@@ -1,10 +1,8 @@
 {
-    "container": "channels",
-    "key": "channels-${project-key}",
-    "value": [
-        {
-            "id": "xxxx-xxxxx-xxxxxx",
-            "type": "whatsapp",
+    "container": "notify-channels",
+    "key": "notify-channels-${project-key}",
+    "value": {
+        "whatsapp": {
             "configurations": {
                 "isEnabled": true,
                 "messageBody": {
@@ -12,9 +10,7 @@
                 }
             }
         },
-        {
-            "id": "xxxx-xxxxx-xxxxxx",
-            "type": "email",
+        "email": {
             "configurations": {
                 "isEnabled": true,
                 "messageBody": {
@@ -22,9 +18,7 @@
                 }
             }
         },
-        {
-            "id": "xxxx-xxxxx-xxxxxx",
-            "type": "sms",
+        "sms": {
             "configurations": {
                 "isEnabled": true,
                 "messageBody": {
@@ -32,5 +26,5 @@
                 }
             }
         }
-    ]
+    }
 }
