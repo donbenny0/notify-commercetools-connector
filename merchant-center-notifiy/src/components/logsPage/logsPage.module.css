@@ -1,0 +1,62 @@
+.logContainer {
+    display: flex;
+    flex-direction: row;
+}
+
+.statusContainer {
+    display: flex;
+    align-items: center;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    background-color: #030806;
+    padding: 1%;
+    color: aliceblue;
+    font-weight: 800;
+    word-spacing: 10px;
+    border: 1px solid transparent;
+    border-top-left-radius: 5px;
+    border-bottom-left-radius: 5px;
+}
+
+.statusContainer.status200 {
+    background-color: #49cc90;
+    /* Success - 200 OK */
+}
+
+.statusContainer.status300 {
+    background-color: #61affe;
+    /* Redirection - 300 */
+}
+
+.statusContainer.status400 {
+    background-color: #fca130;
+    /* Client Error - 400 */
+}
+
+.statusContainer.status404 {
+    background-color: #f93e3e;
+    /* Not Found - 404 */
+}
+
+.statusContainer.status500 {
+    background-color: #e53935;
+    /* Server Error - 500 */
+}
+
+.loadingContainer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100vh;
+}
+
+.messageAndTime {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.messageAndTime span {
+    font-size: 12px;
+    color: grey;
+}

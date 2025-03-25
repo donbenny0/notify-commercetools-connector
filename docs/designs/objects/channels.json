@@ -1,0 +1,36 @@
+{
+    "container": "channels",
+    "key": "channels-${project-key}",
+    "value": [
+        {
+            "id": "xxxx-xxxxx-xxxxxx",
+            "type": "whatsapp",
+            "configurations": {
+                "isEnabled": true,
+                "messageBody": {
+                    "text": "Hello, this is a test message from the WhatsApp channel"
+                }
+            }
+        },
+        {
+            "id": "xxxx-xxxxx-xxxxxx",
+            "type": "email",
+            "configurations": {
+                "isEnabled": true,
+                "messageBody": {
+                    "text": "Hello, this is a test message from the Email channel"
+                }
+            }
+        },
+        {
+            "id": "xxxx-xxxxx-xxxxxx",
+            "type": "sms",
+            "configurations": {
+                "isEnabled": true,
+                "messageBody": {
+                    "text": "Hello, this is a test message from the SMS channel"
+                }
+            }
+        }
+    ]
+}
