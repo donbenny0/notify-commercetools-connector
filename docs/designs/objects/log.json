@@ -1,5 +1,5 @@
 {
-    "container": "messagelogs",
+    "container": "notify-messagelogs",
     "key": "message-logs-${project-key}",
     "value": [
         {

@@ -1,9 +1,3 @@
-import { Request, Response } from "express";
-import { CreateSubscriptionInterface, RemoveSubscriptionInterface } from "../../interface/subscription/subscription.interface";
-import { createSubscriptionService } from "../../services/subscription/createSubscription.service";
-import { logger } from "../../utils/logger.utils";
-import { removeSubscriptionService } from "../../services/subscription/removeSubscription.service";
-import GlobalError from "../../errors/global.error";
 
 
 export const createSubscriptionController = async (req: Request, res: Response) => {

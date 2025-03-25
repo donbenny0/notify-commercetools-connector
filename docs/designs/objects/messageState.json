@@ -3,15 +3,31 @@
     "version": 1,
     "key": "xxxx-xxxx-xxxxxxx",
     "value": {
+        "channelReference": {
+            "id": "c5bdee50-393d-4738-b1fe-81df4517eedf",
+            "typeId": "key-value-document"
+        },
         "channelsProcessed": {
             "whatsapp": {
-                "isSent": true
+                "isSent": [
+                    "processing",
+                    true,
+                    false
+                ]
             },
             "email": {
-                "isSent": true
+                "isSent": [
+                    "processing",
+                    true,
+                    false
+                ]
             },
             "sms": {
-                "isSent": false
+                "isSent": [
+                    "processing",
+                    true,
+                    false
+                ]
             }
         },
         "messsage": {

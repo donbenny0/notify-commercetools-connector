@@ -1,38 +1,44 @@
 {
-    "container": "subscriptions",
-    "key": "subscriptions-${project-key}",
+    "container": "notify-subscriptions",
+    "key": "notify-subscriptions-key",
     "value": {
-        "whatsapp": {
-            "subscriptions": [
-                {
-                    "triggerType": "OrderCreated",
-                    "subscribedAt": "2024-03-01T00:00:00.000Z"
-                },
-                {
-                    "triggerType": "OrderStateChanged",
-                    "subscribedAt": "2024-03-01T00:00:00.000Z"
-                }
-            ]
+        "channelReference": {
+            "id": "4e2b758f-f259-4c14-808e-2beb126bc0f1",
+            "typeId": "notify-channels-key"
         },
-        "sms": {
-            "subscriptions": [
-                {
-                    "triggerType": "OrderCreated",
-                    "subscribedAt": "2024-03-01T00:00:00.000Z"
-                },
-                {
-                    "triggerType": "OrderStateChanged",
-                    "subscribedAt": "2024-03-01T00:00:00.000Z"
-                },
-                {
-                    "triggerType": "CustomerCreated",
-                    "subscribedAt": "2024-03-01T00:00:00.000Z"
-                },
-                {
-                    "triggerType": "CustomerNameSet",
-                    "subscribedAt": "2024-03-01T00:00:00.000Z"
-                }
-            ]
+        "channels": {
+            "whatsapp": {
+                "subscriptions": [
+                    {
+                        "triggerType": "OrderCreated",
+                        "subscribedAt": "2024-03-01T00:00:00.000Z"
+                    },
+                    {
+                        "triggerType": "OrderStateChanged",
+                        "subscribedAt": "2024-03-01T00:00:00.000Z"
+                    }
+                ]
+            },
+            "sms": {
+                "subscriptions": [
+                    {
+                        "triggerType": "OrderCreated",
+                        "subscribedAt": "2024-03-01T00:00:00.000Z"
+                    },
+                    {
+                        "triggerType": "OrderStateChanged",
+                        "subscribedAt": "2024-03-01T00:00:00.000Z"
+                    },
+                    {
+                        "triggerType": "CustomerCreated",
+                        "subscribedAt": "2024-03-01T00:00:00.000Z"
+                    },
+                    {
+                        "triggerType": "CustomerNameSet",
+                        "subscribedAt": "2024-03-01T00:00:00.000Z"
+                    }
+                ]
+            }
         }
     }
 }

@@ -1,6 +1,6 @@
 {
     "container": "notify-channels",
-    "key": "notify-channels-${project-key}",
+    "key": "notify-channels-key",
     "value": {
         "whatsapp": {
             "configurations": {
