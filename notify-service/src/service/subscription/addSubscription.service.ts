@@ -1,6 +1,8 @@
 import GlobalError from "../../errors/global.error";
+import { CreateCustomObjectInterface } from "../../interfaces/customObject.interface";
 import { ChannelSubscriptions } from "../../interfaces/subscription.interface";
-import { getCustomObjectRepository } from "../../repository/customObjects/customObjects.repository";
+import { getCustomObjectRepository, updateCustomObjectRepository } from "../../repository/customObjects/customObjects.repository";
+import { createCommerceToolsSubscriptionRepository } from "../../repository/subscription/subscription.repository";
 
 export const addSubscriptionService = async (channel: string, updateBody: ChannelSubscriptions) => {
     // Fetch the current custom object
@@ -51,10 +53,34 @@ export const addSubscriptionService = async (channel: string, updateBody: Channe
             // If resourceType doesn't exist, add new subscription
             mergedSubscriptions.push(newSubscription);
         }
+
+        // Create CommerceTools subscription for each resource type
+        const subKey = `notify-${newSubscription.resourceType}-subscription`;
+        const triggers = newSubscription.triggers.map(trigger => trigger.triggerType);
+
+        // Validate required fields before creating subscription
+        if (!newSubscription.resourceType) {
+            throw new GlobalError(400, `ResourceType is required for subscription`);
+        }
+
+        await createCommerceToolsSubscriptionRepository(
+            subKey,
+            newSubscription.resourceType,
+            triggers
+        );
     }
 
     // Replace the channel's subscriptions with the merged subscriptions
     currentChannel.subscriptions = mergedSubscriptions;
 
-    return updatedValue;
+    const subscriptionObject: CreateCustomObjectInterface = {
+        container: "notify-subscriptions",
+        key: "notify-subscriptions-key",
+        version: currentCustomObject.version,
+        value: updatedValue
+    }
+
+    const subObjectUpdatedResponse = await updateCustomObjectRepository(subscriptionObject);
+
+    return subObjectUpdatedResponse;
 };
