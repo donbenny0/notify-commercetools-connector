@@ -5,7 +5,8 @@ import express, { Express } from 'express';
 import bodyParser from 'body-parser';
 
 // Import routes
-import ServiceRoutes from './routes/service.route';
+import subscriptionRouter from './routes/subscription.route';
+
 
 import { readConfiguration } from './utils/config.utils';
 import { errorMiddleware } from './middleware/error.middleware';
@@ -23,7 +24,9 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 // Define routes
-app.use('/service', ServiceRoutes);
+// prefix
+const prefix = '/api/v1';
+app.use(`${prefix}/subscription`, subscriptionRouter);
 app.use('*', () => {
   throw new CustomError(404, 'Path not found.');
 });

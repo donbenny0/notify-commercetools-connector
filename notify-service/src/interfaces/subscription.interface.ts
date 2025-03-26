@@ -7,16 +7,26 @@ interface ReferenceObject {
     [key: string]: Reference;
 }
 
-interface Subscription {
+export interface Subscription {
+    resourceType: string;
+    triggers: TriggerList[];
+}
+
+export interface TriggerList {
     triggerType: string;
     subscribedAt: string;
 }
-
-interface ChannelSubscriptions {
+export interface ChannelSubscriptions {
     subscriptions: Subscription[];
 }
 
+interface PubsubPropreties {
+    projectId: string;
+    topic: string;
+}
+
 export interface CreateSubscriptionInterface {
+    pubsubPropreties?: PubsubPropreties;
     references?: ReferenceObject;
     channels: {
         [key: string]: ChannelSubscriptions;

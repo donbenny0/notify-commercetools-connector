@@ -4,12 +4,12 @@ import { CreateCustomObjectInterface } from "../../interfaces/customObject.inter
 const apiRoot = createApiRoot();
 
 export const updateCustomObjectRepository = async (objectBody: CreateCustomObjectInterface) => {
-    const currentCustomObject = await getCustomObjectRepository(objectBody.container, objectBody.key);
+
     const response = await apiRoot.customObjects()
         .post({
             body: {
                 container: objectBody.container,
-                version: currentCustomObject?.version,
+                version: objectBody?.version,
                 key: objectBody.key,
                 value: objectBody.value
             }
