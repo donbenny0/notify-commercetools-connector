@@ -61,6 +61,35 @@ export const updateCommerceToolsSubscriptionRepository = async (subscriptionKey:
 
 }
 
+export const deleteCommerceToolsSubscriptionRepository = async (subscriptionKey: string) => {
+    try {
+        const version = await fetchCommerceToolsSubscriptionRepository(subscriptionKey).then(response => response.version);
+
+        // If found, delete the subscription
+        await apiRoot.subscriptions()
+            .withKey({ key: subscriptionKey })
+            .delete({
+                queryArgs: {
+                    version: version,
+                },
+            })
+            .execute();
+
+        return true;
+    } catch (error: any) {
+        if (error.statusCode === 404) {
+            return true;
+        }
+        // For other errors, throw a GlobalError
+        throw new GlobalError(
+            error.statusCode || 500,
+            error.message || 'Failed to delete subscription'
+        );
+    }
+};
+
+
+
 export const fetchCommerceToolsSubscriptionRepository = async (subscriptionKey: string) => {
     try {
         const response = await apiRoot.subscriptions().withKey({ key: subscriptionKey }).get().execute();

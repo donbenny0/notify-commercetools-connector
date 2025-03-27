@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { logger } from '../utils/logger.utils';
-import { addSubscriptionController } from '../controllers/subscription.controller';
+import { addSubscriptionController, removeSubscriptionController } from '../controllers/subscription.controller';
 
 const subscriptionRouter: Router = Router();
 
@@ -15,14 +15,14 @@ subscriptionRouter.post('/add', async (req, res, next) => {
 });
 
 // remove subscription
-// subscriptionRouter.post('/remove', async (req, res, next) => {
-//     logger.info('Subscription removal initiated');
-//     try {
-//         await removeSubscriptionController(req, res);
-//     } catch (error) {
-//         next(error);
-//     }
-// });
+subscriptionRouter.post('/remove', async (req, res, next) => {
+    logger.info('Subscription removal initiated');
+    try {
+        await removeSubscriptionController(req, res);
+    } catch (error) {
+        next(error);
+    }
+});
 
 
 export default subscriptionRouter;
