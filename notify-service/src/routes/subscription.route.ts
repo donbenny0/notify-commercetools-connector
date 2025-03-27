@@ -5,10 +5,24 @@ import { addSubscriptionController } from '../controllers/subscription.controlle
 const subscriptionRouter: Router = Router();
 
 // create subscription
-subscriptionRouter.post('/add', async (req, res) => {
+subscriptionRouter.post('/add', async (req, res, next) => {
     logger.info('Subscription creation initiated');
-    await addSubscriptionController(req, res);
+    try {
+        await addSubscriptionController(req, res);
+    } catch (error) {
+        next(error);
+    }
 });
+
+// remove subscription
+// subscriptionRouter.post('/remove', async (req, res, next) => {
+//     logger.info('Subscription removal initiated');
+//     try {
+//         await removeSubscriptionController(req, res);
+//     } catch (error) {
+//         next(error);
+//     }
+// });
 
 
 export default subscriptionRouter;

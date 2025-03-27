@@ -4,3 +4,11 @@ export class AddSubscriptionDto {
     channel!: string;
     updateBody!: ChannelSubscriptions;
 }
+
+export class RemoveSubscriptionDto {
+    channel!: string;
+    subscription!: {
+        resourceType: string;
+        triggerType: string;
+    }
+}

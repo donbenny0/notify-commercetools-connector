@@ -1,56 +1,74 @@
 import { GoogleCloudPubSubDestination } from "@commercetools/platform-sdk";
 import { createApiRoot } from "../../client/create.client"
 import { getCustomObjectRepository } from "../customObjects/customObjects.repository";
+import GlobalError from "../../errors/global.error";
 
 const apiRoot = createApiRoot();
 
-
 export const createCommerceToolsSubscriptionRepository = async (subscriptionKey: string, resourceTypeId: string, types: string[]) => {
-    const gcpPropreties = await getCustomObjectRepository('notify-subscriptions', 'notify-subscriptions-key');
-    const destination: GoogleCloudPubSubDestination = {
-        type: 'GoogleCloudPubSub',
-        topic: gcpPropreties.value.pubsubPropreties.topic,
-        projectId: gcpPropreties.value.pubsubPropreties.projectId,
-    };
-    apiRoot.subscriptions()
-        .post({
-            body: {
-                key: subscriptionKey,
-                destination,
-                messages: [
-                    {
-                        resourceTypeId: resourceTypeId,
-                        types: types,
-                    },
-                ],
-            },
-        })
-        .execute();
-}
+    try {
+        const gcpPropreties = await getCustomObjectRepository('notify-subscriptions', 'notify-subscriptions-key');
+        const destination: GoogleCloudPubSubDestination = {
+            type: 'GoogleCloudPubSub',
+            topic: gcpPropreties.value.pubsubPropreties.topic,
+            projectId: gcpPropreties.value.pubsubPropreties.projectId,
+        };
 
-export const updateCommerceToolsSubscriptionRepository = async (subscriptionKey: string, resourceTypeId: string, types: string[]) => {
-    const version = await fetchCommerceToolsSubscriptionRepository(subscriptionKey).then(response => response.version);
-    apiRoot.subscriptions().withKey({ key: subscriptionKey }).post({
-        body: {
-            actions: [
-                {
-                    action: 'setMessages',
+        const response = await apiRoot.subscriptions()
+            .post({
+                body: {
+                    key: subscriptionKey,
+                    destination,
                     messages: [
                         {
                             resourceTypeId: resourceTypeId,
                             types: types,
                         },
-                    ]
+                    ],
                 },
-            ],
-            version: version
-        }
-    }).execute();
+            })
+            .execute();
+
+        return response;
+    } catch (error: any) {
+        throw new GlobalError(error.statusCode || 500, error.message || 'Failed to create subscription');
+    }
+}
+
+export const updateCommerceToolsSubscriptionRepository = async (subscriptionKey: string, resourceTypeId: string, types: string[]) => {
+    try {
+        const version = await fetchCommerceToolsSubscriptionRepository(subscriptionKey).then(response => response.version);
+        const response = await apiRoot.subscriptions().withKey({ key: subscriptionKey }).post({
+            body: {
+                actions: [
+                    {
+                        action: 'setMessages',
+                        messages: [
+                            {
+                                resourceTypeId: resourceTypeId,
+                                types: types,
+                            },
+                        ]
+                    },
+                ],
+                version: version
+            }
+        }).execute();
+        return response;
+    } catch (error: any) {
+        throw new GlobalError(error.statusCode || 500, error.message || 'Failed to update subscription');
+    }
+
 }
 
 export const fetchCommerceToolsSubscriptionRepository = async (subscriptionKey: string) => {
-    const response = await apiRoot.subscriptions().withKey({ key: subscriptionKey }).get().execute();
-    return response.body;
+    try {
+        const response = await apiRoot.subscriptions().withKey({ key: subscriptionKey }).get().execute();
+        return response.body;
+    } catch (error: any) {
+        throw new GlobalError(error.statusCode || 500, error.message || 'Failed to update subscription');
+    }
+
 }
 
 export const commerceToolsSubscriptionExistsRepository = async (subscriptionKey: string): Promise<boolean> => {
@@ -61,7 +79,7 @@ export const commerceToolsSubscriptionExistsRepository = async (subscriptionKey:
         if (error?.statusCode === 404) {
             return false;
         }
-        throw error; 
+        throw error;
     }
 };
 
