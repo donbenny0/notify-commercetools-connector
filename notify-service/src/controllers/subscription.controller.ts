@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { AddSubscriptionDto } from "../dto/request/subscription.dto";
 import { addSubscriptionService } from "../service/subscription/addSubscription.service";
 import { logger } from "../utils/logger.utils";
+import GlobalError from '../errors/global.error';
 
 
 export const addSubscriptionController = async (req: Request, res: Response) => {
@@ -11,7 +12,9 @@ export const addSubscriptionController = async (req: Request, res: Response) => 
         res.status(200).send(response);
     } catch (error: any) {
         logger.error('Error creating subscription');
-        res.status(error.body?.statusCode || 500).send(error.body || { message: error });
+        const globalError = GlobalError.fromCatch(error);
+        res.status(globalError.getStatusCode()).send(globalError.getResponseBody());
+
     }
 };
 // export const removeSubscriptionController = async (req: Request, res: Response) => {

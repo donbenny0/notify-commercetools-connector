@@ -29,4 +29,36 @@ export const createCommerceToolsSubscriptionRepository = async (subscriptionKey:
         .execute();
 }
 
+export const updateCommerceToolsSubscriptionRepository = async (subscriptionKey: string, resourceTypeId: string, types: string[]) => {
+
+
+    const version = await fetchCommerceToolsSubscriptionRepository(subscriptionKey).then(response => response.version);
+    apiRoot.subscriptions().withKey({ key: subscriptionKey }).post({
+        body: {
+            actions: [
+                {
+                    action: 'setMessages',
+                    messages: [
+                        {
+                            resourceTypeId: resourceTypeId,
+                            types: types,
+                        },
+                    ]
+                },
+            ],
+            version: version
+        }
+    }).execute();
+}
+
+export const fetchCommerceToolsSubscriptionRepository = async (subscriptionKey: string) => {
+    const response = await apiRoot.subscriptions().withKey({ key: subscriptionKey }).get().execute();
+    return response.body;
+}
+
+export const commerceToolsSubscriptionExistsRepository = async (subscriptionKey: string): Promise<boolean> => {
+    const response = await fetchCommerceToolsSubscriptionRepository(subscriptionKey);
+    return response.key === subscriptionKey;
+}
+
 

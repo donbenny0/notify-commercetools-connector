@@ -6,7 +6,8 @@
             "configurations": {
                 "isEnabled": true,
                 "messageBody": {
-                    "text": "Hello, this is a test message from the WhatsApp channel"
+                    "OrderCreated": "Hello, this is a test message from the WhatsApp channel",
+                    "OrderUpdated": "Hello, this is a test message from the WhatsApp channel"
                 }
             }
         },
@@ -14,7 +15,8 @@
             "configurations": {
                 "isEnabled": true,
                 "messageBody": {
-                    "text": "Hello, this is a test message from the Email channel"
+                    "OrderCreated": "Hello, this is a test message from the WhatsApp channel",
+                    "OrderUpdated": "Hello, this is a test message from the WhatsApp channel"
                 }
             }
         },
@@ -22,7 +24,8 @@
             "configurations": {
                 "isEnabled": true,
                 "messageBody": {
-                    "text": "Hello, this is a test message from the SMS channel"
+                    "OrderCreated": "Hello, this is a test message from the WhatsApp channel",
+                    "OrderUpdated": "Hello, this is a test message from the WhatsApp channel"
                 }
             }
         }
