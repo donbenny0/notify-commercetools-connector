@@ -12,7 +12,6 @@ export const createCommerceToolsSubscriptionRepository = async (subscriptionKey:
         topic: gcpPropreties.value.pubsubPropreties.topic,
         projectId: gcpPropreties.value.pubsubPropreties.projectId,
     };
-
     apiRoot.subscriptions()
         .post({
             body: {
@@ -30,8 +29,6 @@ export const createCommerceToolsSubscriptionRepository = async (subscriptionKey:
 }
 
 export const updateCommerceToolsSubscriptionRepository = async (subscriptionKey: string, resourceTypeId: string, types: string[]) => {
-
-
     const version = await fetchCommerceToolsSubscriptionRepository(subscriptionKey).then(response => response.version);
     apiRoot.subscriptions().withKey({ key: subscriptionKey }).post({
         body: {
@@ -57,8 +54,15 @@ export const fetchCommerceToolsSubscriptionRepository = async (subscriptionKey: 
 }
 
 export const commerceToolsSubscriptionExistsRepository = async (subscriptionKey: string): Promise<boolean> => {
-    const response = await fetchCommerceToolsSubscriptionRepository(subscriptionKey);
-    return response.key === subscriptionKey;
-}
+    try {
+        await apiRoot.subscriptions().withKey({ key: subscriptionKey }).get().execute();
+        return true;
+    } catch (error: any) {
+        if (error?.statusCode === 404) {
+            return false;
+        }
+        throw error; 
+    }
+};
 
 
