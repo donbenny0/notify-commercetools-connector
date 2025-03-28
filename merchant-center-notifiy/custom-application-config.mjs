@@ -17,8 +17,8 @@ const config = {
     },
   },
   oAuthScopes: {
-    view: ['view_orders'],
-    manage: ['manage_orders'],
+    view: ['view_orders','view_key_value_documents'],
+    manage: ['manage_orders','manage_key_value_documents','manage_subscriptions'],
   },
   icon: '${path:@commercetools-frontend/assets/application-icons/bell.svg}',
   mainMenuLink: {

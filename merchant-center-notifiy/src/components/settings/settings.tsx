@@ -11,7 +11,7 @@ import { useCallback, useEffect, useState } from "react";
 import styles from './settings.module.css';
 import Card from '@commercetools-uikit/card';
 import whatsappSvg from './whatsapp.svg';
-import { useAsyncDispatch } from '@commercetools-frontend/sdk';
+import { TSdkAction, useAsyncDispatch } from '@commercetools-frontend/sdk';
 import { fetchMessageBodyObject, fetchOrders, updateMessageBodyObject } from "../../repository/messages.repository";
 import Loader from "../loader";
 import { validateTemplate } from "../../utils/messageBody.utils";
@@ -20,6 +20,8 @@ import { useIntl } from 'react-intl';
 import SelectField from "@commercetools-uikit/select-field";
 import { generateMessage } from "../../utils/messageTemplate.utils";
 import ViewSwitcher from '@commercetools-uikit/view-switcher';
+import { createCommerceToolsSubscriptionRepository, deleteCommerceToolsSubscriptionRepository, updateCommerceToolsSubscriptionRepository } from "../../repository/subscription.repository";
+import { fetchAllChannelsService } from "../hooks/channel/fetchChannel.hooks";
 type TEditMessagesProps = {
     linkToNotifications: string;
 };
@@ -36,14 +38,14 @@ const EditMessages = ({ linkToNotifications }: TEditMessagesProps) => {
     const [orders, setOrders] = useState<any[]>([]);
     const [renderedMessage, setRenderedMessage] = useState('');
     const [seletedValue, setSelectedValue] = useState('edit-template');
-
     const dispatch = useAsyncDispatch();
     const intl = useIntl();
+    const [customObject, setCustomObject] = useState<any>(null);
     const showNotification = useShowNotification();
-
     const loadMessages = useCallback(async () => {
         try {
-            const results = await fetchMessageBodyObject(dispatch);
+            const custombody = await fetchAllChannelsService(dispatch);
+            setCustomObject(custombody)
             if (!hasLoaded) {
                 const selectedMsg = results.find(
                     msg => msg.value.channel.toLowerCase() === selectedMethod.toLowerCase()
@@ -61,6 +63,8 @@ const EditMessages = ({ linkToNotifications }: TEditMessagesProps) => {
     useEffect(() => {
         loadMessages();
     }, [loadMessages]);
+
+    // console.log(customObject);
 
     const handleTemplateChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
         const newMessage = event.target.value;
@@ -149,7 +153,7 @@ const EditMessages = ({ linkToNotifications }: TEditMessagesProps) => {
                         selectedValue={seletedValue}
                         onChange={setSelectedValue}
                     >
-                        <ViewSwitcher.Button  isDisabled={seletedValue === 'edit-template'} value="edit-template">
+                        <ViewSwitcher.Button isDisabled={seletedValue === 'edit-template'} value="edit-template">
                             Edit Template
                         </ViewSwitcher.Button>
                     </ViewSwitcher.Group>
