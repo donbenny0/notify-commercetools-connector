@@ -1,7 +1,7 @@
 /* eslint-disable no-useless-catch */
 
-import { RemoveSubscriptionDto } from "../../dto/request/subscription.dto";
 import GlobalError from "../../errors/global.error";
+import { RemoveSubscriptionRequestInterface } from "../../interfaces/subscription.interface";
 import {
     getCustomObjectRepository,
     updateCustomObjectRepository
@@ -12,9 +12,9 @@ import {
 } from "../../repository/subscription/subscription.repository";
 import { logger } from "../../utils/logger.utils";
 
-export const removeSubscriptionService = async (removeSubscriptionDto: RemoveSubscriptionDto) => {
+export const removeSubscriptionService = async (removeSubscriptionInterface: RemoveSubscriptionRequestInterface) => {
     try {
-        const { channel, subscription } = removeSubscriptionDto;
+        const { channel, subscription } = removeSubscriptionInterface;
         const subscriptionKey = `notify-${subscription.resourceType}-subscription`;
 
         // Fetch custom object and prepare Commerce Tools operations in parallel
@@ -29,10 +29,8 @@ export const removeSubscriptionService = async (removeSubscriptionDto: RemoveSub
             throw new GlobalError(404, `Channel ${channel} not found`);
         }
 
-        // Use direct array access with find instead of findIndex when possible
-        const subscriptionIndex = currentChannel.subscriptions.findIndex((sub: any) =>
-            (sub.resourceType === subscription.resourceType ||
-             sub.resourseType === subscription.resourceType)
+        const subscriptionIndex = currentChannel.subscriptions.findIndex((currentSubscription: { triggerType: string, resourceType: string }) =>
+            (currentSubscription.resourceType === subscription.resourceType)
         );
 
         if (subscriptionIndex === -1) {
@@ -47,7 +45,7 @@ export const removeSubscriptionService = async (removeSubscriptionDto: RemoveSub
         // Handle Commerce Tools operations and custom object update in parallel
         if (updatedTriggers.length === 0) {
             currentChannel.subscriptions.splice(subscriptionIndex, 1);
-            
+
             // Execute delete operation and custom object update in parallel
             await Promise.all([
                 deleteCommerceToolsSubscriptionRepository(subscriptionKey)

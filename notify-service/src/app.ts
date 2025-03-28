@@ -11,6 +11,7 @@ import subscriptionRouter from './routes/subscription.route';
 import { readConfiguration } from './utils/config.utils';
 import { errorMiddleware } from './middleware/error.middleware';
 import CustomError from './errors/custom.error';
+import channelRouter from './routes/channel.route';
 
 // Read env variables
 readConfiguration();
@@ -27,6 +28,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 // prefix
 const prefix = '/api/v1';
 app.use(`${prefix}/subscription`, subscriptionRouter);
+app.use(`${prefix}/channel`, channelRouter);
 app.use('*', () => {
   throw new CustomError(404, 'Path not found.');
 });

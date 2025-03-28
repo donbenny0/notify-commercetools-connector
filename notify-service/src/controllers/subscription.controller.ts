@@ -1,12 +1,12 @@
 import { Request, Response } from 'express';
-import { AddSubscriptionDto, RemoveSubscriptionDto } from "../dto/request/subscription.dto";
 import { addSubscriptionService } from "../service/subscription/addSubscription.service";
 import GlobalError from '../errors/global.error';
 import { removeSubscriptionService } from '../service/subscription/removeSubscription.service';
+import { AddSubscriptionRequestInterface, RemoveSubscriptionRequestInterface } from '../interfaces/subscription.interface';
 
 export const addSubscriptionController = async (req: Request, res: Response) => {
     try {
-        const requestBody: AddSubscriptionDto = req.body;
+        const requestBody: AddSubscriptionRequestInterface = req.body;
         const response = await addSubscriptionService(requestBody.channel, requestBody.updateBody);
         res.status(200).json(response);
     } catch (error: any) {
@@ -20,7 +20,7 @@ export const addSubscriptionController = async (req: Request, res: Response) => 
 
 export const removeSubscriptionController = async (req: Request, res: Response) => {
     try {
-        const requestBody: RemoveSubscriptionDto = req.body;
+        const requestBody: RemoveSubscriptionRequestInterface = req.body;
 
 
         const response = await removeSubscriptionService(requestBody);

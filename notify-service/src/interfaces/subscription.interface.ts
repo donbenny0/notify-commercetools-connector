@@ -32,3 +32,17 @@ export interface CreateSubscriptionInterface {
         [key: string]: ChannelSubscriptions;
     };
 }
+
+
+export interface AddSubscriptionRequestInterface {
+    channel: string;
+    updateBody: ChannelSubscriptions;
+}
+
+export interface RemoveSubscriptionRequestInterface {
+    channel: string;
+    subscription: {
+        resourceType: string;
+        triggerType: string;
+    }
+}

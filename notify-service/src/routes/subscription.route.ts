@@ -15,7 +15,7 @@ subscriptionRouter.post('/add', async (req, res, next) => {
 });
 
 // remove subscription
-subscriptionRouter.post('/remove', async (req, res, next) => {
+subscriptionRouter.delete('/remove', async (req, res, next) => {
     logger.info('Subscription removal initiated');
     try {
         await removeSubscriptionController(req, res);
