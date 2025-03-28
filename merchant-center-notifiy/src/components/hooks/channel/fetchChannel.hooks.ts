@@ -2,7 +2,7 @@ import { fetchCustomObjectRepository } from "../../../repository/customObject.re
 
 
 
-export const fetchAllChannelsService = async (dispatch: any) => {
+export const fetchAllChannelsHook = async (dispatch: any) => {
     try {
         const response = await fetchCustomObjectRepository(dispatch, 'notify-channels', 'notify-channels-key');
         if (!response) {
@@ -14,7 +14,7 @@ export const fetchAllChannelsService = async (dispatch: any) => {
     }
 }
 
-export const fetchChannelService = async (dispatch: any, channel: string) => {
+export const fetchChannelHook = async (dispatch: any, channel: string) => {
     try {
         const response = await fetchCustomObjectRepository(dispatch, 'notify-channels', 'notify-channels-key');
         if (!response) {
