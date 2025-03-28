@@ -29,9 +29,7 @@ export const addSubscriptionService = async (channel: string, updateBody: Channe
         // Normalize currentChannel subscriptions, ensuring no duplicate resourceTypes
         const normalizedCurrentSubscriptions = currentChannel.subscriptions.reduce((acc: any[], curr: any) => {
             const existingIndex = acc.findIndex(sub =>
-                sub.resourceType === curr.resourceType ||
-                sub.resourseType === curr.resourseType // Handle potential typo
-            );
+                sub.resourceType === curr.resourceType);
 
             if (existingIndex === -1) {
                 acc.push(curr);

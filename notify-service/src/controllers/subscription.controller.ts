@@ -33,3 +33,4 @@ export const removeSubscriptionController = async (req: Request, res: Response) 
         res.status(globalError.getStatusCode()).json(globalError.getResponseBody());
     }
 };
+
