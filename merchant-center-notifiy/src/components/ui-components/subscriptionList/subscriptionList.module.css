@@ -1,0 +1,21 @@
+.subscriptionTable {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1rem 0;
+}
+
+.subscriptionTable th,
+.subscriptionTable td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+.subscriptionTable th {
+    background-color: #f2f2f2;
+    color: #333;
+}
+
+.subscriptionTable tr:hover {
+    background-color: #f1f1f1;
+}

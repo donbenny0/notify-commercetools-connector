@@ -1,10 +1,10 @@
 import type { ReactNode } from 'react';
 import { Switch, Route, useRouteMatch } from 'react-router-dom';
 import Spacings from '@commercetools-uikit/spacings';
-import Notification from './components/notifications';
-import EditMessages from './components/settings';
-import LogsPage from './components/logsPage';
-import ConfigurationPage from './components/configuration/configurationPage';
+import Notification from './components/pages/notifications';
+import EditMessages from './components/pages/settings';
+import LogsPage from './components/pages/logsPage';
+import ConfigurationPage from './components/pages/configuration/configurationPage';
 
 type ApplicationRoutesProps = {
   children?: ReactNode;

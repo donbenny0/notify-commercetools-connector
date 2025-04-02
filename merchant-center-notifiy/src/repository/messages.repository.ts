@@ -53,3 +53,19 @@ export const fetchOrders = async (dispatch: any) => {
         throw error;
     }
 };
+
+// export const fetch = async (dispatch: any) => {
+//     try {
+//         const result = await dispatch(
+//             actions.get({
+//                 mcApiProxyTarget: MC_API_PROXY_TARGETS.COMMERCETOOLS_PLATFORM,
+//                 uri: ''
+//             })
+//         );
+
+//         return result.results;
+//     } catch (error) {
+//         console.error('Error fetching orders:', error);
+//         throw error;
+//     }
+// };

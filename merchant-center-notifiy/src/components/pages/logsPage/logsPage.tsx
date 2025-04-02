@@ -1,17 +1,17 @@
 
-import Spacings from "@commercetools-uikit/spacings";
-import Text from "@commercetools-uikit/text";
-import { Link as RouterLink, useParams } from "react-router-dom";
+import { useAsyncDispatch } from '@commercetools-frontend/sdk';
+import Card from '@commercetools-uikit/card';
 import FlatButton from "@commercetools-uikit/flat-button";
 import { BackIcon } from "@commercetools-uikit/icons";
-import messages from "./messages";
+import Spacings from "@commercetools-uikit/spacings";
+import Text from "@commercetools-uikit/text";
 import { useCallback, useEffect, useState } from "react";
-import { fetchNotificationsObject } from "../../repository/notifications.repository";
-import { useAsyncDispatch } from '@commercetools-frontend/sdk';
-import { LogState } from "../../interfaces/LogState.interface";
-import Card from '@commercetools-uikit/card';
+import { Link as RouterLink, useParams } from "react-router-dom";
+import { LogState } from "../../../interfaces/LogState.interface";
+import { fetchNotificationsObject } from "../../../repository/notifications.repository";
+import Loader from "../../ui-components/loader";
 import styles from './logsPage.module.css';
-import Loader from "../loader";
+import messages from "./messages";
 
 type TLogsPageProps = {
     linkToNotifications: string;

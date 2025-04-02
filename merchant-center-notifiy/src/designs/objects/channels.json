@@ -1,0 +1,33 @@
+{
+    "container": "notify-channels",
+    "key": "notify-channels-key",
+    "value": {
+        "whatsapp": {
+            "configurations": {
+                "isEnabled": true,
+                "messageBody": {
+                    "OrderCreated": "Hello, this is a test message from the WhatsApp channel",
+                    "OrderUpdated": "Hello, this is a test message from the WhatsApp channel"
+                }
+            }
+        },
+        "email": {
+            "configurations": {
+                "isEnabled": true,
+                "messageBody": {
+                    "OrderCreated": "Hello, this is a test message from the WhatsApp channel",
+                    "OrderUpdated": "Hello, this is a test message from the WhatsApp channel"
+                }
+            }
+        },
+        "sms": {
+            "configurations": {
+                "isEnabled": true,
+                "messageBody": {
+                    "OrderCreated": "Hello, this is a test message from the WhatsApp channel",
+                    "OrderUpdated": "Hello, this is a test message from the WhatsApp channel"
+                }
+            }
+        }
+    }
+}
