@@ -1,0 +1,98 @@
+.sidebar {
+    height: 100%;
+    background-color: transparent;
+    transition: width 0.3s;
+    border: 1px solid #80808033;
+    border-radius: 10px;
+    overflow: hidden;
+    padding: 1%;
+}
+
+.sidebarHeaders {
+    display: flex;
+    gap: 8px;
+    padding: 2%;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.sidebarHeaders:hover {
+    background-color: #e0e0e061;
+}
+
+.channelNamespace {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.sidebarHeaders img {
+    width: 24px;
+    height: 24px;
+}
+
+.open {
+    width: 250px;
+}
+
+.closed {
+    width: 60px;
+}
+
+.toggleButton {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+    margin: 10px;
+}
+
+.nav {
+    margin-top: 20px;
+}
+
+.nav ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.nav li {
+    padding: 10px;
+    cursor: pointer;
+}
+
+.channelList li:hover {
+    background-color: #e0e0e0;
+}
+
+/* New styles for the channel list */
+.channelList {
+    list-style-type: none;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease-in-out, opacity 0.3s ease-in-out;
+    opacity: 0;
+}
+
+.active {
+    max-height: 150px; /* Adjust based on content */
+    opacity: 1;
+}
+
+.hidden {
+    max-height: 0;
+    opacity: 0;
+}
+
+.rotated {
+    transform: rotate(180deg);
+    transition: transform 0.3s ease-in-out;
+}
+
+
+.channelList li {
+    font-size: 14px;
+    margin-left: 16%;
+    padding: 6px 0px 6px;
+}

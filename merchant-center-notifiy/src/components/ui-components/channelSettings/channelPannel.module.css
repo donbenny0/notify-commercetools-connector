@@ -1,0 +1,33 @@
+.channelPannel {
+    width: 100%;
+    border: 1px solid #80808033;
+    border-radius: 10px;
+    padding: 2%;
+}
+
+.channelPannel>hr {
+    border: 0.5px solid #80808033;
+    
+}
+
+.channelPannelHeader {
+    display: flex;
+    justify-content: space-between;
+
+}
+
+.channelPannelHeaderButtons {
+    display: flex;
+    gap: 5px;
+}
+
+.channelPannelHeaderButtons>button {
+    height: 34px;
+    background-color: #00000000;
+    border: 1px solid #80808033;
+    border-radius: 5px;
+}
+
+
+
+.channelPannelHeaderButtons :nth-child(1) {}
