@@ -5,7 +5,9 @@
     border: 1px solid #80808033;
     border-radius: 10px;
     overflow: hidden;
-    padding: 1%;
+    margin-left: -15px;
+    padding: 1.5%;
+    margin-top: -6px;
 }
 
 .sidebarHeaders {
@@ -32,7 +34,7 @@
 }
 
 .open {
-    width: 250px;
+    width: 300px;
 }
 
 .closed {
@@ -48,9 +50,9 @@
     margin: 10px;
 }
 
-.nav {
+/* .nav {
     margin-top: 20px;
-}
+} */
 
 .nav ul {
     list-style-type: none;
@@ -76,7 +78,8 @@
 }
 
 .active {
-    max-height: 150px; /* Adjust based on content */
+    max-height: 150px;
+    /* Adjust based on content */
     opacity: 1;
 }
 

@@ -1,0 +1,87 @@
+.channelPannel {
+    width: 100%;
+    border: 1px solid #80808033;
+    border-radius: 10px;
+    padding: 2%;
+    margin-top: -6px;
+}
+
+.loading {
+    width: 100%;
+    height: 60vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.channelPannel>hr {
+    border: 0.5px solid #80808033;
+
+}
+
+.channelPannelHeader {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    flex-direction: row;
+    align-items: flex-start;
+
+
+}
+
+.channelPannelHeaderButtons {
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+    flex-direction: row;
+    align-content: center;
+    align-items: center;
+}
+
+.channelPannelHeaderButtons>button {
+    height: 34px;
+    background-color: #00000000;
+    border: 1px solid #80808033;
+    border-radius: 5px;
+}
+
+.addSubButton {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 10px 16px;
+    border: none;
+    border-radius: 8px;
+    background-color: #3aa856 !important;
+    /* Green background for the button */
+    color: #fff;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.addSubButton:hover {
+    /* background-color: #34974d; */
+    /* Darker green on hover */
+    transform: scale(1.03);
+}
+
+.addSubButton span {
+    background: transparent;
+    /* Ensures only text remains */
+}
+
+.addSubButton img {
+    width: 29px;
+    height: 29px;
+    padding: 4px;
+    border-radius: 50%;
+    transition: transform 0.2s ease;
+}
+
+.addSubButton:hover img {
+    transform: scale(1.1);
+}
+
+.channelPannelHeaderButtons :nth-child(2) {}

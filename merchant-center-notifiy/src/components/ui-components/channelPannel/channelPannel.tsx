@@ -5,10 +5,12 @@ import TabBar from '../tabBar/TabBar';
 import styles from './channelPannel.module.css';
 import bellIcon from '../../../assets/icons/bell-24.png';
 import messageIcon from '../../../assets/icons/messages-26.png';
+import addIcon from '../../../assets/icons/add-circle.svg';
 import SubscriptionList from '../subscriptionList/SubscriptionList';
 import { fetchCustomObjectQueryRepository } from '../../../repository/customObject.repository';
 import { toggleChannelStatusHook } from '../../hooks/channel/updateChannel.hooks';
 import Loader from '../loader';
+import Toggler from '../toggler/Toggler';
 
 type ChannelPannelProps = {
     channel: string;
@@ -18,7 +20,7 @@ const ChannelPannel = ({ channel }: ChannelPannelProps) => {
     const [activeTab, setActiveTab] = useState('subscription');
     const [isChannelActive, setIsChannelActive] = useState(false);
     const [subscriptions, setSubscriptions] = useState<any>(null);
-    const [isLoading, setisLoading] = useState(true)
+    const [isLoading, setisLoading] = useState(true);
     const dispatch = useAsyncDispatch();
 
     const tabs = [
@@ -28,21 +30,22 @@ const ChannelPannel = ({ channel }: ChannelPannelProps) => {
 
     useEffect(() => {
         const fetchData = async () => {
-            setisLoading(true)
+            setisLoading(true);
             try {
                 const response = await fetchCustomObjectQueryRepository(
                     dispatch,
                     'notify-subscriptions',
-                    'notify-subscriptions-key'
+                    'notify-subscriptions-key',
+                    'expand=value.references.channelReference'
                 );
 
                 if (response?.value?.channels?.[channel]) {
-                    setisLoading(false)
+                    setisLoading(false);
                     setSubscriptions(response.value.channels[channel]);
-                    const isEnabled = response.value.references?.obj?.value?.[channel]?.configurations?.isEnabled ?? false;
+                    const isEnabled = response.value.references?.obj?.value[channel]?.configurations?.isEnabled;
                     setIsChannelActive(isEnabled);
                 } else {
-                    setisLoading(false)
+                    setisLoading(false);
                     setSubscriptions([]);
                     setIsChannelActive(false);
                 }
@@ -54,10 +57,9 @@ const ChannelPannel = ({ channel }: ChannelPannelProps) => {
         fetchData();
     }, [dispatch, channel]);
 
-    const toggleActivateButton = async () => {
-        const newStatus = !isChannelActive;
-        setIsChannelActive(newStatus);
-        await toggleChannelStatusHook(dispatch, channel, { isEnabled: newStatus });
+    const handleToggle = async (newState: boolean) => {
+        setIsChannelActive(newState);
+        await toggleChannelStatusHook(dispatch, channel, { isEnabled: newState });
     };
 
     return (
@@ -67,12 +69,16 @@ const ChannelPannel = ({ channel }: ChannelPannelProps) => {
             ) : (
                 <div>
                     <div className={styles.channelPannelHeader}>
-                        <h3>{channel.charAt(0).toUpperCase() + channel.slice(1)}</h3>
+                        <div>
+                                <h3>Configure {channel.charAt(0).toUpperCase() + channel.slice(1)} preferences</h3>
+                                <small>Configure the subsciptions, message body & other settings related to {channel.charAt(0).toUpperCase() + channel.slice(1)} channel.</small>
+                        </div>
                         <div className={styles.channelPannelHeaderButtons}>
-                            <button onClick={toggleActivateButton}>
-                                {isChannelActive ? 'Disable' : 'Enable'}
+                            <button className={styles.addSubButton}>
+                                <span>Add subscription</span>
+                                <img src={addIcon} alt="" />
                             </button>
-                            <button>Subscription</button>
+                            <Toggler isToggled={isChannelActive} onToggle={handleToggle} />
                         </div>
                     </div>
                     <div className={styles.channelPannelBody}>
@@ -84,7 +90,8 @@ const ChannelPannel = ({ channel }: ChannelPannelProps) => {
                         )}
                     </div>
                 </div>
-            )}        </div>
+            )}
+        </div>
     );
 };
 

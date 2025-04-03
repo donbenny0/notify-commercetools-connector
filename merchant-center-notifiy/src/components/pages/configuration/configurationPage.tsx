@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import styles from './configuration.module.css';
 import SideBar from '../../ui-components/sidebar/SideBar';
-import ChannelPannel from '../../ui-components/channelSettings/channelPannel';
+import ChannelPannel from '../../ui-components/channelPannel/channelPannel';
 
 const availableChannels = ['whatsapp', 'email', 'sms'];
 

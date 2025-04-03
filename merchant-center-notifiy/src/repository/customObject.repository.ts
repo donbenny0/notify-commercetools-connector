@@ -23,7 +23,7 @@ export const fetchCustomObjectRepository = async (dispatch: any, container: stri
 };
 
 
-export const fetchCustomObjectQueryRepository = async (dispatch: any, container: string, key: string, expandQuery?: string) => {
+export const fetchCustomObjectQueryRepository = async (dispatch: any, container: string, key: string, Query?: string) => {
     try {
         const result = await dispatch(
             actions.get({
@@ -31,7 +31,7 @@ export const fetchCustomObjectQueryRepository = async (dispatch: any, container:
                 service: 'customObjects',
                 options: {
                     container: container,
-                    key: `${key}?${expandQuery}`,
+                    key: `${key}?${Query}`,
                 },
             })
         );

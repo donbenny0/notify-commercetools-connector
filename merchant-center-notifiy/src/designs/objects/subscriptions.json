@@ -14,7 +14,7 @@
             "whatsapp": {
                 "subscriptions": [
                     {
-                        "resourseType": "order",
+                        "resourceType": "order",
                         "triggers": [
                             {
                                 "triggerType": "OrderCreated",
@@ -27,7 +27,7 @@
                         ]
                     },
                     {
-                        "resourseType": "product",
+                        "resourceType": "product",
                         "triggers": [
                             {
                                 "triggerType": "ProductCreated",
@@ -44,7 +44,7 @@
             "sms": {
                 "subscriptions": [
                     {
-                        "resourseType": "order",
+                        "resourceType": "order",
                         "triggers": [
                             {
                                 "triggerType": "OrderCreated",
@@ -57,7 +57,7 @@
                         ]
                     },
                     {
-                        "resourseType": "customer",
+                        "resourceType": "customer",
                         "triggers": [
                             {
                                 "triggerType": "CustomerCreated",
