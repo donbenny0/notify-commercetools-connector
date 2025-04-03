@@ -7,11 +7,12 @@ import { fetchCustomObjectRepository } from "./customObject.repository";
 export const createCommerceToolsSubscriptionRepository = async (dispatch: any, subscriptionKey: string, resourceTypeId: string, types: string[]) => {
     try {
         const gcpPropreties = await fetchCustomObjectRepository(dispatch, 'notify-subscriptions', 'notify-subscriptions-key');
+        console.log('gcp propreties', gcpPropreties);
 
         const destination = {
             type: 'GoogleCloudPubSub',
-            topic: gcpPropreties.value.pubsubPropreties.topic,
-            projectId: gcpPropreties.value.pubsubPropreties.projectId,
+            topic: gcpPropreties.value.pubsubReference.topic,
+            projectId: gcpPropreties.value.pubsubReference.projectId,
         };
         const result = await dispatch(
             actions.post({

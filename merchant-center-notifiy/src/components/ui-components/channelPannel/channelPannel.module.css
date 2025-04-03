@@ -45,7 +45,8 @@
     border-radius: 5px;
 }
 
-.addSubButton {
+.addSubButton,
+.cancelSubButton {
     display: flex;
     align-items: center;
     gap: 5px;
@@ -61,18 +62,29 @@
     transition: background-color 0.2s ease, transform 0.2s ease;
 }
 
+.cancelSubButton {
+    background-color: #a83a3a !important;
+}
+
 .addSubButton:hover {
     /* background-color: #34974d; */
     /* Darker green on hover */
     transform: scale(1.03);
 }
 
-.addSubButton span {
-    background: transparent;
-    /* Ensures only text remains */
+.cancelSubButton:hover {
+    /* background-color: #34974d; */
+    /* Darker green on hover */
+    transform: scale(1.03);
 }
 
-.addSubButton img {
+.addSubButton span,
+.cancelSubButton span {
+    background: transparent;
+}
+
+.addSubButton img,
+.cancelSubButton img {
     width: 29px;
     height: 29px;
     padding: 4px;
@@ -80,7 +92,8 @@
     transition: transform 0.2s ease;
 }
 
-.addSubButton:hover img {
+.addSubButton:hover img,
+.cancelSubButton:hover img {
     transform: scale(1.1);
 }
 

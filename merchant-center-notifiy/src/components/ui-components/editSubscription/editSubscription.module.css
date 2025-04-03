@@ -1,0 +1,138 @@
+/* Base styles with variables for consistency */
+:root {
+    --primary-color: #3aa856;
+    --primary-hover: #34974d;
+    --text-primary: #333;
+    --text-secondary: #555;
+    --border-color: #ccc;
+    --background: #ffffff;
+    --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    --border-radius: 8px;
+    --transition: all 0.2s ease-in-out;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    line-height: 1.5;
+    background-color: #f8f9fa;
+}
+
+/* Form container with improved spacing */
+.formContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    max-width: 500px;
+    margin: 40px auto;
+    padding: 28px;
+    background: var(--background);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+    transition: var(--transition);
+}
+
+/* Heading styles */
+h2 {
+    text-align: center;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+    font-weight: 600;
+}
+
+/* Form field groups */
+.formGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+/* Label styling */
+label {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-secondary);
+}
+
+/* Input field styling */
+.select,
+.textarea {
+    width: 100%;
+    padding: 12px;
+    font-size: 14px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    outline: none;
+    transition: var(--transition);
+    background-color: #fafafa;
+}
+
+.select:focus,
+.textarea:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(58, 168, 86, 0.15);
+    background-color: #ffffff;
+}
+
+.select:hover,
+.textarea:hover {
+    border-color: #b1b1b1;
+}
+
+/* Textarea specific styling */
+.textarea {
+    height: 120px;
+    resize: none;
+    line-height: 1.5;
+}
+
+/* Button styling */
+.saveButton {
+    margin-top: 8px;
+    padding: 14px;
+    font-size: 16px;
+    font-weight: 500;
+    color: white;
+    background-color: var(--primary-color);
+    border: none;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    transition: var(--transition);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.saveButton:hover {
+    background-color: var(--primary-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(58, 168, 86, 0.25);
+}
+
+.saveButton:active {
+    transform: translateY(0);
+}
+
+.saveButton:disabled {
+    background-color: #c4c4c4;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+/* Responsive adjustments */
+@media (max-width: 550px) {
+    .formContainer {
+        margin: 20px 16px;
+        padding: 20px;
+    }
+
+    .saveButton {
+        padding: 12px;
+    }
+}

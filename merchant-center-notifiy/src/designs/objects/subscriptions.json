@@ -15,6 +15,7 @@
                 "subscriptions": [
                     {
                         "resourceType": "order",
+                        "recepientPath": "order/shippingAddress.lastName",
                         "triggers": [
                             {
                                 "triggerType": "OrderCreated",
@@ -28,6 +29,7 @@
                     },
                     {
                         "resourceType": "product",
+                        "recepientPath": "order/shippingAddress.lastName",
                         "triggers": [
                             {
                                 "triggerType": "ProductCreated",
@@ -45,6 +47,7 @@
                 "subscriptions": [
                     {
                         "resourceType": "order",
+                        "recepientPath": "order/shippingAddress.lastName",
                         "triggers": [
                             {
                                 "triggerType": "OrderCreated",
@@ -58,6 +61,7 @@
                     },
                     {
                         "resourceType": "customer",
+                        "recepientPath": "order/shippingAddress.lastName",
                         "triggers": [
                             {
                                 "triggerType": "CustomerCreated",

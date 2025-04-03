@@ -1,19 +1,25 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import styles from "./subscriptionList.module.css";
 import editIcon from "../../../assets/icons/edit_icon.svg";
 import disconnectIcon from "../../../assets/icons/disconnect_icon.svg";
+import EditSubscription from "../editSubscription/editSubscription";
 
 type Subscription = {
     resourceType: string;
     triggers?: { triggerType: string; subscribedAt: string }[];
 };
 
+type MessageData = {
+    [key: string]: string;
+};
+
 type SubscriptionListProps = {
     subscriptionList: { subscriptions: Subscription[] };
     channel: string;
+    messageData: MessageData;
 };
 
-const SubscriptionList = ({ subscriptionList, channel }: SubscriptionListProps) => {
+const SubscriptionList = ({ subscriptionList, channel, messageData }: SubscriptionListProps) => {
     const [expandedRow, setExpandedRow] = useState<string | null>(null);
 
     if (!subscriptionList?.subscriptions?.length) {
@@ -45,9 +51,11 @@ const SubscriptionList = ({ subscriptionList, channel }: SubscriptionListProps) 
                         subscription.triggers?.length ? (
                             subscription.triggers.map((trigger, index) => {
                                 const rowKey = `${subscription.resourceType}-${trigger.triggerType}-${index}`;
+                                const messageBody = messageData[trigger.triggerType] || "No message available";
+
                                 return (
-                                    <>
-                                        <tr key={rowKey}>
+                                    <React.Fragment key={rowKey}>
+                                        <tr>
                                             <td>{trigger.triggerType}</td>
                                             <td>{subscription.resourceType}</td>
                                             <td>{formatDate(trigger.subscribedAt)}</td>
@@ -67,17 +75,21 @@ const SubscriptionList = ({ subscriptionList, channel }: SubscriptionListProps) 
                                                 </button>
                                             </td>
                                         </tr>
-                                        <tr className={`${styles.expandableRow} ${expandedRow === rowKey ? styles.expanded : ""}`}>
-                                            <td colSpan={4}>
-                                                {expandedRow === rowKey && (
+                                        {expandedRow === rowKey && (
+                                            <tr className={`${styles.expandableRow} ${styles.expanded}`}>
+                                                <td colSpan={4}>
                                                     <div className={styles.expandedContent}>
-                                                        <p><strong>Edit Subscription:</strong> {subscription.resourceType}</p>
-                                               
+                                                        <EditSubscription
+                                                            resourceType={subscription.resourceType}
+                                                            messageBody={messageBody}
+                                                            channel={channel}
+                                                            triggerName={trigger.triggerType }
+                                                        />
                                                     </div>
-                                                )}
-                                            </td>
-                                        </tr>
-                                    </>
+                                                </td>
+                                            </tr>
+                                        )}
+                                    </React.Fragment>
                                 );
                             })
                         ) : (

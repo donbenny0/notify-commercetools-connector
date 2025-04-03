@@ -4,13 +4,15 @@ import { useAsyncDispatch } from '@commercetools-frontend/sdk';
 import TabBar from '../tabBar/TabBar';
 import styles from './channelPannel.module.css';
 import bellIcon from '../../../assets/icons/bell-24.png';
-import messageIcon from '../../../assets/icons/messages-26.png';
+import settingsIcon from '../../../assets/icons/settings_icon.svg';
 import addIcon from '../../../assets/icons/add-circle.svg';
+import closeIcon from '../../../assets/icons/close-circle.svg';
 import SubscriptionList from '../subscriptionList/SubscriptionList';
 import { fetchCustomObjectQueryRepository } from '../../../repository/customObject.repository';
 import { toggleChannelStatusHook } from '../../hooks/channel/updateChannel.hooks';
 import Loader from '../loader';
 import Toggler from '../toggler/Toggler';
+import TriggerSearchForm from '../createTrigger/TriggerSearchForm';
 
 type ChannelPannelProps = {
     channel: string;
@@ -20,12 +22,24 @@ const ChannelPannel = ({ channel }: ChannelPannelProps) => {
     const [activeTab, setActiveTab] = useState('subscription');
     const [isChannelActive, setIsChannelActive] = useState(false);
     const [subscriptions, setSubscriptions] = useState<any>(null);
+    const [messageData, setmessageData] = useState({});
     const [isLoading, setisLoading] = useState(true);
+    const [addSubscription, setaddSubscription] = useState(false)
     const dispatch = useAsyncDispatch();
+
+
+
+    const handleSubmit = async (selectedTrigger: string, messageBody: string) => {
+        console.log('Submitting:', { selectedTrigger, messageBody });
+        // Simulate API call
+        await new Promise(resolve => setTimeout(resolve, 1500));
+        console.log('Submission complete');
+    };
+
 
     const tabs = [
         { id: 'subscription', label: 'Subscriptions', icon: bellIcon },
-        { id: 'logs', label: 'Logs', icon: messageIcon },
+        { id: 'settings', label: 'Settings', icon: settingsIcon },
     ];
 
     useEffect(() => {
@@ -43,7 +57,9 @@ const ChannelPannel = ({ channel }: ChannelPannelProps) => {
                     setisLoading(false);
                     setSubscriptions(response.value.channels[channel]);
                     const isEnabled = response.value.references?.obj?.value[channel]?.configurations?.isEnabled;
+                    const messageBody = response.value.references?.obj?.value[channel]?.configurations?.messageBody;
                     setIsChannelActive(isEnabled);
+                    setmessageData(messageBody)
                 } else {
                     setisLoading(false);
                     setSubscriptions([]);
@@ -70,24 +86,39 @@ const ChannelPannel = ({ channel }: ChannelPannelProps) => {
                 <div>
                     <div className={styles.channelPannelHeader}>
                         <div>
-                                <h3>Configure {channel.charAt(0).toUpperCase() + channel.slice(1)} preferences</h3>
-                                <small>Configure the subsciptions, message body & other settings related to {channel.charAt(0).toUpperCase() + channel.slice(1)} channel.</small>
+                            <h3>Configure {channel.charAt(0).toUpperCase() + channel.slice(1)} preferences</h3>
+                            <small>Configure the subsciptions, message body & other settings related to {channel.charAt(0).toUpperCase() + channel.slice(1)} channel.</small>
                         </div>
                         <div className={styles.channelPannelHeaderButtons}>
-                            <button className={styles.addSubButton}>
-                                <span>Add subscription</span>
-                                <img src={addIcon} alt="" />
-                            </button>
-                            <Toggler isToggled={isChannelActive} onToggle={handleToggle} />
+                            {addSubscription ? (
+                                <button className={styles.cancelSubButton} onClick={() => setaddSubscription(false)}>
+                                    <span>Cancel</span>
+                                    <img src={closeIcon} alt="" />
+                                </button>
+                            ) : (
+                                <button className={styles.addSubButton} onClick={() => setaddSubscription(true)}>
+                                    <span>Add subscription</span>
+                                    <img src={addIcon} alt="" />
+                                </button>
+                            )}                            <Toggler isToggled={isChannelActive} onToggle={handleToggle} />
                         </div>
                     </div>
                     <div className={styles.channelPannelBody}>
-                        <TabBar tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} />
-                        {activeTab === 'subscription' && (
-                            <div className={styles.tabContent}>
-                                <SubscriptionList subscriptionList={subscriptions} channel={channel} />
+                        {addSubscription ? (
+                            <div className={styles.addSubBody}>
+                                <TriggerSearchForm channel={channel} />
+                            </div>
+                        ) : (
+                            <div>
+                                <TabBar tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} />
+                                {activeTab === 'subscription' && (
+                                    <div className={styles.tabContent}>
+                                        <SubscriptionList subscriptionList={subscriptions} channel={channel} messageData={messageData} />
+                                    </div>
+                                )}
                             </div>
                         )}
+
                     </div>
                 </div>
             )}
