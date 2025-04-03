@@ -3,6 +3,7 @@ import { CreateCustomObjectInterface } from "../../../interfaces/customObject.in
 import { fetchCustomObjectRepository, updateCustomObjectRepository } from "../../../repository/customObject.repository";
 
 export const toggleChannelStatusHook = async (dispatch: any, channel: string, updateRequest: ChannelConfigurationRequest) => {
+
     try {
         // Fetch the existing object
         const response = await fetchCustomObjectRepository(dispatch, 'notify-channels', 'notify-channels-key');

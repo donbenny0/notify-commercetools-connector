@@ -58,6 +58,8 @@ export const updateCustomObjectRepository = async (dispatch: any, objectBody: Cr
             })
         );
 
+        
+
         return result;
     } catch (error) {
         console.error('Error updating custom object:', error);
