@@ -1,8 +1,11 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styles from "./subscriptionList.module.css";
 import editIcon from "../../../assets/icons/edit_icon.svg";
 import disconnectIcon from "../../../assets/icons/disconnect_icon.svg";
 import EditSubscription from "../editSubscription/editSubscription";
+import { removeSubscriptionHook } from "../../hooks/subscription/removeSubscription.hooks";
+import { useAsyncDispatch } from '@commercetools-frontend/sdk';
+import { RemoveSubscriptionRequestInterface } from "../../../interfaces/subscription.interface";
 
 type Subscription = {
     resourceType: string;
@@ -20,11 +23,14 @@ type SubscriptionListProps = {
 };
 
 const SubscriptionList = ({ subscriptionList, channel, messageData }: SubscriptionListProps) => {
-    const [expandedRow, setExpandedRow] = useState<string | null>(null);
+    const dispatch = useAsyncDispatch();
 
-    if (!subscriptionList?.subscriptions?.length) {
-        return <p>No subscriptions found for {channel}.</p>;
-    }
+    const [expandedRow, setExpandedRow] = useState<string | null>(null);
+    const [subList, setSubList] = useState<{ subscriptions: Subscription[] }>({ subscriptions: [] });
+
+    useEffect(() => {
+        setSubList(subscriptionList);
+    }, [subscriptionList]);
 
     const formatDate = (dateString: string) => {
         const date = new Date(dateString);
@@ -34,6 +40,40 @@ const SubscriptionList = ({ subscriptionList, channel, messageData }: Subscripti
     const toggleRow = (rowKey: string) => {
         setExpandedRow(expandedRow === rowKey ? null : rowKey);
     };
+
+    const handleUnsubscribe = async (resourceType: string, triggerType: string) => {
+        try {
+            const subscription: RemoveSubscriptionRequestInterface = {
+                channel,
+                subscription: {
+                    resourceType,
+                    triggerType,
+                },
+            };
+
+            await removeSubscriptionHook(dispatch, subscription);
+
+            setSubList((prev) => ({
+                subscriptions: prev.subscriptions
+                    .map((sub) => {
+                        if (sub.resourceType === resourceType) {
+                            const updatedTriggers = sub.triggers?.filter(t => t.triggerType !== triggerType);
+                            return { ...sub, triggers: updatedTriggers };
+                        }
+                        return sub;
+                    })
+                    .filter(sub => sub.triggers?.length), 
+            }));
+
+            setExpandedRow(null); // close any open row
+        } catch (error) {
+            console.error("Error unsubscribing from trigger:", error);
+        }
+    };
+
+    if (!subList?.subscriptions?.length) {
+        return <p>No subscriptions found for {channel}.</p>;
+    }
 
     return (
         <div className={styles.container}>
@@ -47,7 +87,7 @@ const SubscriptionList = ({ subscriptionList, channel, messageData }: Subscripti
                     </tr>
                 </thead>
                 <tbody>
-                    {subscriptionList.subscriptions.map((subscription) =>
+                    {subList.subscriptions.map((subscription) =>
                         subscription.triggers?.length ? (
                             subscription.triggers.map((trigger, index) => {
                                 const rowKey = `${subscription.resourceType}-${trigger.triggerType}-${index}`;
@@ -70,6 +110,9 @@ const SubscriptionList = ({ subscriptionList, channel, messageData }: Subscripti
                                                 <button
                                                     className={`${styles.actionButton} ${styles.actionDisconnectButton}`}
                                                     data-tooltip="Unsubscribe"
+                                                    onClick={() =>
+                                                        handleUnsubscribe(subscription.resourceType, trigger.triggerType)
+                                                    }
                                                 >
                                                     <img src={disconnectIcon} alt="Disconnect" />
                                                 </button>
@@ -83,7 +126,7 @@ const SubscriptionList = ({ subscriptionList, channel, messageData }: Subscripti
                                                             resourceType={subscription.resourceType}
                                                             messageBody={messageBody}
                                                             channel={channel}
-                                                            triggerName={trigger.triggerType }
+                                                            triggerName={trigger.triggerType}
                                                         />
                                                     </div>
                                                 </td>
@@ -92,14 +135,7 @@ const SubscriptionList = ({ subscriptionList, channel, messageData }: Subscripti
                                     </React.Fragment>
                                 );
                             })
-                        ) : (
-                            <tr key={subscription.resourceType}>
-                                <td colSpan={3}>No triggers</td>
-                                <td>
-                                    <button className={styles.actionButton}>Unsubscribe</button>
-                                </td>
-                            </tr>
-                        )
+                        ) : null
                     )}
                 </tbody>
             </table>

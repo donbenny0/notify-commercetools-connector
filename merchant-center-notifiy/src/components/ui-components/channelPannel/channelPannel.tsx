@@ -29,14 +29,6 @@ const ChannelPannel = ({ channel }: ChannelPannelProps) => {
 
 
 
-    const handleSubmit = async (selectedTrigger: string, messageBody: string) => {
-        console.log('Submitting:', { selectedTrigger, messageBody });
-        // Simulate API call
-        await new Promise(resolve => setTimeout(resolve, 1500));
-        console.log('Submission complete');
-    };
-
-
     const tabs = [
         { id: 'subscription', label: 'Subscriptions', icon: bellIcon },
         { id: 'settings', label: 'Settings', icon: settingsIcon },
