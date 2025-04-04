@@ -59,7 +59,6 @@ export const generateMessage = (data: object, template: string): string => {
     });
 };
 
-
 export const formatUserInput = (input: string) => {
     return input.replace(/\n/g, '\\n');
 }
@@ -67,3 +66,17 @@ export const formatEditedInput = (input: string) => {
     return input.replace(/\n/g, '\n\n');
 }
 
+// Version 2.0.0
+
+export function flattenObject(obj: any, prefix = ''): string[] {
+    return Object.keys(obj).reduce((acc: string[], key) => {
+        const pre = prefix.length ? `${prefix}.` : '';
+        if (typeof obj[key] === 'object' && obj[key] !== null) {
+            if (Array.isArray(obj[key])) {
+                return [...acc, `${pre}${key}[*]`, ...flattenObject(obj[key][0] || {}, `${pre}${key}[0]`)];
+            }
+            return [...acc, ...flattenObject(obj[key], `${pre}${key}`)];
+        }
+        return [...acc, `${pre}${key}`];
+    }, []);
+}
