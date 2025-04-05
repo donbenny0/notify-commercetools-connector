@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import styles from './MessageBox.module.css';
 import { flattenObject } from '../../../utils/messageTemplate.utils';
+import addIconWhite from '../../../assets/icons/add-white.svg';
 
 interface MessageBoxProps {
     selectedTemplateData: any;
@@ -30,20 +31,35 @@ const MessageBox = ({ selectedTemplateData, messageBody, onMessageChange }: Mess
 
         const cursorPos = e.target.selectionStart;
         const textBeforeCursor = value.substring(0, cursorPos);
-        const lastOpen = textBeforeCursor.lastIndexOf('{{');
-        const lastClose = textBeforeCursor.lastIndexOf('}}');
+        const textAfterCursor = value.substring(cursorPos);
 
-        if (lastOpen > lastClose) {
-            const currentPlaceholder = textBeforeCursor.substring(lastOpen + 2).trim();
-            setCurrentContext(currentPlaceholder);
+        // Find the nearest placeholder boundaries around the cursor
+        const lastOpenBeforeCursor = textBeforeCursor.lastIndexOf('{{');
+        const lastCloseBeforeCursor = textBeforeCursor.lastIndexOf('}}');
+        const nextCloseAfterCursor = textAfterCursor.indexOf('}}');
+        const nextOpenAfterCursor = textAfterCursor.indexOf('{{');
 
-            const lastDotPos = currentPlaceholder.lastIndexOf('.');
+        // Check if cursor is inside a placeholder (between {{ and }})
+        const isInsidePlaceholder = (
+            lastOpenBeforeCursor > lastCloseBeforeCursor &&
+            (nextCloseAfterCursor >= 0 && (nextOpenAfterCursor === -1 || nextCloseAfterCursor < nextOpenAfterCursor))
+        );
+
+        if (isInsidePlaceholder) {
+            // Extract the full placeholder content including the braces
+            const placeholderStart = lastOpenBeforeCursor;
+            const placeholderEnd = cursorPos + nextCloseAfterCursor + 2;
+            const placeholderContent = value.substring(placeholderStart + 2, placeholderEnd - 2).trim();
+
+            setCurrentContext(placeholderContent);
+
+            const lastDotPos = placeholderContent.lastIndexOf('.');
             const searchTerm = lastDotPos >= 0
-                ? currentPlaceholder.substring(lastDotPos + 1)
-                : currentPlaceholder;
+                ? placeholderContent.substring(lastDotPos + 1)
+                : placeholderContent;
 
             const contextPath = lastDotPos >= 0
-                ? currentPlaceholder.substring(0, lastDotPos)
+                ? placeholderContent.substring(0, lastDotPos)
                 : '';
 
             let contextData = selectedTemplateData;
@@ -80,7 +96,7 @@ const MessageBox = ({ selectedTemplateData, messageBody, onMessageChange }: Mess
                         ? path.substring(contextPath.length + 1)
                         : path)
                 : suggestions.filter(path =>
-                    path.toLowerCase().includes(currentPlaceholder.toLowerCase())
+                    path.toLowerCase().includes(placeholderContent.toLowerCase())
                 );
 
             if (matchingSuggestions.length > 0 && textareaRef.current) {
@@ -90,7 +106,7 @@ const MessageBox = ({ selectedTemplateData, messageBody, onMessageChange }: Mess
 
                 // Calculate position right after the opening {{
                 const top = textarea.offsetTop + (lines.length * 20) + 30;
-                const left = textarea.offsetLeft + (lastOpen * 8) + 16;
+                const left = textarea.offsetLeft + (lastOpenBeforeCursor * 8) + 16;
 
                 setSuggestionPosition({ top, left });
                 setSuggestions(matchingSuggestions);
@@ -104,35 +120,41 @@ const MessageBox = ({ selectedTemplateData, messageBody, onMessageChange }: Mess
         }
     };
 
-
     const insertPlaceholder = (placeholder: string) => {
         if (!textareaRef.current) return;
 
         const textarea = textareaRef.current;
         const cursorPos = textarea.selectionStart;
-        const textBeforeCursor = messageBody.substring(0, cursorPos);
-        const textAfterCursor = messageBody.substring(cursorPos);
+        const value = messageBody;
+        const textBeforeCursor = value.substring(0, cursorPos);
+        const textAfterCursor = value.substring(cursorPos);
 
-        const lastOpen = textBeforeCursor.lastIndexOf('{{');
-        const lastClose = textBeforeCursor.lastIndexOf('}}');
+        // Find the placeholder boundaries
+        const lastOpenBeforeCursor = textBeforeCursor.lastIndexOf('{{');
+        const lastCloseBeforeCursor = textBeforeCursor.lastIndexOf('}}');
+        const nextCloseAfterCursor = textAfterCursor.indexOf('}}');
 
-        if (lastOpen > lastClose) {
-            const partialPath = textBeforeCursor.substring(lastOpen + 2).trim();
-            const lastDotPos = partialPath.lastIndexOf('.');
-            const contextPath = lastDotPos >= 0 ? partialPath.substring(0, lastDotPos) : '';
+        // Only proceed if we're inside a placeholder
+        if (lastOpenBeforeCursor > lastCloseBeforeCursor && nextCloseAfterCursor >= 0) {
+            const placeholderStart = lastOpenBeforeCursor;
+            const placeholderEnd = cursorPos + nextCloseAfterCursor + 2;
+            const placeholderContent = value.substring(placeholderStart + 2, placeholderEnd - 2).trim();
+
+            const lastDotPos = placeholderContent.lastIndexOf('.');
+            const contextPath = lastDotPos >= 0 ? placeholderContent.substring(0, lastDotPos) : '';
 
             const fullPath = contextPath ? `${contextPath}.${placeholder}` : placeholder;
 
             const newText =
-                textBeforeCursor.substring(0, lastOpen) +
+                value.substring(0, placeholderStart) +
                 `{{${fullPath}}}` +
-                textAfterCursor;
+                value.substring(placeholderEnd);
 
             onMessageChange(newText);
 
             setTimeout(() => {
                 if (textareaRef.current) {
-                    const newCursorPos = lastOpen + fullPath.length + 4;
+                    const newCursorPos = placeholderStart + fullPath.length + 4;
                     textareaRef.current.setSelectionRange(newCursorPos, newCursorPos);
                 }
             }, 0);
@@ -157,20 +179,69 @@ const MessageBox = ({ selectedTemplateData, messageBody, onMessageChange }: Mess
             }
         }
     };
+
+    const handleVarButtonClick = () => {
+        if (!textareaRef.current) return;
+
+        const textarea = textareaRef.current;
+        const startPos = textarea.selectionStart;
+        const endPos = textarea.selectionEnd;
+        const currentValue = messageBody;
+
+        // Insert {{}} at cursor position
+        const newValue =
+            currentValue.substring(0, startPos) +
+            '{{}}' +
+            currentValue.substring(endPos);
+
+        onMessageChange(newValue);
+
+        // Set cursor position between the curly braces after the DOM updates
+        setTimeout(() => {
+            if (textareaRef.current) {
+                const newCursorPos = startPos + 2;
+                textareaRef.current.selectionStart = newCursorPos;
+                textareaRef.current.selectionEnd = newCursorPos;
+                textareaRef.current.focus();
+
+                // Calculate position for suggestions
+                const textBeforeCursor = newValue.substring(0, newCursorPos);
+                const lines = textBeforeCursor.split('\n');
+
+                const top = textarea.offsetTop + (lines.length * 20) + 30;
+                const left = textarea.offsetLeft + (startPos * 8) + 16;
+
+                setSuggestionPosition({ top, left });
+                setCurrentContext(''); // Reset context since we're starting fresh
+                setShowSuggestions(true);
+                setActiveSuggestion(0);
+            }
+        }, 0);
+    };
+
     return (
         <div className={styles.messageBoxContainer}>
             <label className={styles.label}>Message Template</label>
             <div className={styles.editorContainer}>
-                <textarea
-                    ref={textareaRef}
-                    value={messageBody}
-                    onChange={handleTextareaChange}
-                    onKeyDown={handleKeyDown}
-                    className={styles.editor}
-                    placeholder="Type your message here. Use {{ to insert variables..."
-                    rows={8}
-                    spellCheck={false}
-                />
+                <div className={styles.messageEditorBox}>
+                    <button
+                        className={styles.varButton}
+                        onClick={handleVarButtonClick}
+                    >
+                        <img src={addIconWhite} alt="" />
+                        <span>Variables</span>
+                    </button>
+                    <textarea
+                        ref={textareaRef}
+                        value={messageBody}
+                        onChange={handleTextareaChange}
+                        onKeyDown={handleKeyDown}
+                        className={styles.editor}
+                        placeholder="Type your message here. Use {{}} to insert variables..."
+                        rows={8}
+                        spellCheck={false}
+                    />
+                </div>
 
                 {showSuggestions && (
                     <div
@@ -181,8 +252,7 @@ const MessageBox = ({ selectedTemplateData, messageBody, onMessageChange }: Mess
                         }}
                     >
                         <div className={styles.suggestionsHeader}>
-                            <span>Available Variables</span>
-                            {currentContext && (
+                            <span>Press Esc to close suggestions</span>                            {currentContext && (
                                 <span className={styles.contextBadge}>{currentContext}</span>
                             )}
                         </div>

@@ -151,7 +151,7 @@ const TriggerSearchForm = ({ channel }: TriggerSearchFormProps) => {
     };
 
     return (
-        <form className={styles.formContainer}>
+        <div className={styles.formContainer}>
             <div className={styles.formGroup}>
                 <div className={styles.searchContainer}>
                     <label htmlFor="triggerSearch" className={styles.label}>
@@ -212,21 +212,33 @@ const TriggerSearchForm = ({ channel }: TriggerSearchFormProps) => {
                                 </option>
                             ))}
                         </select>
-                        <div>
-                            <h3>Search for Placeholders</h3>
-                            <PlaceholderSearch
-                                templateData={selectedTemplateData}
-                                onSelect={handlePlaceholderSelect}
-                                placeholder="Search for variables to insert..."
-                            />
-                        </div>
+
+
+                    </div>
+
+                )}
+
+
+                {selectedTemplate && (
+                    <div>
+                        <br />
+                        <label htmlFor="templateSelection" className={styles.label}>
+                            Delivery address
+                            <br />
+                            <small>Choose the appropriate delivery address field. </small>
+                        </label>
+                        <PlaceholderSearch
+                            templateData={selectedTemplateData}
+                            onSelect={handlePlaceholderSelect}
+                            placeholder="Search for variables to insert..."
+                        />
+                        <br />
                         <MessageBox
                             selectedTemplateData={selectedTemplateData}
                             messageBody={messageBody}
                             onMessageChange={setMessageBody}
                         />
                     </div>
-
                 )}
             </div>
 
@@ -246,7 +258,7 @@ const TriggerSearchForm = ({ channel }: TriggerSearchFormProps) => {
                     'Save'
                 )}
             </button>
-        </form>
+        </div>
     );
 };
 

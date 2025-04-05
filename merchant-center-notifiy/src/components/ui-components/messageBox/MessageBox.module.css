@@ -126,3 +126,30 @@
     padding: 0 0.125rem;
     border-radius: 0.125rem;
 }
+
+.messageEditorBox {
+    padding: 2%
+}
+
+
+
+.messageEditorBox img {
+    width: 20px;
+    height: 20px;
+    margin-right: 5px;
+}
+
+.varButton {
+    background-color: #2563eb;
+    display: flex;
+    align-items: center;
+    border: 1px solid #80808054;
+    color: white;
+    border-radius: 7px;
+    font-size: 12px;
+    float: right;
+    padding: 5px 10px;
+    margin-right: 5px;
+    cursor: pointer;
+}
+

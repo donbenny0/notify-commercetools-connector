@@ -44,7 +44,7 @@ const PlaceholderSearch = ({ templateData, onSelect, placeholder = "Search place
     const handleSelect = (placeholder: string) => {
         onSelect(placeholder);
         setSearchTerm('');
-        setIsDropdownOpen(false);
+        setIsDropdownOpen(false);        
         searchInputRef.current?.focus();
     };
 

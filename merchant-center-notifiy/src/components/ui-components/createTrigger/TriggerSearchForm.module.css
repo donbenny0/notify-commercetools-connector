@@ -166,6 +166,16 @@ body {
 }
 
 /* Loading indicator */
+
+.loadingContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 100%;
+}
+
+
 .loadingIndicator {
   display: inline-block;
   width: 20px;
