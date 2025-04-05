@@ -9,28 +9,32 @@ import PlaceholderSearch from "../placeholderSearch/PlaceholderSearch";
 
 type EditSubscriptionProps = {
     resourceType: string;
-    messageBody: string;
+    messageBody: {
+        message: string;
+        sendToPath: string;
+    }
     triggerName: string;
     channel: string;
 }
 
-const EditSubscription = ({ resourceType, messageBody: initialMessageBody, channel, triggerName }: EditSubscriptionProps) => {
-    const [messageBodyValue, setMessageBodyValue] = useState(initialMessageBody);
+const EditSubscription = ({ resourceType, messageBody, channel, triggerName }: EditSubscriptionProps) => {
+    const [messageBodyValue, setMessageBodyValue] = useState(messageBody.message);
     const [templateData, setTemplateData] = useState<{ id: string }[]>([]);
     const [selectedTemplate, setSelectedTemplate] = useState("");
     const [selectedTemplateData, setSelectedTemplateData] = useState<any>({});
     const [isLoading, setIsLoading] = useState(false);
+    const [sendToPath, setSendToPath] = useState(messageBody.sendToPath)
 
     const dispatch = useAsyncDispatch();
 
     // Sync the local state with the prop when it changes
     useEffect(() => {
-        setMessageBodyValue(initialMessageBody);
-    }, [initialMessageBody]);
+        setMessageBodyValue(messageBody.message);
+    }, [messageBody]);
 
     const handleResourceDataFetch = async () => {
         try {
-            const response = await fetchCurrentResourceData(dispatch, resourceType);
+            const response = await fetchCurrentResourceData(dispatch, `${resourceType}s`);
             setTemplateData(response);
             return response;
         } catch (error) {
@@ -43,7 +47,10 @@ const EditSubscription = ({ resourceType, messageBody: initialMessageBody, chann
         setIsLoading(true);
         try {
             const messageBodyPayload = {
-                [triggerName]: messageBodyValue,
+                [triggerName]: {
+                    message: messageBodyValue,
+                    sendToPath: sendToPath
+                },
             };
             await updateMessageBodyHook(dispatch, channel, messageBodyPayload);
             console.log("Changes saved successfully:", messageBodyPayload);
@@ -61,10 +68,7 @@ const EditSubscription = ({ resourceType, messageBody: initialMessageBody, chann
     };
 
     const handlePlaceholderSelect = (placeholder: string) => {
-        console.log('Selected placeholder:', placeholder);
-        // You might want to insert this placeholder into the message body
-        // For example:
-        // setMessageBodyValue(prev => `${prev} {{${placeholder}}}`);
+        setSendToPath(placeholder);
     };
 
     return (
@@ -108,9 +112,10 @@ const EditSubscription = ({ resourceType, messageBody: initialMessageBody, chann
                         <small>Choose the appropriate delivery address field. </small>
                     </label>
                     <PlaceholderSearch
+                        curretnValue={sendToPath}
                         templateData={selectedTemplateData}
                         onSelect={handlePlaceholderSelect}
-                        placeholder="Search for variables to insert..."
+                        placeholder="Select a delivery address..."
                     />
                     <br />
                     <MessageBox
@@ -133,7 +138,7 @@ const EditSubscription = ({ resourceType, messageBody: initialMessageBody, chann
                                 <small>Saving</small>
                             </div>
                         ) : (
-                            'Save'
+                            'Update'
                         )}
                     </button>
                 </div>)}

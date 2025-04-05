@@ -18,6 +18,7 @@ type ChannelPannelProps = {
     channel: string;
 };
 
+
 const ChannelPannel = ({ channel }: ChannelPannelProps) => {
     const [activeTab, setActiveTab] = useState('subscription');
     const [isChannelActive, setIsChannelActive] = useState(false);
@@ -31,7 +32,7 @@ const ChannelPannel = ({ channel }: ChannelPannelProps) => {
 
     const tabs = [
         { id: 'subscription', label: 'Subscriptions', icon: bellIcon },
-        { id: 'settings', label: 'Settings', icon: settingsIcon },
+        { id: 'logs', label: 'Logs', icon: settingsIcon },
     ];
 
     useEffect(() => {
@@ -50,6 +51,7 @@ const ChannelPannel = ({ channel }: ChannelPannelProps) => {
                     setSubscriptions(response.value.channels[channel]);
                     const isEnabled = response.value.references?.obj?.value[channel]?.configurations?.isEnabled;
                     const messageBody = response.value.references?.obj?.value[channel]?.configurations?.messageBody;
+                    
                     setIsChannelActive(isEnabled);
                     setmessageData(messageBody)
                 } else {

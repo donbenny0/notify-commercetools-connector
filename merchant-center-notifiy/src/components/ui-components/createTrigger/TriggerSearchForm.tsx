@@ -7,6 +7,7 @@ import { addSubscriptionHook } from '../../hooks/subscription/addSubscription.ho
 import { fetchCurrentResourceData } from '../../../repository/fetchResouces.repository';
 import MessageBox from '../messageBox/MessageBox';
 import PlaceholderSearch from '../placeholderSearch/PlaceholderSearch';
+import { updateMessageBodyHook } from '../../hooks/channel/updateChannel.hooks';
 
 
 interface TriggerCategory {
@@ -37,7 +38,7 @@ const TriggerSearchForm = ({ channel }: TriggerSearchFormProps) => {
     const [templateData, setTemplateData] = useState<{ id: string }[]>([]);
     const [selectedTemplate, setSelectedTemplate] = useState("");
     const [selectedTemplateData, setSelectedTemplateData] = useState<any>({});
-
+    const [sendToPath, setSendToPath] = useState('')
     const dispatch = useAsyncDispatch();
 
     useEffect(() => {
@@ -105,14 +106,19 @@ const TriggerSearchForm = ({ channel }: TriggerSearchFormProps) => {
                         triggers: [
                             {
                                 triggerType: selectedTrigger.trigger,
-                                subscribedAt: messageBody
-                            }
+                                subscribedAt: new Date().toISOString()                            }
                         ]
                     }
                 ]
             };
 
             await addSubscriptionHook(dispatch, channel, messageUpdatedBody);
+            await updateMessageBodyHook(dispatch, channel, {
+                [selectedTrigger.trigger]: {
+                    message: messageBody,
+                    sendToPath: sendToPath
+                }
+            });
             setSelectedTrigger(null);
             setMessageBody('');
             setSearchTerm('');
@@ -125,7 +131,7 @@ const TriggerSearchForm = ({ channel }: TriggerSearchFormProps) => {
 
     const handleTriggerSelect = async (triggerInfo: TriggerInfo) => {
         try {
-            const response = await fetchCurrentResourceData(dispatch, triggerInfo.category);
+            const response = await fetchCurrentResourceData(dispatch, `${triggerInfo.category}s`);
             setTemplateData(response);
             setSelectedTrigger(triggerInfo);
             setSearchTerm(triggerInfo.trigger);
@@ -146,8 +152,7 @@ const TriggerSearchForm = ({ channel }: TriggerSearchFormProps) => {
     };
 
     const handlePlaceholderSelect = (placeholder: string) => {
-        console.log('Selected placeholder:', placeholder);
-        // Do something with the selected placeholder
+        setSendToPath(placeholder);
     };
 
     return (

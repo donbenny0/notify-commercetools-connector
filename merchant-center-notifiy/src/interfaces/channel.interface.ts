@@ -1,5 +1,8 @@
 export interface MessageBody {
-    [key: string]: string;
+    [key: string]: {
+        message: string;
+        sendToPath: string;
+    };
 }
 
 export interface ChannelConfigurationRequest {

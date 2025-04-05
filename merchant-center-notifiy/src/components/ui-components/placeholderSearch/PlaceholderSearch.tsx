@@ -6,9 +6,10 @@ interface PlaceholderSearchProps {
     templateData: any;
     onSelect: (placeholder: string) => void;
     placeholder?: string;
+    curretnValue?: string;
 }
 
-const PlaceholderSearch = ({ templateData, onSelect, placeholder = "Search placeholders..." }: PlaceholderSearchProps) => {
+const PlaceholderSearch = ({ curretnValue, templateData, onSelect, placeholder = "Search placeholders..." }: PlaceholderSearchProps) => {
     const [searchTerm, setSearchTerm] = useState('');
     const [filteredPlaceholders, setFilteredPlaceholders] = useState<string[]>([]);
     const [allPlaceholders, setAllPlaceholders] = useState<string[]>([]);
@@ -44,7 +45,7 @@ const PlaceholderSearch = ({ templateData, onSelect, placeholder = "Search place
     const handleSelect = (placeholder: string) => {
         onSelect(placeholder);
         setSearchTerm('');
-        setIsDropdownOpen(false);        
+        setIsDropdownOpen(false);
         searchInputRef.current?.focus();
     };
 
@@ -86,7 +87,7 @@ const PlaceholderSearch = ({ templateData, onSelect, placeholder = "Search place
                 <input
                     ref={searchInputRef}
                     type="text"
-                    value={searchTerm}
+                    value={searchTerm || curretnValue}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     onFocus={() => setIsDropdownOpen(true)}
                     onKeyDown={handleKeyDown}

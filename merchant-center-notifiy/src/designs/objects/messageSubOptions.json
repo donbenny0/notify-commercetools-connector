@@ -7,7 +7,7 @@
             "CategoryCreated",
             "CategorySlugChanged"
         ],
-        "customers": [
+        "customer": [
             "CustomerCreated",
             "CustomerDeleted",
             "CustomerAddressChanged",
@@ -38,7 +38,7 @@
             "InventoryEntryDeleted",
             "InventoryEntryQuantitySet"
         ],
-        "orders": [
+        "order": [
             "OrderCreated",
             "OrderImported",
             "OrderEditApplied",
@@ -94,7 +94,7 @@
             "OrderCustomTypeSet",
             "OrderCustomTypeRemoved"
         ],
-        "payments": [
+        "payment": [
             "PaymentCreated",
             "PaymentInteractionAdded",
             "PaymentTransactionAdded",
@@ -102,7 +102,7 @@
             "PaymentStatusStateTransition",
             "PaymentStatusInterfaceCodeSet"
         ],
-        "products": [
+        "product": [
             "ProductCreated",
             "ProductPublished",
             "ProductUnpublished",
@@ -139,7 +139,7 @@
             "ProductSelectionVariantExclusionChanged",
             "ProductSelectionDeleted"
         ],
-        "quotes": [
+        "quote": [
             "QuoteCreated",
             "QuoteRenegotiationRequested",
             "QuoteStateChanged",
@@ -154,7 +154,7 @@
             "QuoteRequestCustomerChanged",
             "QuoteRequestDeleted"
         ],
-        "reviews": [
+        "review": [
             "ReviewCreated",
             "ReviewStateTransition",
             "ReviewRatingSet"
@@ -197,7 +197,7 @@
             "StandalonePriceTierRemoved",
             "StandalonePriceTiersSet"
         ],
-        "stores": [
+        "store": [
             "StoreCreated",
             "StoreDeleted",
             "StoreLanguagesChanged",

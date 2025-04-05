@@ -38,10 +38,19 @@ export const toggleChannelStatusHook = async (dispatch: any, channel: string, up
 };
 
 
-export const updateMessageBodyHook = async (dispatch: any, channel: string, updateRequest: MessageBody) => {
+export const updateMessageBodyHook = async (
+    dispatch: any,
+    channel: string,
+    updateRequest: MessageBody
+) => {
     try {
         // Fetch the existing object
-        const response = await fetchCustomObjectRepository(dispatch, 'notify-channels', 'notify-channels-key');
+        const response = await fetchCustomObjectRepository(
+            dispatch,
+            'notify-channels',
+            'notify-channels-key'
+        );
+
         if (!response) {
             throw new Error('Notification channels not found');
         }
@@ -58,24 +67,34 @@ export const updateMessageBodyHook = async (dispatch: any, channel: string, upda
         if (!response.value[channel].configurations.messageBody) {
             response.value[channel].configurations.messageBody = {};
         }
-        // Validate if all keys exist before updating
+
+        // Update or add message body fields
         Object.keys(updateRequest).forEach((key) => {
-            if (!(key in response.value[channel].configurations.messageBody)) {
-                throw new Error(`Key '${key}' not found in message body for channel '${channel}'`);
+            // If the trigger doesn't exist, create it
+            if (!response.value[channel].configurations.messageBody[key]) {
+                response.value[channel].configurations.messageBody[key] = {
+                    message: '',
+                    sendToPath: ''
+                };
+            }
+
+            // Update the values
+            if (updateRequest[key].message !== undefined) {
+                response.value[channel].configurations.messageBody[key].message =
+                    updateRequest[key].message;
+            }
+            if (updateRequest[key].sendToPath !== undefined) {
+                response.value[channel].configurations.messageBody[key].sendToPath =
+                    updateRequest[key].sendToPath;
             }
         });
 
-        // Update the message body field dynamically
-        Object.keys(updateRequest).forEach((key) => {
-            response.value[channel].configurations.messageBody[key] = updateRequest[key];
-        });
-
         // Prepare the updated object with the correct version
-        const updatedObject: CreateCustomObjectInterface = {
+        const updatedObject = {
             container: response.container,
             key: response.key,
             version: response.version,
-            value: response.value, // Preserve full object structure
+            value: response.value,
         };
 
         // Save the updated object

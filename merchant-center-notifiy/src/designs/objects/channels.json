@@ -6,8 +6,14 @@
             "configurations": {
                 "isEnabled": true,
                 "messageBody": {
-                    "OrderCreated": "Hello, this is a test message from the WhatsApp channel",
-                    "OrderUpdated": "Hello, this is a test message from the WhatsApp channel"
+                    "OrderCreated": {
+                        "message": "Hello, this is a test message from the WhatsApp channel",
+                        "sendToPath": "shippingAddress.lastName"
+                    },
+                    "OrderUpdated": {
+                        "message": "Hello, this is a test message from the WhatsApp channel",
+                        "sendToPath": "shippingAddress.lastName"
+                    }
                 }
             }
         },
@@ -15,8 +21,14 @@
             "configurations": {
                 "isEnabled": true,
                 "messageBody": {
-                    "OrderCreated": "Hello, this is a test message from the WhatsApp channel",
-                    "OrderUpdated": "Hello, this is a test message from the WhatsApp channel"
+                    "OrderCreated": {
+                        "message": "Hello, this is a test message from the WhatsApp channel",
+                        "sendToPath": "shippingAddress.lastName"
+                    },
+                    "OrderUpdated": {
+                        "message": "Hello, this is a test message from the WhatsApp channel",
+                        "sendToPath": "shippingAddress.lastName"
+                    }
                 }
             }
         },
@@ -24,8 +36,14 @@
             "configurations": {
                 "isEnabled": true,
                 "messageBody": {
-                    "OrderCreated": "Hello, this is a test message from the WhatsApp channel",
-                    "OrderUpdated": "Hello, this is a test message from the WhatsApp channel"
+                    "OrderCreated": {
+                        "message": "Hello, this is a test message from the WhatsApp channel",
+                        "sendToPath": "shippingAddress.lastName"
+                    },
+                    "OrderUpdated": {
+                        "message": "Hello, this is a test message from the WhatsApp channel",
+                        "sendToPath": "shippingAddress.lastName"
+                    }
                 }
             }
         }

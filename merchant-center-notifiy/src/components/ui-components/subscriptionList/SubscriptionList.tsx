@@ -6,6 +6,7 @@ import EditSubscription from "../editSubscription/editSubscription";
 import { removeSubscriptionHook } from "../../hooks/subscription/removeSubscription.hooks";
 import { useAsyncDispatch } from '@commercetools-frontend/sdk';
 import { RemoveSubscriptionRequestInterface } from "../../../interfaces/subscription.interface";
+import { MessageBody } from "../../../interfaces/channel.interface";
 
 type Subscription = {
     resourceType: string;
@@ -13,7 +14,10 @@ type Subscription = {
 };
 
 type MessageData = {
-    [key: string]: string;
+    [key: string]: {
+        message: string;
+        sendToPath: string;
+    };
 };
 
 type SubscriptionListProps = {
@@ -23,6 +27,7 @@ type SubscriptionListProps = {
 };
 
 const SubscriptionList = ({ subscriptionList, channel, messageData }: SubscriptionListProps) => {
+
     const dispatch = useAsyncDispatch();
 
     const [expandedRow, setExpandedRow] = useState<string | null>(null);
@@ -62,7 +67,7 @@ const SubscriptionList = ({ subscriptionList, channel, messageData }: Subscripti
                         }
                         return sub;
                     })
-                    .filter(sub => sub.triggers?.length), 
+                    .filter(sub => sub.triggers?.length),
             }));
 
             setExpandedRow(null); // close any open row
@@ -91,7 +96,7 @@ const SubscriptionList = ({ subscriptionList, channel, messageData }: Subscripti
                         subscription.triggers?.length ? (
                             subscription.triggers.map((trigger, index) => {
                                 const rowKey = `${subscription.resourceType}-${trigger.triggerType}-${index}`;
-                                const messageBody = messageData[trigger.triggerType] || "No message available";
+                                const messageBody = messageData[trigger.triggerType] || {};
 
                                 return (
                                     <React.Fragment key={rowKey}>
