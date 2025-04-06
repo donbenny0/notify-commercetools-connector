@@ -1,13 +1,13 @@
-import dotenv from 'dotenv';
+import * as dotenv from 'dotenv';
 dotenv.config();
 
-import { createApiRoot } from '../client/create.client';
+
 import { assertError } from '../utils/assert.utils';
-import { deleteOrderSubscription } from './actions';
+import { deleteAllObjects } from './actions';
+
 
 async function preUndeploy(): Promise<void> {
-  const apiRoot = createApiRoot();
-  await deleteOrderSubscription(apiRoot);
+  await deleteAllObjects();
 }
 
 async function run(): Promise<void> {

@@ -1,0 +1,58 @@
+{
+    "container": "notify-messagelogs",
+    "key": "72bdda14-b87b-481e-8f17-751f6433d906",
+    "value": {
+        "messageId": "72bdda14-b87b-481e-8f17-751f6433d906",
+        "createdAt": "2025-03-21T09:21:14.174Z",
+        "lastUpdatedAt": "2025-03-21T09:21:24.174Z",
+        "message": "<base64_encoded_message>",
+        "channels": {
+            "whatsapp": {
+                "isSent": true,
+                "lastProcessedDate": "2025-03-21T09:21:24.174Z",
+                "recipient": "+9155454545444",
+                "processLogs": [
+                    {
+                        "message": "Message sent successfully",
+                        "statusCode": 200,
+                        "createdAt": "2025-03-21T09:21:24.174Z"
+                    }
+                ]
+            },
+            "email": {
+                "isSent": true,
+                "lastProcessedDate": "2025-03-21T09:21:22.174Z",
+                "recipient": "someone@gmail.com",
+                "processLogs": [
+                    {
+                        "message": "The resource subscription is not subscribed",
+                        "statusCode": 500,
+                        "createdAt": "2025-03-21T09:21:20.174Z"
+                    },
+                    {
+                        "message": "Message sent successfully",
+                        "statusCode": 200,
+                        "createdAt": "2025-03-21T09:21:22.174Z"
+                    }
+                ]
+            },
+            "sms": {
+                "isSent": false,
+                "lastProcessedDate": "2025-03-21T09:21:21.174Z",
+                "recipient": "+9155454545444",
+                "processLogs": [
+                    {
+                        "message": "The resource subscription is not subscribed",
+                        "statusCode": 500,
+                        "createdAt": "2025-03-21T09:21:19.174Z"
+                    },
+                    {
+                        "message": "Failed to connect to SMS provider",
+                        "statusCode": 503,
+                        "createdAt": "2025-03-21T09:21:21.174Z"
+                    }
+                ]
+            }
+        }
+    }
+}
