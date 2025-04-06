@@ -106,7 +106,15 @@ const MessageBox = ({ selectedTemplateData, messageBody, onMessageChange }: Mess
 
                 // Calculate position right after the opening {{
                 const top = textarea.offsetTop + (lines.length * 20) + 30;
-                const left = textarea.offsetLeft + (lastOpenBeforeCursor * 8) + 16;
+
+                // Create temporary span for accurate width measurement
+                const tempSpan = document.createElement('span');
+                tempSpan.textContent = textBeforeCursor.substring(0, lastOpenBeforeCursor);
+                tempSpan.style.whiteSpace = 'pre';
+                tempSpan.style.visibility = 'hidden';
+                document.body.appendChild(tempSpan);
+                const left = textarea.offsetLeft + tempSpan.offsetWidth + 16;
+                document.body.removeChild(tempSpan);
 
                 setSuggestionPosition({ top, left });
                 setSuggestions(matchingSuggestions);
@@ -156,8 +164,9 @@ const MessageBox = ({ selectedTemplateData, messageBody, onMessageChange }: Mess
                 if (textareaRef.current) {
                     const newCursorPos = placeholderStart + fullPath.length + 4;
                     textareaRef.current.setSelectionRange(newCursorPos, newCursorPos);
+                    textareaRef.current.focus();
                 }
-            }, 0);
+            }, 10);
         }
 
         setShowSuggestions(false);
@@ -181,42 +190,84 @@ const MessageBox = ({ selectedTemplateData, messageBody, onMessageChange }: Mess
     };
 
     const handleVarButtonClick = () => {
+
         if (!textareaRef.current) return;
 
-        const textarea = textareaRef.current;
+        const textarea = textareaRef.current;        
         const startPos = textarea.selectionStart;
         const endPos = textarea.selectionEnd;
         const currentValue = messageBody;
 
-        // Insert {{}} at cursor position
-        const newValue =
-            currentValue.substring(0, startPos) +
-            '{{}}' +
-            currentValue.substring(endPos);
+        // Check if we're inside an existing placeholder
+        const textBeforeCursor = currentValue.substring(0, startPos);
+        const textAfterCursor = currentValue.substring(endPos);
+        const lastOpenBeforeCursor = textBeforeCursor.lastIndexOf('{{');
+        const lastCloseBeforeCursor = textBeforeCursor.lastIndexOf('}}');
+        const nextCloseAfterCursor = textAfterCursor.indexOf('}}');
 
-        onMessageChange(newValue);
+        const isInsidePlaceholder = (
+            lastOpenBeforeCursor > lastCloseBeforeCursor &&
+            (nextCloseAfterCursor >= 0)
+        );
 
-        // Set cursor position between the curly braces after the DOM updates
-        setTimeout(() => {
-            if (textareaRef.current) {
+        if (isInsidePlaceholder) {
+            // If inside a placeholder, just show suggestions
+            const placeholderStart = lastOpenBeforeCursor;
+            const placeholderContent = currentValue.substring(placeholderStart + 2, startPos + nextCloseAfterCursor).trim();
+            setCurrentContext(placeholderContent);
+
+            // Calculate position
+            const lines = textBeforeCursor.split('\n');
+            const top = textarea.offsetTop + (lines.length * 20) + 30;
+
+            const tempSpan = document.createElement('span');
+            tempSpan.textContent = textBeforeCursor.substring(0, lastOpenBeforeCursor);
+            tempSpan.style.whiteSpace = 'pre';
+            tempSpan.style.visibility = 'hidden';
+            document.body.appendChild(tempSpan);
+            const left = textarea.offsetLeft + tempSpan.offsetWidth + 16;
+            document.body.removeChild(tempSpan);
+
+            setSuggestionPosition({ top, left });
+            setShowSuggestions(true);
+            setActiveSuggestion(0);
+        } else {
+            // If not inside a placeholder, insert new {{}} and show suggestions
+            const newValue =
+                currentValue.substring(0, startPos) +
+                '{{}}' +
+                currentValue.substring(endPos);
+
+            onMessageChange(newValue);
+
+            // Use a slightly longer timeout to ensure DOM updates
+            setTimeout(() => {
+                if (!textareaRef.current) return;
+
                 const newCursorPos = startPos + 2;
                 textareaRef.current.selectionStart = newCursorPos;
                 textareaRef.current.selectionEnd = newCursorPos;
                 textareaRef.current.focus();
 
-                // Calculate position for suggestions
-                const textBeforeCursor = newValue.substring(0, newCursorPos);
-                const lines = textBeforeCursor.split('\n');
-
+                // Calculate position for the new {{}}
+                const newTextBeforeCursor = newValue.substring(0, newCursorPos);
+                const lines = newTextBeforeCursor.split('\n');
                 const top = textarea.offsetTop + (lines.length * 20) + 30;
-                const left = textarea.offsetLeft + (startPos * 8) + 16;
+
+                const tempSpan = document.createElement('span');
+                tempSpan.textContent = newTextBeforeCursor;
+                tempSpan.style.whiteSpace = 'pre';
+                tempSpan.style.visibility = 'hidden';
+                document.body.appendChild(tempSpan);
+                const left = textarea.offsetLeft + tempSpan.offsetWidth;
+                document.body.removeChild(tempSpan);
 
                 setSuggestionPosition({ top, left });
-                setCurrentContext(''); // Reset context since we're starting fresh
+                setCurrentContext('');
                 setShowSuggestions(true);
                 setActiveSuggestion(0);
-            }
-        }, 0);
+            }, 50); // Increased delay to ensure DOM updates
+        }
     };
 
     return (
@@ -227,6 +278,7 @@ const MessageBox = ({ selectedTemplateData, messageBody, onMessageChange }: Mess
                     <button
                         className={styles.varButton}
                         onClick={handleVarButtonClick}
+                        type="button"
                     >
                         <img src={addIconWhite} alt="" />
                         <span>Variables</span>
@@ -252,7 +304,8 @@ const MessageBox = ({ selectedTemplateData, messageBody, onMessageChange }: Mess
                         }}
                     >
                         <div className={styles.suggestionsHeader}>
-                            <span>Press Esc to close suggestions</span>                            {currentContext && (
+                            <span>Press Esc to close suggestions</span>
+                            {currentContext && (
                                 <span className={styles.contextBadge}>{currentContext}</span>
                             )}
                         </div>
