@@ -3,11 +3,12 @@ import { GeneralError, InvalidPlaceholder } from '../errors/helpers.errors';
 import { Base64DecodingError, JsonParsingError, MissingPubSubMessageDataError } from '../errors/pubsub.error';
 import { MessageBodyCustomObject } from '../interface/messageBodyCustomObject.interface';
 import { PubSubEncodedMessage } from '../interface/pubsub.interface';
+import { PubsubMessageBody } from '../interface/pubsubMessageBody.interface';
 import { transformMessageBodyCustomObject } from '../services/customObject/messageBody/transformMessageObject.service';
 import { logger } from './logger.utils';
 
 // Helper function to decode base64 and parse JSON
-const decodeAndParseData = (data: string): object => {
+const decodeAndParseData = (data: string): PubsubMessageBody => {
     try {
         // Decode base64 and parse JSON in a single block
         const decodedData = Buffer.from(data, 'base64').toString().trim();
@@ -27,7 +28,7 @@ const decodeAndParseData = (data: string): object => {
 };
 
 // Process the event data
-export const decodePubSubData = (pubSubMessage: PubSubEncodedMessage): object => {
+export const decodePubSubData = (pubSubMessage: PubSubEncodedMessage): PubsubMessageBody => {
     // Check if the message has data to decode
     if (!pubSubMessage.data) {
         logger.error('Missing data field in the Pub/Sub message');
@@ -126,5 +127,43 @@ export const generateMessage = async (data: object): Promise<string> => {
 
 
 
+interface AnyObject {
+    [key: string]: any;
+}
 
+export const fetchValueFromPlaceholder = (selectedTemplateData: AnyObject, path: string): string => {
+    try {
 
+        // Handle array indices and wildcards
+        const normalizedPath = path.replace(/\[\*\]/g, '[0]');
+        const pathSegments = normalizedPath.split('.');
+
+        let value: any = selectedTemplateData;
+
+        for (const segment of pathSegments) {
+            const arrayMatch = segment.match(/(.*)\[(\d+)\]/);
+
+            if (arrayMatch) {
+                const [, key, indexStr] = arrayMatch;
+                const index = parseInt(indexStr, 10);
+
+                if (!value || !(key in value) || !Array.isArray(value[key])) {
+                    value = undefined;
+                    break;
+                }
+
+                value = value[key][index];
+            } else {
+                if (!value || !(segment in value)) {
+                    value = undefined;
+                    break;
+                }
+                value = value[segment];
+            }
+        }
+
+        return value !== undefined ? String(value) : `[MISSING: ${path}]`;
+    } catch (error) {
+        return `[ERROR: ${path}]`;
+    }
+};

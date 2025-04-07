@@ -1,7 +1,7 @@
 import { Order } from '@commercetools/platform-sdk';
+import { FetchOrderError, InvalidOrderResponseError, InvalidOrderState, OrderNotFoundError } from '../../errors/order.error';
 import { getOrder } from '../../repository/orders/getOrder.repository';
-import { OrderNotFoundError, FetchOrderError, InvalidOrderState, InvalidOrderResponseError } from '../../errors/order.error';
-import { transformOrder, getRecipientFromOrder } from './orders.service';
+import { getRecipientFromOrder, transformOrder } from './orders.service';
 
 // Mock the `getOrder` function
 jest.mock('../../repository/orders/getOrder.repository');

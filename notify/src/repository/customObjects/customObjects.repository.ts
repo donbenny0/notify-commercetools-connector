@@ -26,6 +26,7 @@ export const updateCustomObjectRepository = async (objectBody: CreateCustomObjec
 };
 
 export const getCustomObjectRepository = async (container: string, key: string) => {
+
     try {
         const response = await apiRoot.customObjects()
             .withContainerAndKey({ container, key })
@@ -37,6 +38,25 @@ export const getCustomObjectRepository = async (container: string, key: string) 
     }
 
 };
+
+export const checkIfCustomObjectExists = async (container: string, key: string) => {
+    try {
+        const response = await apiRoot.customObjects()
+            .withContainerAndKey({ container, key })
+            .get()
+            .execute();
+
+        if (response && response.statusCode === 200 && response.body.id) {
+            return true || response;
+        } else {
+            return false;
+        }
+    } catch (error) {
+        
+        return false;
+    }
+};
+
 
 
 export const deleteCustomObjectRepository = async (container: string, key: string) => {
