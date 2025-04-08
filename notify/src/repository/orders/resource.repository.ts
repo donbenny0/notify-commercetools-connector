@@ -4,50 +4,39 @@ import { logger } from "../../utils/logger.utils";
 
 const apiRoot = createApiRoot();
 
-// Special cases mapping (singular to plural)
-const SPECIAL_CASES: Record<string, string> = {
-    "inventory-entry": "inventory",
-};
-
-const getPluralResourceName = (resourceType: string): string => {
-    // Handle special cases first
-    if (SPECIAL_CASES[resourceType]) {
-        return SPECIAL_CASES[resourceType];
-    }
-
-    // Default pluralization rules
-    if (resourceType.endsWith('y')) {
-        return resourceType.slice(0, -1) + 'ies';
-    }
-    if (resourceType.endsWith('s') || resourceType.endsWith('x') || resourceType.endsWith('ch')) {
-        return resourceType + 'es'; // box -> boxes, bus -> buses
-    }
-
-    return resourceType + 's';
-};
 
 export const fetchResource = async (resourceType: string, resourceId: string) => {
     logger.info(`Fetching ${resourceType} with ID ${resourceId}`);
 
-    try {
-        const pluralName = getPluralResourceName(resourceType.toLowerCase());
-
-        // Check if the method exists on apiRoot
-        if (!(pluralName in (apiRoot as Record<string, any>) && typeof (apiRoot as Record<string, any>)[pluralName] === 'function')) {
-            throw new GlobalError(400, `Unsupported resource type: ${resourceType}`);
-        }
-
-        // Call the method dynamically
-        const response = await (apiRoot as Record<string, any>)[pluralName]()
-            .withId(resourceId)
-            .get()
-            .execute();
-
-        return response.body;
-    } catch (error: any) {
-        throw new GlobalError(
-            error.statusCode || 500,
-            error.message || `Failed to fetch ${resourceType} with ID ${resourceId}`
-        );
+    switch (resourceType) {
+        case 'order':
+            return await apiRoot.orders().withId({ ID: resourceId }).get().execute();
+        case 'customer':
+            return await apiRoot.customers().withId({ ID: resourceId }).get().execute();
+        case 'product':
+            return await apiRoot.products().withId({ ID: resourceId }).get().execute();
+        case 'inventory-entry':
+            return await apiRoot.products().withId({ ID: resourceId }).get().execute();
+        case 'payment':
+            return await apiRoot.products().withId({ ID: resourceId }).get().execute();
+        case 'product-selection':
+            return await apiRoot.products().withId({ ID: resourceId }).get().execute();
+        case 'quote':
+            return await apiRoot.products().withId({ ID: resourceId }).get().execute();
+        case 'quote-request':
+            return await apiRoot.products().withId({ ID: resourceId }).get().execute();
+        case 'review':
+            return await apiRoot.products().withId({ ID: resourceId }).get().execute();
+        case 'staged-quote':
+            return await apiRoot.products().withId({ ID: resourceId }).get().execute();
+        case 'product-tailoring':
+            return await apiRoot.products().withId({ ID: resourceId }).get().execute();
+        case 'standalone-price':
+            return await apiRoot.products().withId({ ID: resourceId }).get().execute();
+        case 'store':
+            return await apiRoot.products().withId({ ID: resourceId }).get().execute();
+        default:
+            throw new GlobalError(400, `Invalid resource type: ${resourceType}`)
     }
-};
+
+}

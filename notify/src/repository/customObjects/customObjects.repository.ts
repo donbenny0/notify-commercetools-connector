@@ -25,12 +25,12 @@ export const updateCustomObjectRepository = async (objectBody: CreateCustomObjec
 
 };
 
-export const getCustomObjectRepository = async (container: string, key: string) => {
+export const getCustomObjectRepository = async (container: string, key: string, expandQuery?: string) => {
 
     try {
         const response = await apiRoot.customObjects()
             .withContainerAndKey({ container, key })
-            .get()
+            .get({ queryArgs: { expand: expandQuery } })
             .execute();
         return response.body;
     } catch (error: any) {
@@ -52,7 +52,7 @@ export const checkIfCustomObjectExists = async (container: string, key: string) 
             return false;
         }
     } catch (error) {
-        
+
         return false;
     }
 };

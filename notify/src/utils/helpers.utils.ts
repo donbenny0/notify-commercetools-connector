@@ -131,7 +131,7 @@ interface AnyObject {
     [key: string]: any;
 }
 
-export const fetchValueFromPlaceholder = (selectedTemplateData: AnyObject, path: string): string => {
+export const fetchValueFromPlaceholder = (selectedTemplateData: AnyObject, path: string): string | null => {
     try {
 
         // Handle array indices and wildcards
@@ -162,8 +162,14 @@ export const fetchValueFromPlaceholder = (selectedTemplateData: AnyObject, path:
             }
         }
 
-        return value !== undefined ? String(value) : `[MISSING: ${path}]`;
+        return value || null;
     } catch (error) {
         return `[ERROR: ${path}]`;
     }
 };
+
+export function jsonToBase64(json: object): string {
+    const jsonString = JSON.stringify(json);
+    const base64 = Buffer.from(jsonString).toString('base64');
+    return base64;
+}

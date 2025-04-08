@@ -1,4 +1,5 @@
 import { createApiRoot } from '../../client/create.client';
+import { logger } from '../../utils/logger.utils';
 
 /**
  * Fetches an order using the provided order ID.
@@ -10,21 +11,17 @@ import { createApiRoot } from '../../client/create.client';
  * @throws {InvalidOrderResponseError} If the response is invalid
  */
 export async function getOrder(orderId: string) {
-  
+  logger.info(`Fetching order with ID : ${orderId}`);
   // Initialize API root with error handling
   const apiRootInstance = createApiRoot();
-  
+
   // Fetch the order by ID
   const response = await apiRootInstance
     .orders()
-    .withId({ ID: orderId })
+    .withId({ ID: '9bda752a-447a-47e6-bbc7-07dac970ecb8' })
     .get()
     .execute();
 
-  // Validate response
-  if (!response || !response.body) {
-    return null;
-  }
 
   return response.body;
 }

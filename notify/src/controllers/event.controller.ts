@@ -3,17 +3,35 @@ import * as dotenv from 'dotenv';
 import { decodePubSubData } from '../utils/helpers.utils';
 import CustomError from '../errors/custom.error';
 import { PubsubMessageBody } from '../interface/pubsubMessageBody.interface';
-import { handleMessageState } from '../services/messageState/messageDispatcher.service';
+import { addNewMessageStateEntry, processDeliveringMessage } from '../services/messageState/messageDispatcher.service';
+import { MessageStateResponse } from '../interface/messageState.interface';
+import { checkIfCustomObjectExists, getCustomObjectRepository } from '../repository/customObjects/customObjects.repository';
 dotenv.config();
 
 export const post = async (request: Request, response: Response): Promise<Response | void> => {
   const pubSubMessage = request.body.message;
-  const pubSubDecodedMessage:PubsubMessageBody = decodePubSubData(pubSubMessage);
+  const pubSubDecodedMessage: PubsubMessageBody = decodePubSubData(pubSubMessage);
+
   try {
-      await handleMessageState(pubSubDecodedMessage)
-    return response.status(200).send('Message sent successfully');
+    const messageExists = await checkIfCustomObjectExists("notify-messageState", pubSubDecodedMessage.id);
+    const channelsAndSubscriptions = await getCustomObjectRepository("notify-subscriptions", "notify-subscriptions-key","value.references.id");
+
+    let allSuccessful: boolean;
+
+    if (messageExists) {
+      const currentMessageState: MessageStateResponse = await getCustomObjectRepository("notify-messageState", pubSubDecodedMessage.id);
+      allSuccessful = await processDeliveringMessage(currentMessageState, channelsAndSubscriptions, pubSubDecodedMessage);
+    } else {
+      await addNewMessageStateEntry(pubSubDecodedMessage, channelsAndSubscriptions);
+      allSuccessful = false;
+    }
+
+    if (allSuccessful) {
+      return response.status(200).send('All messages sent successfully');
+    } else {
+      return response.status(400).send('Some messages failed to send');
+    }
   } catch (error: any) {
- 
     return response.status(error instanceof CustomError ? error.statusCode as number : 500).send(error.message);
   }
 };
