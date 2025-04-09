@@ -1,8 +1,8 @@
-import { ProcessLogInterface, LogValueInterface } from "../../../interface/log.interface";
-import { PubsubMessageBody } from "../../../interface/pubsubMessageBody.interface";
-import { getCustomObjectRepository, updateCustomObjectRepository } from "../../../repository/customObjects/customObjects.repository";
-import { jsonToBase64 } from "../../../utils/helpers.utils";
-import { logger } from "../../../utils/logger.utils";
+import { ProcessLogInterface, LogValueInterface } from "../../interface/log.interface";
+import { PubsubMessageBody } from "../../interface/pubsub.interface";
+import { getCustomObjectRepository, updateCustomObjectRepository } from "../../repository/customObjects/customObjects.repository";
+import { jsonToBase64 } from "../../utils/helpers.utils";
+import { logger } from "../../utils/logger.utils";
 
 export const getMessageLogs = async (messageId: string) => {
     try {

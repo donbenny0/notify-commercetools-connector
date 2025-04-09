@@ -1,8 +1,6 @@
-import CustomError from '../errors/custom.error';
-import { GeneralError, InvalidPlaceholder } from '../errors/helpers.errors';
+import GlobalError from '../errors/global.error';
 import { Base64DecodingError, JsonParsingError, MissingPubSubMessageDataError } from '../errors/pubsub.error';
-import { PubSubEncodedMessage } from '../interface/pubsub.interface';
-import { PubsubMessageBody } from '../interface/pubsubMessageBody.interface';
+import { PubSubEncodedMessage, PubsubMessageBody } from '../interface/pubsub.interface';
 import { logger } from './logger.utils';
 
 // Helper function to decode base64 and parse JSON
@@ -52,80 +50,96 @@ export const generateRandomKey = (): string => {
 };
 
 
-// Generate custom messageBody
+
 export const parsePlaceholder = (data: object, template: string): string => {
-    // Pre-compile the regex once with safeguards against backtracking
-    const placeholderRegex = /\{\{([^{}]+?)\}\}/g;
+    try {
+        const placeholderRegex = /\{\{([^{}]+?)\}\}/g;
+        const pathCache = new Map<string, { segments: string[], wildcards: (boolean | number)[] }>();
 
-    // Cache for path segments to avoid repeated parsing
-    const pathCache = new Map<string, { segments: string[], wildcards: (boolean | number)[] }>();
-
-    const extractValues = (obj: object, pathString: string): any[] => {
-        // Check cache first
-        let cached = pathCache.get(pathString);
-        if (!cached) {
-            const segments: string[] = [];
-            const wildcards: (boolean | number)[] = [];
-
-            // Parse path segments with minimal operations
-            let currentPos = 0;
-            while (currentPos < pathString.length) {
-                const dotPos = pathString.indexOf('.', currentPos);
-                const segmentEnd = dotPos === -1 ? pathString.length : dotPos;
-                const segment = pathString.slice(currentPos, segmentEnd);
-
-                const arrayMatch = segment.match(/^([^[]+)(?:\[(\*|\d+)\])?$/);
-                if (!arrayMatch) {
-                    segments.push(segment);
-                    wildcards.push(false);
-                } else {
-                    segments.push(arrayMatch[1]);
-                    if (arrayMatch[2]) {
-                        wildcards.push(arrayMatch[2] === '*' ? true : parseInt(arrayMatch[2], 10));
-                    } else {
-                        wildcards.push(false);
-                    }
-                }
-
-                currentPos = segmentEnd + 1;
+        return template.replace(placeholderRegex, (_, path) => {
+            try {
+                const values = extractValues(data, path.trim(), pathCache);
+                return values.length > 0 ? String(values[0]) : '';
+            } catch (error) {
+                throw new GlobalError({
+                    statusCode: 400,
+                    message: `Failed to parse placeholder '${path}'`,
+                    details: error instanceof Error ? error.message : String(error)
+                });
             }
-
-            cached = { segments, wildcards };
-            pathCache.set(pathString, cached);
-        }
-
-        const { segments, wildcards } = cached;
-        let current: any[] = [obj];
-
-        for (let i = 0; i < segments.length && current.length > 0; i++) {
-            const segment = segments[i];
-            const isWildcard = wildcards[i];
-
-            current = current.flatMap((item) => {
-                if (item === null || typeof item !== 'object') return [];
-
-                const value = item[segment];
-                if (value === undefined) return [];
-
-                if (isWildcard === true) {
-                    return Array.isArray(value) ? value : [];
-                }
-                if (typeof isWildcard === 'number') {
-                    return Array.isArray(value) && value[isWildcard] !== undefined ? [value[isWildcard]] : [];
-                }
-                return [value];
-            });
-        }
-
-        return current.filter(val => val !== undefined && val !== null);
-    };
-
-    return template.replace(placeholderRegex, (_, path) => {
-        const values = extractValues(data, path.trim());
-        return values.length > 0 ? String(values[0]) : '';
-    });
+        });
+    } catch (error) {
+        throw GlobalError.fromCatch(error);
+    }
 };
 
+const parsePath = (pathString: string): { segments: string[], wildcards: (boolean | number)[] } => {
+    const segments: string[] = [];
+    const wildcards: (boolean | number)[] = [];
+    let currentPos = 0;
+
+    while (currentPos < pathString.length) {
+        const dotPos = pathString.indexOf('.', currentPos);
+        const segmentEnd = dotPos === -1 ? pathString.length : dotPos;
+        const segment = pathString.slice(currentPos, segmentEnd);
+
+        const arrayMatch = segment.match(/^([^[]+)(?:\[(\*|\d+)\])?$/);
+        if (!arrayMatch) {
+            segments.push(segment);
+            wildcards.push(false);
+        } else {
+            segments.push(arrayMatch[1]);
+            wildcards.push(
+                arrayMatch[2]
+                    ? arrayMatch[2] === '*'
+                        ? true
+                        : parseInt(arrayMatch[2], 10)
+                    : false
+            );
+        }
+
+        currentPos = segmentEnd + 1;
+    }
+
+    return { segments, wildcards };
+};
+
+const extractValues = (
+    obj: object,
+    pathString: string,
+    pathCache: Map<string, { segments: string[], wildcards: (boolean | number)[] }>
+): any[] => {
+    const cached = pathCache.get(pathString) || parsePath(pathString);
+    if (!pathCache.has(pathString)) {
+        pathCache.set(pathString, cached);
+    }
+
+    const { segments, wildcards } = cached;
+    let current: any[] = [obj];
+
+    for (let i = 0; i < segments.length && current.length > 0; i++) {
+        current = processSegment(current, segments[i], wildcards[i]);
+    }
+
+    return current.filter(val => val !== undefined && val !== null);
+};
+
+const processSegment = (items: any[], segment: string, wildcard: boolean | number): any[] => {
+    return items.flatMap(item => {
+        if (item === null || typeof item !== 'object') return [];
+
+        const value = item[segment];
+        if (value === undefined) return [];
+
+        if (wildcard === true) {
+            return Array.isArray(value) ? value : [];
+        }
+        if (typeof wildcard === 'number') {
+            return Array.isArray(value) && value[wildcard] !== undefined ? [value[wildcard]] : [];
+        }
+        return [value];
+    });
+};
 
 
 export function jsonToBase64(json: object): string {

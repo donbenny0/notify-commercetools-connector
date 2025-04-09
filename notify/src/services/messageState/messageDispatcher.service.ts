@@ -3,11 +3,11 @@ import { smsHandler } from "../../handlers/sms.handler";
 import { whatsappHandler } from "../../handlers/whatsapp.handler";
 import { ChannelAndSubscriptions, ChannelHandler, ChannelInterfaceResponse } from "../../interface/channels.interface";
 import { MessageStateRequest, MessageStateResponse } from "../../interface/messageState.interface";
-import { PubsubMessageBody } from "../../interface/pubsubMessageBody.interface";
 import { updateCustomObjectRepository } from "../../repository/customObjects/customObjects.repository";
-import { fetchResource } from "../../repository/orders/resource.repository";
+import { fetchResource } from "../../repository/allResources/resource.repository";
 import { parsePlaceholder } from "../../utils/helpers.utils";
 import { logger } from "../../utils/logger.utils";
+import { PubsubMessageBody } from "../../interface/pubsub.interface";
 
 
 const handlers: Record<string, ChannelHandler> = {
@@ -75,12 +75,12 @@ export const processDeliveringMessage = async (
     );
 
     // Final update to state
-    await updateCustomObjectRepository({
-        container: "notify-messageState",
-        key: message.id,
-        version: currentMessageState.version,
-        value: currentMessageState.value,
-    });
+    // await updateCustomObjectRepository({
+    //     container: "notify-messageState",
+    //     key: message.id,
+    //     version: currentMessageState.version,
+    //     value: currentMessageState.value,
+    // });
 
     return allSuccessful;
 };

@@ -1,4 +1,5 @@
-import { PubsubMessageBody } from "./pubsubMessageBody.interface";
+import { PubsubMessageBody } from "./pubsub.interface";
+
 
 interface ChannelStatus {
     isSent: "processing" | boolean;

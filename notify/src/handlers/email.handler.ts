@@ -1,3 +1,4 @@
+import GlobalError from '../errors/global.error';
 import { ChannelHandler } from '../interface/channels.interface';
 import { logger } from '../utils/logger.utils';
 import sgMail from '@sendgrid/mail'
@@ -13,17 +14,31 @@ export const emailHandler: ChannelHandler = {
             logger.info(`Sending email message to ${recipient}`);
             logger.info(message);
             const msg = {
-                to: recipient || 'donbennyy@gmail.com',
+                to: 'donbennyy@gmail.com',
                 from: SENDER_EMAIL_ID,
                 subject: 'Sending with Twilio SendGrid is Fun',
                 text: message,
                 html: message,
             };
             const response = await sgMail.send(msg);
+            console.log('message for email', response)
             return response;
         } catch (error) {
             logger.error(`Error sending email message: ${error}`);
-            throw new Error(`Error sending email message: ${error}`);
+            if (error instanceof Error) {
+                throw new GlobalError({
+                    statusCode: 500,
+                    message: error.message,
+                    details: error.message,
+                    originalError: error
+                });
+            } else {
+                throw new GlobalError({
+                    statusCode: 500,
+                    message: 'Failed to send Email',
+                    details: String(error)
+                });
+            }
         }
     },
 };
