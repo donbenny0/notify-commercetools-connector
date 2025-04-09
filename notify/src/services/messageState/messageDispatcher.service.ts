@@ -6,7 +6,7 @@ import { MessageStateRequest, MessageStateResponse } from "../../interface/messa
 import { PubsubMessageBody } from "../../interface/pubsubMessageBody.interface";
 import { updateCustomObjectRepository } from "../../repository/customObjects/customObjects.repository";
 import { fetchResource } from "../../repository/orders/resource.repository";
-import { fetchValueFromPlaceholder, generateMessage } from "../../utils/helpers.utils";
+import { parsePlaceholder } from "../../utils/helpers.utils";
 import { logger } from "../../utils/logger.utils";
 
 
@@ -16,17 +16,6 @@ const handlers: Record<string, ChannelHandler> = {
     email: emailHandler
 };
 
-// export const handleMessageState = async (message: PubsubMessageBody) => {
-//     const messageExists = await checkIfCustomObjectExists("notify-messageState", message.id);
-//     const channels = await getCustomObjectRepository("notify-channels", "notify-channels-key");
-
-//     if (messageExists) {
-//         const currentMessageState: MessageStateResponse = await getCustomObjectRepository("notify-messageState", message.id);
-//         await processDeliveringMessage(currentMessageState, channels, message);
-//     } else {
-//         await addNewMessageStateEntry(message, channels);
-//     }
-// };
 
 export const addNewMessageStateEntry = async (
     message: PubsubMessageBody,
@@ -54,40 +43,36 @@ export const addNewMessageStateEntry = async (
 
 export const processDeliveringMessage = async (
     currentMessageState: MessageStateResponse,
-    channelsAndSubscriptuons: ChannelAndSubscriptions,
+    channelsAndSubscriptions: ChannelAndSubscriptions,
     message: PubsubMessageBody
 ): Promise<boolean> => {
-    const enabledChannels = Object.entries(channelsAndSubscriptuons.value.references.obj.value)
+    const channels: ChannelInterfaceResponse = channelsAndSubscriptions.value.references.obj
+    const enabledChannels = Object.entries(channels.value)
         .filter(([_, config]) => config.configurations.isEnabled)
         .map(([channelName]) => channelName);
 
 
-    // const channelsToSend = enabledChannels.filter((channel) => {
-    //     const status = currentMessageState.value.channelsProcessed[channel]?.isSent;
-    //     const channelSubscriptions = channelsAndSubscriptuons.value;
-
-    //     // Check if any subscription has a trigger matching the message type
-    //     const hasTriggerType = channelSubscriptions.some(subscription =>
-    //         subscription.triggers.some(trigger => trigger.triggerType === message.type)
-    //     );
-
-    //     return status !== true && hasTriggerType;
-    // });
-
     const channelsToSend = enabledChannels.filter((channel) => {
         const status = currentMessageState.value.channelsProcessed[channel]?.isSent;
-        return status !== true;
+
+        const channelSubscriptions = channelsAndSubscriptions.value.channels[channel]?.subscriptions || [];
+
+
+        const hasTriggerType = channelSubscriptions.some(subscription =>
+            subscription.triggers.some(trigger => trigger.triggerType === message.type)
+        );
+
+        return status !== true && hasTriggerType;
     });
 
     const currentResource = await fetchResource(message.resource.typeId, message.resource.id);
-
-    // const allSuccessful = await deliverMessages(
-    //     currentMessageState,
-    //     channelsToSend,
-    //     channels,
-    //     currentResource,
-    //     message
-    // );
+    const allSuccessful = await deliverMessages(
+        currentMessageState,
+        channelsToSend,
+        channels,
+        currentResource,
+        message
+    );
 
     // Final update to state
     await updateCustomObjectRepository({
@@ -97,39 +82,39 @@ export const processDeliveringMessage = async (
         value: currentMessageState.value,
     });
 
-    return true;
+    return allSuccessful;
 };
 
-// const deliverMessages = async (
-//     currentMessageState: MessageStateResponse,
-//     channelsToSend: string[],
-//     channels: ChannelInterfaceResponse,
-//     currentResource: object,
-//     message: PubsubMessageBody
-// ): Promise<boolean> => {
-//     const sendResults = await Promise.allSettled(channelsToSend.map(async (channel) => {
-//         const handler = handlers[channel];
-//         const recipientPath = channels.value[channel]?.configurations.messageBody?.[message.type].sendToPath;
-//         const generatedMessageBody = await generateMessage(currentResource);
-//         const recipient = fetchValueFromPlaceholder(currentResource, recipientPath);
+const deliverMessages = async (
+    currentMessageState: MessageStateResponse,
+    channelsToSend: string[],
+    channels: ChannelInterfaceResponse,
+    currentResource: object,
+    message: PubsubMessageBody
+): Promise<boolean> => {
+    const sendResults = await Promise.allSettled(channelsToSend.map(async (channel) => {
+        const handler = handlers[channel];
+        const recipientPath = channels.value[channel]?.configurations.messageBody?.[message.type].sendToPath;
+        const messageBodyPath = channels.value[channel]?.configurations.messageBody?.[message.type].message;
+        const generatedMessageBody = parsePlaceholder(currentResource, messageBodyPath);
+        const recipient = parsePlaceholder(currentResource, `{{${recipientPath}}}`);
+        if (handler && generatedMessageBody && recipient) {
+            try {
+                await handler.sendMessage(generatedMessageBody, recipient);
+                currentMessageState.value.channelsProcessed[channel].isSent = true;
+                return true;
+            } catch (error: any) {
+                logger.info(`Error sending to ${channel}:`, error);
+                currentMessageState.value.channelsProcessed[channel].isSent = false;
+                return false;
+            }
+        }
+        currentMessageState.value.channelsProcessed[channel].isSent = false;
+        return false;
+    }));
 
-//         if (handler && generatedMessageBody && recipient) {
-//             try {
-//                 await handler.sendMessage(generatedMessageBody, recipient);
-//                 currentMessageState.value.channelsProcessed[channel].isSent = true;
-//                 return true;
-//             } catch (error: any) {
-//                 logger.info(`Error sending to ${channel}:`, error);
-//                 currentMessageState.value.channelsProcessed[channel].isSent = false;
-//                 return false;
-//             }
-//         }
-//         currentMessageState.value.channelsProcessed[channel].isSent = false;
-//         return false;
-//     }));
-
-//     // Check if all messages were sent successfully
-//     return sendResults.every(result =>
-//         result.status === 'fulfilled' && result.value === true
-//     );
-// };
+    // Check if all messages were sent successfully
+    return sendResults.every(result =>
+        result.status === 'fulfilled' && result.value === true
+    );
+};

@@ -6,6 +6,7 @@ import { PubsubMessageBody } from '../interface/pubsubMessageBody.interface';
 import { addNewMessageStateEntry, processDeliveringMessage } from '../services/messageState/messageDispatcher.service';
 import { MessageStateResponse } from '../interface/messageState.interface';
 import { checkIfCustomObjectExists, getCustomObjectRepository } from '../repository/customObjects/customObjects.repository';
+import { logger } from '../utils/logger.utils';
 dotenv.config();
 
 export const post = async (request: Request, response: Response): Promise<Response | void> => {
@@ -25,6 +26,7 @@ export const post = async (request: Request, response: Response): Promise<Respon
       await addNewMessageStateEntry(pubSubDecodedMessage, channelsAndSubscriptions);
       allSuccessful = false;
     }
+    logger.info(`success state : ${allSuccessful}`);
 
     if (allSuccessful) {
       return response.status(200).send('All messages sent successfully');

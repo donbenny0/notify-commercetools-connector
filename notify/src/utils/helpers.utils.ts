@@ -1,10 +1,8 @@
 import CustomError from '../errors/custom.error';
 import { GeneralError, InvalidPlaceholder } from '../errors/helpers.errors';
 import { Base64DecodingError, JsonParsingError, MissingPubSubMessageDataError } from '../errors/pubsub.error';
-import { MessageBodyCustomObject } from '../interface/messageBodyCustomObject.interface';
 import { PubSubEncodedMessage } from '../interface/pubsub.interface';
 import { PubsubMessageBody } from '../interface/pubsubMessageBody.interface';
-import { transformMessageBodyCustomObject } from '../services/customObject/messageBody/transformMessageObject.service';
 import { logger } from './logger.utils';
 
 // Helper function to decode base64 and parse JSON
@@ -55,118 +53,80 @@ export const generateRandomKey = (): string => {
 
 
 // Generate custom messageBody
-export const generateMessage = async (data: object): Promise<string> => {
-    const defaultMessage = "Hello,\n\nYour order has been confirmed!.\nThank you"
-    const customObjectMessageBody: MessageBodyCustomObject | null = await transformMessageBodyCustomObject("messageBody", "msg-body-key-constant-whatsapp")
-    const template = customObjectMessageBody?.message || process.env.CUSTOM_MESSAGE_TEMPLATE || defaultMessage;
+export const parsePlaceholder = (data: object, template: string): string => {
+    // Pre-compile the regex once with safeguards against backtracking
+    const placeholderRegex = /\{\{([^{}]+?)\}\}/g;
+
+    // Cache for path segments to avoid repeated parsing
+    const pathCache = new Map<string, { segments: string[], wildcards: (boolean | number)[] }>();
 
     const extractValues = (obj: object, pathString: string): any[] => {
-        const segments: string[] = [];
-        const wildcardPositions: (boolean | number)[] = [];
+        // Check cache first
+        let cached = pathCache.get(pathString);
+        if (!cached) {
+            const segments: string[] = [];
+            const wildcards: (boolean | number)[] = [];
 
-        // Parse the path string into segments and track array positions
-        pathString.split('.').forEach((segment: string) => {
-            const arrayMatch = segment.match(/(.*)\[(\*|\d+)\]/);
-            if (arrayMatch) {
-                const [, key, index] = arrayMatch;
-                segments.push(key);
-                wildcardPositions.push(index === '*' ? true : parseInt(index, 10));
-            } else {
-                segments.push(segment);
-                wildcardPositions.push(false);
+            // Parse path segments with minimal operations
+            let currentPos = 0;
+            while (currentPos < pathString.length) {
+                const dotPos = pathString.indexOf('.', currentPos);
+                const segmentEnd = dotPos === -1 ? pathString.length : dotPos;
+                const segment = pathString.slice(currentPos, segmentEnd);
+
+                const arrayMatch = segment.match(/^([^[]+)(?:\[(\*|\d+)\])?$/);
+                if (!arrayMatch) {
+                    segments.push(segment);
+                    wildcards.push(false);
+                } else {
+                    segments.push(arrayMatch[1]);
+                    if (arrayMatch[2]) {
+                        wildcards.push(arrayMatch[2] === '*' ? true : parseInt(arrayMatch[2], 10));
+                    } else {
+                        wildcards.push(false);
+                    }
+                }
+
+                currentPos = segmentEnd + 1;
             }
-        });
 
-        // Navigate through the object structure
+            cached = { segments, wildcards };
+            pathCache.set(pathString, cached);
+        }
+
+        const { segments, wildcards } = cached;
         let current: any[] = [obj];
 
-        for (let i = 0; i < segments.length; i++) {
+        for (let i = 0; i < segments.length && current.length > 0; i++) {
             const segment = segments[i];
-            const isWildcard = wildcardPositions[i];
+            const isWildcard = wildcards[i];
 
-            current = current.flatMap((item: any) => {
+            current = current.flatMap((item) => {
+                if (item === null || typeof item !== 'object') return [];
+
                 const value = item[segment];
+                if (value === undefined) return [];
 
                 if (isWildcard === true) {
-                    // Handle wildcard array access
                     return Array.isArray(value) ? value : [];
-                } else if (typeof isWildcard === 'number') {
-                    // Handle specific index array access
-                    return Array.isArray(value) && value[isWildcard] ? [value[isWildcard]] : [];
-                } else {
-                    // Handle regular property access
-                    return value !== undefined && value !== null ? [value] : [];
                 }
+                if (typeof isWildcard === 'number') {
+                    return Array.isArray(value) && value[isWildcard] !== undefined ? [value[isWildcard]] : [];
+                }
+                return [value];
             });
-
-            if (current.length === 0) break;
         }
 
-        return current;
+        return current.filter(val => val !== undefined && val !== null);
     };
 
-    // Replace template placeholders with actual values
-    return template.replace(/{{(.*?)}}/g, (match: string, path: string): string => {
-        try {
-            const values = extractValues(data, path.trim());
-            if (values.length === 0) {
-                throw new InvalidPlaceholder(path.trim()); // Throw an error for invalid placeholder
-            }
-            return values.join(', ');
-        } catch (error) {
-            if (error instanceof CustomError) {
-                logger.error(`Invalid placeholder: ${error.message}`);
-                throw error;
-            } else {
-                logger.error('Error:', error);
-                throw new GeneralError('An unexpected error occurred while generating the message.');
-            }
-        }
+    return template.replace(placeholderRegex, (_, path) => {
+        const values = extractValues(data, path.trim());
+        return values.length > 0 ? String(values[0]) : '';
     });
 };
 
 
-
-interface AnyObject {
-    [key: string]: any;
-}
-
-export const fetchValueFromPlaceholder = (selectedTemplateData: AnyObject, path: string): string | null => {
-    try {
-
-        // Handle array indices and wildcards
-        const normalizedPath = path.replace(/\[\*\]/g, '[0]');
-        const pathSegments = normalizedPath.split('.');
-
-        let value: any = selectedTemplateData;
-
-        for (const segment of pathSegments) {
-            const arrayMatch = segment.match(/(.*)\[(\d+)\]/);
-
-            if (arrayMatch) {
-                const [, key, indexStr] = arrayMatch;
-                const index = parseInt(indexStr, 10);
-
-                if (!value || !(key in value) || !Array.isArray(value[key])) {
-                    value = undefined;
-                    break;
-                }
-
-                value = value[key][index];
-            } else {
-                if (!value || !(segment in value)) {
-                    value = undefined;
-                    break;
-                }
-                value = value[segment];
-            }
-        }
-
-        return value || null;
-    } catch (error) {
-        return `[ERROR: ${path}]`;
-    }
-};
 
 export function jsonToBase64(json: object): string {
     const jsonString = JSON.stringify(json);
