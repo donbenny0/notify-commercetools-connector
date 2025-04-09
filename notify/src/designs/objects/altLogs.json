@@ -10,6 +10,11 @@
                 "recipient": "+9155454545444",
                 "processLogs": [
                     {
+                        "message": "Invalid provider",
+                        "statusCode": 400,
+                        "createdAt": "2025-03-21T09:21:24.174Z"
+                    },
+                    {
                         "message": "Message sent successfully",
                         "statusCode": 200,
                         "createdAt": "2025-03-21T09:21:24.174Z"

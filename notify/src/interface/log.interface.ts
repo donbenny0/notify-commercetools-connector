@@ -1,6 +1,6 @@
 export interface ProcessLogInterface {
     message: string;
-    statusCode: number;
+    statusCode: string;
     createdAt: string;
 }
 

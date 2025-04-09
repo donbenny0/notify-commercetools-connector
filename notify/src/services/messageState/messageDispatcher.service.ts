@@ -8,6 +8,8 @@ import { fetchResource } from "../../repository/allResources/resource.repository
 import { parsePlaceholder } from "../../utils/helpers.utils";
 import { logger } from "../../utils/logger.utils";
 import { PubsubMessageBody } from "../../interface/pubsub.interface";
+import { addProcessLog } from "../logs/addLogs.service";
+import GlobalError from "../../errors/global.error";
 
 
 const handlers: Record<string, ChannelHandler> = {
@@ -47,21 +49,24 @@ export const processDeliveringMessage = async (
     message: PubsubMessageBody
 ): Promise<boolean> => {
     const channels: ChannelInterfaceResponse = channelsAndSubscriptions.value.references.obj
+
     const enabledChannels = Object.entries(channels.value)
         .filter(([_, config]) => config.configurations.isEnabled)
         .map(([channelName]) => channelName);
 
 
     const channelsToSend = enabledChannels.filter((channel) => {
+        // check if the delivery already fullfilled
         const status = currentMessageState.value.channelsProcessed[channel]?.isSent;
+        // fetch all subscriptions corresponding to the channel
         const channelSubscriptions = channelsAndSubscriptions.value.channels[channel]?.subscriptions || [];
+        // Check current channel has the subscription added.
         const hasTriggerType = channelSubscriptions.some(subscription =>
             subscription.triggers.some(trigger => trigger.triggerType === message.type)
         );
 
         return status !== true && hasTriggerType;
     });
-    logger.info("channelsToSend", channelsToSend)
     const currentResource = await fetchResource(message.resource.typeId, message.resource.id);
     const allSuccessful = await deliverMessages(
         currentMessageState,
@@ -98,10 +103,14 @@ const deliverMessages = async (
             try {
                 await handler.sendMessage(generatedMessageBody, recipient);
                 currentMessageState.value.channelsProcessed[channel].isSent = true;
+                await addProcessLog(message.id, channel, recipient, { message: "Message sent successfully", statusCode: "200", isSent: true }, message);
                 return true;
             } catch (error: any) {
                 logger.info(`Error sending to ${channel}:`, error);
                 currentMessageState.value.channelsProcessed[channel].isSent = false;
+                const errorMessage = error instanceof GlobalError ? error.message : "Unknown error";
+                const errorStatusCode = error instanceof GlobalError ? error.statusCode : 500;
+                await addProcessLog(message.id, channel, recipient, { message: errorMessage, statusCode: errorStatusCode.toString(), isSent: false }, message);
                 return false;
             }
         }
