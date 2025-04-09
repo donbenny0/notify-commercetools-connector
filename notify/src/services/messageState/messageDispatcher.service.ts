@@ -64,7 +64,7 @@ export const processDeliveringMessage = async (
 
         return status !== true && hasTriggerType;
     });
-
+    logger.info("channelsToSend", channelsToSend)
     const currentResource = await fetchResource(message.resource.typeId, message.resource.id);
     const allSuccessful = await deliverMessages(
         currentMessageState,

@@ -14,14 +14,13 @@ export const emailHandler: ChannelHandler = {
             logger.info(`Sending email message to ${recipient}`);
             logger.info(message);
             const msg = {
-                to: 'donbennyy@gmail.com',
+                to: recipient,
                 from: SENDER_EMAIL_ID,
                 subject: 'Sending with Twilio SendGrid is Fun',
                 text: message,
                 html: message,
             };
             const response = await sgMail.send(msg);
-            console.log('message for email', response)
             return response;
         } catch (error) {
             logger.error(`Error sending email message: ${error}`);
@@ -35,7 +34,7 @@ export const emailHandler: ChannelHandler = {
             } else {
                 throw new GlobalError({
                     statusCode: 500,
-                    message: 'Failed to send Email',
+                    message: 'Failed to send E',
                     details: String(error)
                 });
             }
