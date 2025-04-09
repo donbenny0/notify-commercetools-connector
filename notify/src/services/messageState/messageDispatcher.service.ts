@@ -19,9 +19,9 @@ const handlers: Record<string, ChannelHandler> = {
 
 export const addNewMessageStateEntry = async (
     message: PubsubMessageBody,
-    channelsAndSubscriptuons: ChannelAndSubscriptions
+    channelsAndSubscriptions: ChannelAndSubscriptions
 ) => {
-    const channelsToSend = Object.keys(channelsAndSubscriptuons.value.references.obj.value);
+    const channelsToSend = Object.keys(channelsAndSubscriptions.value.references.obj.value);
     const channelsProcessed = channelsToSend.reduce((acc, channelName) => {
         acc[channelName] = { isSent: "processing" };
         return acc;
@@ -38,7 +38,7 @@ export const addNewMessageStateEntry = async (
     };
 
     const newMessageStateResponse = await updateCustomObjectRepository(newMessageState);
-    await processDeliveringMessage(newMessageStateResponse, channelsAndSubscriptuons, message);
+    await processDeliveringMessage(newMessageStateResponse, channelsAndSubscriptions, message);
 };
 
 export const processDeliveringMessage = async (
@@ -54,10 +54,7 @@ export const processDeliveringMessage = async (
 
     const channelsToSend = enabledChannels.filter((channel) => {
         const status = currentMessageState.value.channelsProcessed[channel]?.isSent;
-
         const channelSubscriptions = channelsAndSubscriptions.value.channels[channel]?.subscriptions || [];
-
-
         const hasTriggerType = channelSubscriptions.some(subscription =>
             subscription.triggers.some(trigger => trigger.triggerType === message.type)
         );
@@ -74,13 +71,12 @@ export const processDeliveringMessage = async (
         message
     );
 
-    // Final update to state
-    // await updateCustomObjectRepository({
-    //     container: "notify-messageState",
-    //     key: message.id,
-    //     version: currentMessageState.version,
-    //     value: currentMessageState.value,
-    // });
+    await updateCustomObjectRepository({
+        container: "notify-messageState",
+        key: message.id,
+        version: currentMessageState.version,
+        value: currentMessageState.value,
+    });
 
     return allSuccessful;
 };
@@ -113,7 +109,6 @@ const deliverMessages = async (
         return false;
     }));
 
-    // Check if all messages were sent successfully
     return sendResults.every(result =>
         result.status === 'fulfilled' && result.value === true
     );
