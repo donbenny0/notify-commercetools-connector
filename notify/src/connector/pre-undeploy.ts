@@ -1,12 +1,11 @@
 import * as dotenv from 'dotenv';
 dotenv.config();
-
-
 import { assertError } from '../utils/assert.utils';
-import { deleteAllObjects } from './actions';
+import { deleteAllObjects, removeSubscriptions } from './actions';
 
 
 async function preUndeploy(): Promise<void> {
+  await removeSubscriptions()
   await deleteAllObjects();
 }
 

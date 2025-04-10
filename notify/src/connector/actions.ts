@@ -1,6 +1,8 @@
 import { GoogleCloudPubSubDestination } from '@commercetools/platform-sdk';
-import { deleteCustomObjectRepository, updateCustomObjectRepository } from '../repository/customObjects/customObjects.repository';
+import { deleteCustomObjectRepository, getCustomObjectRepository, updateCustomObjectRepository } from '../repository/customObjects/customObjects.repository';
 import { CreateCustomObjectInterface } from '../interface/customObject.interface';
+import { removeSubscriptionRepository } from '../repository/subscription/subscription.repository';
+import { logger } from '../utils/logger.utils';
 
 export async function createNotifyObjects(topicName: string, projectId: string): Promise<void> {
   const destination: GoogleCloudPubSubDestination = {
@@ -12,21 +14,9 @@ export async function createNotifyObjects(topicName: string, projectId: string):
 }
 
 async function createInitialProjectCustomObjects(destination: GoogleCloudPubSubDestination) {
-  // 1. Create a custom object for the channels
-  // Container : "notify-channels",
-  // Key       : "notify-channels-key",
+
   const channelContainer = await initializeChannels();
-  //  2. Create a custom object for the subscription body
-  // Container : "notify-subscriptions",
-  // Key       : "notify-subscriptions-key",
-  // Requsites
-  // Fetch the GCP credentials from the environment variables
-  // Fetch the notify-channels object id from the commercetools API
-  // Create an reference to the notify-channels object in the notify-subscriptions object
   await initializeSubscriptions(channelContainer.id, destination);
-  // 3. Create a custom object for trigger list
-  // Container : "notify-trigger-list"
-  // Key       : "notify-trigger-list-key",
   await initializeTriggerList();
 }
 
@@ -303,6 +293,39 @@ async function initializeTriggerList() {
   return response;
 }
 
+export async function removeSubscriptions() {
+  try {
+    // Get the subscriptions data
+    const repo = await getCustomObjectRepository("notify-subscriptions", "notify-subscriptions-key");
+    const data = repo?.value;
+
+    if (!data?.channels) {
+      return;
+    }
+
+    const channelNames = ['whatsapp', 'sms', 'email'];
+
+    // Process each channel
+    for (const channelName of channelNames) {
+      const channel = data.channels[channelName];
+      if (!channel?.subscriptions) continue;
+
+      // Process each subscription in the channel
+      for (const sub of channel.subscriptions) {
+        try {
+          const subscriptionKey = `notify-${sub.resourceType}-subscription`;
+          await removeSubscriptionRepository(subscriptionKey);
+        } catch (error) {
+          logger.error(`Failed to unsubscribe from ${sub.resourceType}:`, error);
+        }
+      }
+    }
+  } catch (error) {
+    logger.error('Error in unsubscribe function:', error);
+  }
+}
+
+
 export async function deleteAllObjects() {
 
   const toBeDeleted = {
@@ -311,7 +334,7 @@ export async function deleteAllObjects() {
       key: "notify-channels-key"
     },
     subscriptions: {
-      container: "notify-subscriptions", 
+      container: "notify-subscriptions",
       key: "notify-subscriptions-key"
     },
     triggerList: {
