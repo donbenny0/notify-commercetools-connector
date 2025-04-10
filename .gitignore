@@ -8,5 +8,4 @@ coverage
 .DS_Store
 .vscode
 build/
-notify/.env
-notify-service/.env
+notify-event/.env
