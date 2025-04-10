@@ -8,7 +8,6 @@ const client: Twilio = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO
 export const smsHandler: ChannelHandler = {
     async sendMessage(message, recipient) {
         try {
-            // const messageBody = await generateMessage(message);
             logger.info(`Sending SMS message to ${recipient}`);
             logger.info(message);
             // // Send the message
@@ -17,24 +16,11 @@ export const smsHandler: ChannelHandler = {
                 from: '+18656066758',
                 to: '+917306227380'
             });
-            console.log('message for sms', response)
             return response;
-        } catch (error) {
+        } catch (error: any) {
             logger.error(`Error sending SMS message: ${error}`);
-            if (error instanceof Error) {
-                throw new GlobalError({
-                    statusCode: 500,
-                    message: error.message,
-                    details: error.message,
-                    originalError: error
-                });
-            } else {
-                throw new GlobalError({
-                    statusCode: 500,
-                    message: 'Failed to send SMS',
-                    details: String(error)
-                });
-            }
+            throw new GlobalError(error.statusCode || 500, error.message || `Failed to send message`);
+
         }
     },
 };

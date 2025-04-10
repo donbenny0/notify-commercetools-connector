@@ -16,25 +16,10 @@ export const whatsappHandler: ChannelHandler = {
                 from: 'whatsapp:+14155238886',
                 to: 'whatsapp:+917306227380',
             });
-            console.log('message for whatsapp',response)
             return response;
-        } catch (error) {
+        } catch (error: any) {
             logger.error(`Error sending WhatsApp message: ${error}`);
-
-            if (error instanceof Error) {
-                throw new GlobalError({
-                    statusCode: 500,
-                    message: error.message,
-                    details: error.message,
-                    originalError: error
-                });
-            } else {
-                throw new GlobalError({
-                    statusCode: 500,
-                    message: 'Failed to send WhatsApp message',
-                    details: String(error)
-                });
-            }
+            throw new GlobalError(error.statusCode || 500, error.message || `Failed to send message`);
         }
     },
 };

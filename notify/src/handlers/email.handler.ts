@@ -22,22 +22,10 @@ export const emailHandler: ChannelHandler = {
             };
             const response = await sgMail.send(msg);
             return response;
-        } catch (error) {
+        } catch (error: any) {
             logger.error(`Error sending email message: ${error}`);
-            if (error instanceof Error) {
-                throw new GlobalError({
-                    statusCode: 500,
-                    message: error.message,
-                    details: error.message,
-                    originalError: error
-                });
-            } else {
-                throw new GlobalError({
-                    statusCode: 500,
-                    message: 'Failed to send E',
-                    details: String(error)
-                });
-            }
+            throw new GlobalError(error.statusCode || 500, error.message || `Failed to send message`);
+
         }
     },
 };

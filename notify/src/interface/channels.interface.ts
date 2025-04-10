@@ -49,7 +49,7 @@ export interface ChannelHandler {
     sendMessage: (
         messageData: string,
         recipient: string
-    ) => Promise<MessageInstance> | Promise<[ClientResponse, {}]>;
+    ) => Promise<MessageInstance> | Promise<[ClientResponse, object]>;
 }
 
 // Subscription trigger type
