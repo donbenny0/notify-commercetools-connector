@@ -5,6 +5,7 @@
         "whatsapp": {
             "configurations": {
                 "isEnabled": true,
+                "sender_id": "000000000000",
                 "messageBody": {
                     "OrderCreated": {
                         "message": "Hello, this is a test message from the WhatsApp channel",
@@ -20,6 +21,7 @@
         "email": {
             "configurations": {
                 "isEnabled": true,
+                "sender_id": "000000000000",
                 "messageBody": {
                     "OrderCreated": {
                         "message": "Hello, this is a test message from the WhatsApp channel",
@@ -35,6 +37,7 @@
         "sms": {
             "configurations": {
                 "isEnabled": true,
+                "sender_id": "000000000000",
                 "messageBody": {
                     "OrderCreated": {
                         "message": "Hello, this is a test message from the WhatsApp channel",

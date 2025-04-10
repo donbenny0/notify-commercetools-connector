@@ -31,8 +31,9 @@ const ChannelPannel = ({ channel }: ChannelPannelProps) => {
 
 
     const tabs = [
-        { id: 'subscription', label: 'Subscriptions', icon: bellIcon },
+        { id: 'subscriptions', label: 'Subscriptions', icon: bellIcon },
         { id: 'logs', label: 'Logs', icon: settingsIcon },
+        { id: 'settings', label: 'Settings', icon: settingsIcon },
     ];
 
     useEffect(() => {
@@ -51,7 +52,7 @@ const ChannelPannel = ({ channel }: ChannelPannelProps) => {
                     setSubscriptions(response.value.channels[channel]);
                     const isEnabled = response.value.references?.obj?.value[channel]?.configurations?.isEnabled;
                     const messageBody = response.value.references?.obj?.value[channel]?.configurations?.messageBody;
-                    
+
                     setIsChannelActive(isEnabled);
                     setmessageData(messageBody)
                 } else {
@@ -105,9 +106,17 @@ const ChannelPannel = ({ channel }: ChannelPannelProps) => {
                         ) : (
                             <div>
                                 <TabBar tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} />
-                                {activeTab === 'subscription' && (
+                                {activeTab === 'subscriptions' && (
                                     <div className={styles.tabContent}>
                                         <SubscriptionList subscriptionList={subscriptions} channel={channel} messageData={messageData} />
+                                    </div>
+                                )}
+                                {activeTab === 'logs' && (
+                                    <div className={styles.tabContent}>
+                                    </div>
+                                )}
+                                {activeTab === 'settings' && (
+                                    <div className={styles.tabContent}>
                                     </div>
                                 )}
                             </div>

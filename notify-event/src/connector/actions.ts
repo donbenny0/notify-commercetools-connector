@@ -3,6 +3,8 @@ import { deleteCustomObjectRepository, getCustomObjectRepository, updateCustomOb
 import { CreateCustomObjectInterface } from '../interface/customObject.interface';
 import { removeSubscriptionRepository } from '../repository/subscription/subscription.repository';
 import { logger } from '../utils/logger.utils';
+import { ChannelInterfaceRequest } from '../interface/channels.interface';
+import { SubscriptionInterfaceRequest } from '../interface/subscription.interface';
 
 export async function createNotifyObjects(topicName: string, projectId: string): Promise<void> {
   const destination: GoogleCloudPubSubDestination = {
@@ -22,7 +24,7 @@ async function createInitialProjectCustomObjects(destination: GoogleCloudPubSubD
 
 // create channel container
 async function initializeChannels() {
-  const channelBody: CreateCustomObjectInterface = {
+  const channelBody: ChannelInterfaceRequest = {
     container: "notify-channels",
     key: "notify-channels-key",
     value: {
@@ -30,18 +32,21 @@ async function initializeChannels() {
         configurations: {
           isEnabled: false,
           messageBody: {},
+          sender_id: ''
         }
       },
       email: {
         configurations: {
           isEnabled: false,
           messageBody: {},
+          sender_id: ''
         }
       },
       sms: {
         configurations: {
           isEnabled: false,
           messageBody: {},
+          sender_id: ''
         }
       }
     }
@@ -51,7 +56,7 @@ async function initializeChannels() {
 }
 
 async function initializeSubscriptions(channelId: string, destination: GoogleCloudPubSubDestination) {
-  const subscriptionBody: CreateCustomObjectInterface = {
+  const subscriptionBody: SubscriptionInterfaceRequest = {
     container: "notify-subscriptions",
     key: "notify-subscriptions-key",
     value: {
@@ -65,10 +70,12 @@ async function initializeSubscriptions(channelId: string, destination: GoogleClo
       },
       channels: {
         whatsapp: {
-          subscriptions: [
-          ]
+          subscriptions: []
         },
         sms: {
+          subscriptions: []
+        },
+        email: {
           subscriptions: []
         }
       }

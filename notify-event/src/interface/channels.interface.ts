@@ -10,6 +10,7 @@ export interface MessageTemplate {
 // Structure for channel configuration
 export interface ChannelConfiguration {
     isEnabled: boolean;
+    sender_id: string;
     messageBody: {
         [triggerType: string]: MessageTemplate;
     };
@@ -39,6 +40,13 @@ export interface ChannelInterfaceResponse {
     lastModifiedAt: string;
     lastModifiedBy?: ModifiedBy;
     createdBy?: ModifiedBy;
+    container: string;
+    key: string;
+    value: ChannelValue;
+}
+
+
+export interface ChannelInterfaceRequest {
     container: string;
     key: string;
     value: ChannelValue;

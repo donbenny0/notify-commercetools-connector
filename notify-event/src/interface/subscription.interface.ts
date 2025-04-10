@@ -1,15 +1,21 @@
-interface Reference {
+interface pubsubReference {
+    projectId: string;
+    topic: string;
+}
+
+
+interface References {
     id: string;
     typeId: string;
 }
 
-interface ReferenceObject {
-    [key: string]: Reference;
-}
-
-interface Subscription {
+interface Triggers {
     triggerType: string;
     subscribedAt: string;
+}
+interface Subscription {
+    resourceType: string;
+    triggers: Triggers[];
 }
 
 interface ChannelSubscriptions {
@@ -17,8 +23,15 @@ interface ChannelSubscriptions {
 }
 
 export interface CreateSubscriptionInterface {
-    references?: ReferenceObject;
+    pubsubReference: pubsubReference;
+    references?: References;
     channels: {
         [key: string]: ChannelSubscriptions;
     };
+}
+
+export interface SubscriptionInterfaceRequest {
+    container: string;
+    key: string;
+    value: CreateSubscriptionInterface;
 }
