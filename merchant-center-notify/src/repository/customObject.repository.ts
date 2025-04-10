@@ -2,6 +2,24 @@ import { MC_API_PROXY_TARGETS } from "@commercetools-frontend/constants";
 import { actions } from '@commercetools-frontend/sdk';
 import { CreateCustomObjectInterface } from "../interfaces/customObject.interface";
 
+
+export const fetchAllCustomObjectsRepository = async (dispatch: any, container: string) => {
+    try {
+        const result = await dispatch(
+            actions.get({
+                mcApiProxyTarget: MC_API_PROXY_TARGETS.COMMERCETOOLS_PLATFORM,
+                uri: `/customObjects/${container}`,
+
+            })
+        );
+
+        return result;
+    } catch (error) {
+        console.error('Error fetching custom all objects:', error);
+        throw error;
+    }
+};
+
 export const fetchCustomObjectRepository = async (dispatch: any, container: string, key: string) => {
     try {
         const result = await dispatch(
