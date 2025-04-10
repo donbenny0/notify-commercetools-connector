@@ -1,5 +1,5 @@
 deployAs:
-  - name: notify
+  - name: notify-event
     applicationType: event
     endpoint: /event
     scripts:
@@ -38,7 +38,7 @@ deployAs:
         - key: TWILIO_FROM_NUMBER
           description: Twilio from number
           required: true
-  - name: merchant-center-notifiy
+  - name: merchant-center-notify
     applicationType: merchant-center-custom-application
     configuration:
       standardConfiguration:
