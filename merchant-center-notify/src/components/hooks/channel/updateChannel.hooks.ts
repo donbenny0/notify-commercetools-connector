@@ -37,6 +37,40 @@ export const toggleChannelStatusHook = async (dispatch: any, channel: string, up
     }
 };
 
+export const updateSenderId = async (dispatch: any, channel: string, updateRequest: ChannelConfigurationRequest) => {
+
+    try {
+        // Fetch the existing object
+        const response = await fetchCustomObjectRepository(dispatch, 'notify-channels', 'notify-channels-key');
+        if (!response) {
+            throw new Error('Notification channels not found');
+        }
+
+        // Check if the requested channel exists
+        const channelData: MessagingChannel = response.value[channel];
+        if (!channelData) {
+            throw new Error(`Channel '${channel}' not found`);
+        }
+
+        // Update the `sender_id` field
+        channelData.configurations.sender_id = updateRequest.sender_id;
+
+        // Prepare the updated object with the correct version
+        const updatedObject: CreateCustomObjectInterface = {
+            container: response.container,
+            key: response.key,
+            version: response.version,
+            value: response.value,
+        };
+
+        // Save the updated object
+        const updatedResponse = await updateCustomObjectRepository(dispatch, updatedObject);
+
+        return { message: `Channel '${channel}' updated successfully`, updatedChannel: updatedResponse.value[channel] };
+    } catch (error) {
+        throw error;
+    }
+};
 
 export const updateMessageBodyHook = async (
     dispatch: any,

@@ -3,19 +3,46 @@ import { actions } from '@commercetools-frontend/sdk';
 import { CreateCustomObjectInterface } from "../interfaces/customObject.interface";
 
 
-export const fetchAllCustomObjectsRepository = async (dispatch: any, container: string) => {
+export const fetchAllCustomObjectsRepository = async (
+    dispatch: any,
+    container: string,
+    options: { limit?: number; offset?: number } = {}
+) => {
     try {
         const result = await dispatch(
             actions.get({
                 mcApiProxyTarget: MC_API_PROXY_TARGETS.COMMERCETOOLS_PLATFORM,
-                uri: `/customObjects/${container}`,
-
+                service: 'customObjects',
+                options: {
+                    id: container,
+                    container: `${container}?limit=${options.limit}?offset=${options.offset}?sort=createdAt desc`,
+                },
             })
         );
 
         return result;
     } catch (error) {
         console.error('Error fetching custom all objects:', error);
+        throw error;
+    }
+};
+
+export const fetchCustomObjectsCount = async (dispatch: any, container: string) => {
+    try {
+        const result = await dispatch(
+            actions.get({
+                mcApiProxyTarget: MC_API_PROXY_TARGETS.COMMERCETOOLS_PLATFORM,
+                service: 'customObjects',
+                options: {
+                    id: container,
+                    container: `${container}?limit=${1}`,
+                },
+            })
+        );
+
+        return result.total || 0;
+    } catch (error) {
+        console.error('Error fetching custom objects count:', error);
         throw error;
     }
 };
@@ -76,7 +103,7 @@ export const updateCustomObjectRepository = async (dispatch: any, objectBody: Cr
             })
         );
 
-        
+
 
         return result;
     } catch (error) {

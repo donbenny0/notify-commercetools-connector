@@ -13,6 +13,8 @@ import { toggleChannelStatusHook } from '../../hooks/channel/updateChannel.hooks
 import Loader from '../loader';
 import Toggler from '../toggler/Toggler';
 import TriggerSearchForm from '../createTrigger/TriggerSearchForm';
+import Logs from '../logs/Logs';
+import ChannelSettings from '../channelSettings/ChannelSettings';
 
 type ChannelPannelProps = {
     channel: string;
@@ -20,7 +22,7 @@ type ChannelPannelProps = {
 
 
 const ChannelPannel = ({ channel }: ChannelPannelProps) => {
-    const [activeTab, setActiveTab] = useState('subscription');
+    const [activeTab, setActiveTab] = useState('subscriptions');
     const [isChannelActive, setIsChannelActive] = useState(false);
     const [subscriptions, setSubscriptions] = useState<any>(null);
     const [messageData, setmessageData] = useState({});
@@ -113,10 +115,12 @@ const ChannelPannel = ({ channel }: ChannelPannelProps) => {
                                 )}
                                 {activeTab === 'logs' && (
                                     <div className={styles.tabContent}>
+                                        <Logs channel={channel} />
                                     </div>
                                 )}
                                 {activeTab === 'settings' && (
                                     <div className={styles.tabContent}>
+                                        <ChannelSettings channel={channel} />
                                     </div>
                                 )}
                             </div>
