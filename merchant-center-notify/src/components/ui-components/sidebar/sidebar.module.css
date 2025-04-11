@@ -1,101 +1,168 @@
 .sidebar {
-    height: 100%;
-    background-color: transparent;
-    transition: width 0.3s;
-    border: 1px solid #80808033;
-    border-radius: 10px;
-    overflow: hidden;
-    margin-left: -15px;
-    padding: 1.5%;
-    margin-top: -6px;
-}
-
-.sidebarHeaders {
-    display: flex;
-    gap: 8px;
-    padding: 2%;
-    align-items: center;
-    justify-content: space-between;
-}
-
-.sidebarHeaders:hover {
-    background-color: #e0e0e061;
-}
-
-.channelNamespace {
-    display: flex;
-    gap: 8px;
-    align-items: center;
-}
-
-.sidebarHeaders img {
-    width: 24px;
-    height: 24px;
+    height: 100vh;
+    background: white;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow-y: auto;
 }
 
 .open {
-    width: 300px;
+    width: 280px;
+    padding: 1.5rem;
 }
 
 .closed {
-    width: 60px;
-}
-
-.toggleButton {
-    background-color: #007bff;
-    color: white;
-    border: none;
-    padding: 10px;
-    cursor: pointer;
-    margin: 10px;
-}
-
-/* .nav {
-    margin-top: 20px;
-} */
-
-.nav ul {
-    list-style-type: none;
+    width: 0;
     padding: 0;
-}
-
-.nav li {
-    padding: 10px;
-    cursor: pointer;
-}
-
-.channelList li:hover {
-    background-color: #e0e0e0;
-}
-
-/* New styles for the channel list */
-.channelList {
-    list-style-type: none;
-    max-height: 0;
     overflow: hidden;
-    transition: max-height 0.3s ease-in-out, opacity 0.3s ease-in-out;
-    opacity: 0;
 }
 
-.active {
-    max-height: 150px;
-    /* Adjust based on content */
-    opacity: 1;
+.mobileHeader {
+    display: none;
 }
 
-.hidden {
-    max-height: 0;
-    opacity: 0;
+.sidebarHeader {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 0.5rem 0;
+    color: #4a5568;
+}
+
+.sidebarHeader h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.divider {
+    height: 1px;
+    background: #e2e8f0;
+    margin: 1rem 0;
+}
+
+.menuList {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.menuItem {
+    margin-bottom: 0.5rem;
+}
+
+.menuHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem 0.5rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.menuHeader:hover {
+    background: #f7fafc;
+}
+
+.menuTitle {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-weight: 500;
+    color: #4a5568;
+}
+
+.icon {
+    width: 20px;
+    height: 20px;
+    opacity: 0.8;
+}
+
+.arrow {
+    width: 16px;
+    height: 16px;
+    transition: transform 0.2s ease;
 }
 
 .rotated {
     transform: rotate(180deg);
-    transition: transform 0.3s ease-in-out;
 }
 
+.subMenu {
+    list-style: none;
+    padding-left: 2rem;
+    margin: 0.5rem 0;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+}
 
-.channelList li {
-    font-size: 14px;
-    margin-left: 16%;
-    padding: 6px 0px 6px;
+.subMenu.active {
+    max-height: 300px;
+}
+
+.subMenuItem {
+    padding: 0.5rem 0.5rem 0.5rem 1.5rem;
+    margin-left: 0.5rem;
+    border-left: 2px solid #e2e8f0;
+    cursor: pointer;
+    color: #718096;
+    transition: all 0.2s ease;
+    position: relative;
+}
+
+.subMenuItem:hover {
+    color: #4299e1;
+    border-left-color: #4299e1;
+}
+
+.subMenuItem::before {
+    content: '';
+    position: absolute;
+    left: 0.5rem;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #cbd5e0;
+    transition: all 0.2s ease;
+}
+
+.subMenuItem:hover::before {
+    background: #4299e1;
+}
+
+@media (max-width: 768px) {
+    .mobileHeader {
+        display: flex;
+        padding: 1rem;
+        justify-content: flex-end;
+    }
+    
+    .mobileToggle {
+        background: none;
+        border: none;
+        color: #4a5568;
+        cursor: pointer;
+    }
+    
+    .open {
+        width: 280px;
+        padding: 0;
+    }
+    
+    .sidebarHeader {
+        padding: 1rem;
+    }
+    
+    .divider {
+        margin: 0 1rem;
+    }
+    
+    .menuHeader {
+        padding: 0.75rem 1rem;
+    }
 }

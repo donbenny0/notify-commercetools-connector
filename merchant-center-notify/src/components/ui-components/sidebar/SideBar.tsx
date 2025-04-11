@@ -1,23 +1,27 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import styles from './sidebar.module.css';
 import channelIcon from '../../../assets/icons/channel_icon_64.svg';
 import dropDown from '../../../assets/icons/dropdown-arrow.svg';
+import { FiSettings } from 'react-icons/fi';
+import { FiMenu, FiX } from 'react-icons/fi';
 
 type SideBarProps = {
     setChannel: (channel: string) => void;
-    availableChannels: string[]; // Dynamically passing available channels
+    availableChannels: string[];
 };
 
 const SideBar = ({ setChannel, availableChannels }: SideBarProps) => {
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-    const [openSections, setOpenSections] = useState<Record<string, boolean>>({});
+    const [openSections, setOpenSections] = useState<Record<string, boolean>>({
+        channels: true
+    });
 
     const toggleSidebar = () => {
         setIsSidebarOpen(!isSidebarOpen);
     };
 
     const toggleSection = (section: string) => {
-        setOpenSections((prev) => ({
+        setOpenSections(prev => ({
             ...prev,
             [section]: !prev[section],
         }));
@@ -25,25 +29,40 @@ const SideBar = ({ setChannel, availableChannels }: SideBarProps) => {
 
     return (
         <div className={`${styles.sidebar} ${isSidebarOpen ? styles.open : styles.closed}`}>
+            <div className={styles.mobileHeader}>
+                <button onClick={toggleSidebar} className={styles.mobileToggle}>
+                    {isSidebarOpen ? <FiX size={24} /> : <FiMenu size={24} />}
+                </button>
+            </div>
             <nav className={styles.nav}>
-                <h3>Settings</h3>
-                <hr />
-                <ul>
-                    <li>
-                        <div className={styles.sidebarHeaders} onClick={() => toggleSection('channels')}>
-                            <div className={styles.channelNamespace}>
-                                <img src={channelIcon} alt="Channel Icon" />
+                <div className={styles.sidebarHeader}>
+                    <FiSettings size={20} />
+                    <h3>Settings</h3>
+                </div>
+                <div className={styles.divider} />
+                <ul className={styles.menuList}>
+                    <li className={styles.menuItem}>
+                        <div
+                            className={styles.menuHeader}
+                            onClick={() => toggleSection('channels')}
+                        >
+                            <div className={styles.menuTitle}>
+                                <img src={channelIcon} alt="Channel Icon" className={styles.icon} />
                                 <span>Channels</span>
                             </div>
                             <img
                                 src={dropDown}
-                                className={openSections['channels'] ? styles.rotated : ''}
+                                className={`${styles.arrow} ${openSections['channels'] ? styles.rotated : ''}`}
                                 alt="Dropdown Arrow"
                             />
                         </div>
-                        <ul className={`${styles.channelList} ${openSections['channels'] ? styles.active : styles.hidden}`}>
+                        <ul className={`${styles.subMenu} ${openSections['channels'] ? styles.active : ''}`}>
                             {availableChannels.map((channel) => (
-                                <li key={channel} onClick={() => setChannel(channel)}>
+                                <li
+                                    key={channel}
+                                    className={styles.subMenuItem}
+                                    onClick={() => setChannel(channel)}
+                                >
                                     {channel.charAt(0).toUpperCase() + channel.slice(1)}
                                 </li>
                             ))}

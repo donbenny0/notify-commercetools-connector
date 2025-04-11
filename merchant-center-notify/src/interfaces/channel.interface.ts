@@ -7,7 +7,7 @@ export interface MessageBody {
 
 export interface ChannelConfigurationRequest {
     isEnabled?: boolean;
-    sender_id: string;
+    sender_id?: string;
     messageBody?: MessageBody;
 }
 
