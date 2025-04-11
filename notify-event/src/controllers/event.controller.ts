@@ -38,7 +38,7 @@ export const post = async (request: Request, response: Response): Promise<Respon
       allSuccessful = false;
     }
 
-    logger.info(`Processing completed with status: ${allSuccessful}`);
+    logger.info(`Processing message ${pubSubDecodedMessage.id} completed with status: ${allSuccessful}`);
     return response.status(allSuccessful ? 200 : 400).send();
 
   } catch (error: unknown) {

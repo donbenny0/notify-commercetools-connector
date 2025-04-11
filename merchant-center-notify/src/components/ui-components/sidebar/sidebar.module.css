@@ -7,6 +7,17 @@
     overflow-y: auto;
 }
 
+.sidebarHeader>img {
+    width: 20px;
+    height: 20px;
+}
+
+.mobileHeader>img {
+    width: 18px;
+    height: 18px;
+}
+
+
 .open {
     width: 280px;
     padding: 1.5rem;
@@ -135,33 +146,52 @@
     background: #4299e1;
 }
 
+/* Add this to your existing styles */
+.subMenuItem.selected {
+    color: #4299e1;
+    border-left-color: #4299e1;
+    background-color: #ebf8ff;
+    font-weight: 500;
+}
+
+.subMenuItem.selected::before {
+    background: #4299e1;
+    width: 8px;
+    height: 8px;
+}
+
+.subMenuItem.selected:hover {
+    background-color: #ebf8ff;
+}
+
+
 @media (max-width: 768px) {
     .mobileHeader {
         display: flex;
         padding: 1rem;
         justify-content: flex-end;
     }
-    
+
     .mobileToggle {
         background: none;
         border: none;
         color: #4a5568;
         cursor: pointer;
     }
-    
+
     .open {
         width: 280px;
         padding: 0;
     }
-    
+
     .sidebarHeader {
         padding: 1rem;
     }
-    
+
     .divider {
         margin: 0 1rem;
     }
-    
+
     .menuHeader {
         padding: 0.75rem 1rem;
     }

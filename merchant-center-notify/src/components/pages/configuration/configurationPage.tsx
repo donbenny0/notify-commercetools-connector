@@ -11,7 +11,11 @@ const ConfigurationPage = () => {
     return (
         <div className={styles.configContainer}>
             <div className={styles.sidebarContainer}>
-                <SideBar setChannel={setSelectedChannel} availableChannels={availableChannels} />
+                <SideBar
+                    setChannel={setSelectedChannel}
+                    availableChannels={availableChannels}
+                    currentChannel={selectedChannel} // Pass the current channel
+                />
             </div>
             <div className={styles.contentContainer}>
                 <ChannelPannel channel={selectedChannel} />

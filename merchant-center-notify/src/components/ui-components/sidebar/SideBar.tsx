@@ -2,15 +2,17 @@ import { useState } from 'react';
 import styles from './sidebar.module.css';
 import channelIcon from '../../../assets/icons/channel_icon_64.svg';
 import dropDown from '../../../assets/icons/dropdown-arrow.svg';
-import { FiSettings } from 'react-icons/fi';
-import { FiMenu, FiX } from 'react-icons/fi';
+import settingsIcon from '../../../assets/icons/settings_icon.svg';
+import menuIcon from '../../../assets/icons/menu.svg';
+import arrowLeftIcon from '../../../assets/icons/arrow-left.svg';
 
 type SideBarProps = {
     setChannel: (channel: string) => void;
     availableChannels: string[];
+    currentChannel: string; // Add currentChannel prop
 };
 
-const SideBar = ({ setChannel, availableChannels }: SideBarProps) => {
+const SideBar = ({ setChannel, availableChannels, currentChannel }: SideBarProps) => {
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
     const [openSections, setOpenSections] = useState<Record<string, boolean>>({
         channels: true
@@ -27,16 +29,22 @@ const SideBar = ({ setChannel, availableChannels }: SideBarProps) => {
         }));
     };
 
+    const handleChannelSelect = (channel: string) => {
+        setChannel(channel);
+    };
+
     return (
         <div className={`${styles.sidebar} ${isSidebarOpen ? styles.open : styles.closed}`}>
             <div className={styles.mobileHeader}>
                 <button onClick={toggleSidebar} className={styles.mobileToggle}>
-                    {isSidebarOpen ? <FiX size={24} /> : <FiMenu size={24} />}
+                    {isSidebarOpen ? <img src={arrowLeftIcon} alt="Close menu" />
+                        : <img src={menuIcon} alt="Open menu" />
+                    }
                 </button>
             </div>
             <nav className={styles.nav}>
                 <div className={styles.sidebarHeader}>
-                    <FiSettings size={20} />
+                    <img src={settingsIcon} alt="Settings" />
                     <h3>Settings</h3>
                 </div>
                 <div className={styles.divider} />
@@ -60,8 +68,8 @@ const SideBar = ({ setChannel, availableChannels }: SideBarProps) => {
                             {availableChannels.map((channel) => (
                                 <li
                                     key={channel}
-                                    className={styles.subMenuItem}
-                                    onClick={() => setChannel(channel)}
+                                    className={`${styles.subMenuItem} ${currentChannel === channel ? styles.selected : ''}`}
+                                    onClick={() => handleChannelSelect(channel)}
                                 >
                                     {channel.charAt(0).toUpperCase() + channel.slice(1)}
                                 </li>
