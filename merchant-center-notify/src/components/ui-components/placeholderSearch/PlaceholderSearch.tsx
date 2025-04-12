@@ -44,9 +44,8 @@ const PlaceholderSearch = ({ curretnValue, templateData, onSelect, placeholder =
 
     const handleSelect = (placeholder: string) => {
         onSelect(placeholder);
-        setSearchTerm('');
+        setSearchTerm(placeholder)
         setIsDropdownOpen(false);
-        searchInputRef.current?.focus();
     };
 
     // Handle keyboard navigation

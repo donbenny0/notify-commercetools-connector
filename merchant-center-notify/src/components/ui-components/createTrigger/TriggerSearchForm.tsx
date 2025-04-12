@@ -8,6 +8,8 @@ import { fetchCurrentResourceData } from '../../../repository/fetchResouces.repo
 import MessageBox from '../messageBox/MessageBox';
 import PlaceholderSearch from '../placeholderSearch/PlaceholderSearch';
 import { updateMessageBodyHook } from '../../hooks/channel/updateChannel.hooks';
+import { ChannelConfigurationRequest } from '../../../interfaces/channel.interface';
+
 
 
 interface TriggerCategory {
@@ -25,9 +27,13 @@ interface TriggerInfo {
 
 type TriggerSearchFormProps = {
     channel: string;
+    channelConfigurations: ChannelConfigurationRequest;
+    setAddAddressClicked: () => void;
+
 };
 
-const TriggerSearchForm = ({ channel }: TriggerSearchFormProps) => {
+const TriggerSearchForm = ({ channel, channelConfigurations, setAddAddressClicked }: TriggerSearchFormProps) => {
+    const configuration = channelConfigurations;
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedTrigger, setSelectedTrigger] = useState<TriggerInfo | null>(null);
     const [messageBody, setMessageBody] = useState('');
@@ -40,6 +46,7 @@ const TriggerSearchForm = ({ channel }: TriggerSearchFormProps) => {
     const [selectedTemplateData, setSelectedTemplateData] = useState<any>({});
     const [sendToPath, setSendToPath] = useState('')
     const dispatch = useAsyncDispatch();
+
 
     useEffect(() => {
         const fetchTriggers = async () => {
@@ -106,7 +113,8 @@ const TriggerSearchForm = ({ channel }: TriggerSearchFormProps) => {
                         triggers: [
                             {
                                 triggerType: selectedTrigger.trigger,
-                                subscribedAt: new Date().toISOString()                            }
+                                subscribedAt: new Date().toISOString()
+                            }
                         ]
                     }
                 ]
@@ -154,49 +162,59 @@ const TriggerSearchForm = ({ channel }: TriggerSearchFormProps) => {
     const handlePlaceholderSelect = (placeholder: string) => {
         setSendToPath(placeholder);
     };
-
+    const isSenderIdPresent = configuration.sender_id
     return (
         <div className={styles.formContainer}>
             <div className={styles.formGroup}>
-                <div className={styles.searchContainer}>
-                    <label htmlFor="triggerSearch" className={styles.label}>
-                        Search Trigger
-                    </label>
-                    <input
-                        id="triggerSearch"
-                        type="text"
-                        value={searchTerm}
-                        onChange={(e) => {
-                            setSearchTerm(e.target.value);
-                            setShowDropdown(true);
-                        }}
-                        onFocus={() => setShowDropdown(true)}
-                        onBlur={handleInputBlur}
-                        className={styles.searchInput}
-                        placeholder="Type to search triggers..."
-                    />
+                {isSenderIdPresent && isSenderIdPresent === '' || !isSenderIdPresent ? (
+                    <div className={styles.showInfo}>
+                        <div className={styles.infoText}>
+                            <span className={styles.icon}>⚠️</span>
+                            <small>{`Sender's "From" address is not configured. Please set it before proceeding.`}</small>
+                        </div>
+                        <button onClick={setAddAddressClicked}>Add Address</button>
+                    </div>) : (
+                    <div className={styles.searchContainer}>
+                        <label htmlFor="triggerSearch" className={styles.label}>
+                            Search Trigger
+                        </label>
+                        <input
+                            id="triggerSearch"
+                            type="text"
+                            value={searchTerm}
+                            onChange={(e) => {
+                                setSearchTerm(e.target.value);
+                                setShowDropdown(true);
+                            }}
+                            onFocus={() => setShowDropdown(true)}
+                            onBlur={handleInputBlur}
+                            className={styles.searchInput}
+                            placeholder="Type to search triggers..."
+                        />
 
-                    {showDropdown && filteredTriggers.length > 0 && (
-                        <ul className={styles.dropdown} role="listbox">
-                            {filteredTriggers.map((triggerInfo, index) => (
-                                <li
-                                    key={`${triggerInfo.category}-${triggerInfo.trigger}-${index}`}
-                                    className={styles.dropdownItem}
-                                    onClick={() => handleTriggerSelect(triggerInfo)}
-                                    role="option"
-                                    aria-selected={selectedTrigger?.trigger === triggerInfo.trigger}
-                                >
-                                    <div className={styles.searchChild}>
-                                        <span>{triggerInfo.trigger}</span>
-                                        <small>
-                                            <strong>{triggerInfo.category}</strong>
-                                        </small>
-                                    </div>
-                                </li>
-                            ))}
-                        </ul>
-                    )}
-                </div>
+                        {showDropdown && filteredTriggers.length > 0 && (
+                            <ul className={styles.dropdown} role="listbox">
+                                {filteredTriggers.map((triggerInfo, index) => (
+                                    <li
+                                        key={`${triggerInfo.category}-${triggerInfo.trigger}-${index}`}
+                                        className={styles.dropdownItem}
+                                        onClick={() => handleTriggerSelect(triggerInfo)}
+                                        role="option"
+                                        aria-selected={selectedTrigger?.trigger === triggerInfo.trigger}
+                                    >
+                                        <div className={styles.searchChild}>
+                                            <span>{triggerInfo.trigger}</span>
+                                            <small>
+                                                <strong>{triggerInfo.category}</strong>
+                                            </small>
+                                        </div>
+                                    </li>
+                                ))}
+                            </ul>
+                        )}
+                    </div>
+
+                )}
 
                 {selectedTrigger && (
                     <div className={styles.templateSearchContainer}>
@@ -248,21 +266,23 @@ const TriggerSearchForm = ({ channel }: TriggerSearchFormProps) => {
             </div>
 
 
+            {isSenderIdPresent && (
+                <button
+                    onClick={(e) => {
+                        e.preventDefault();
+                        handleSubmit();
+                    }}
+                    className={styles.submitButton}
+                    disabled={!selectedTrigger || !messageBody || isLoading}
+                >
+                    {isLoading ? (
+                        <span className={styles.loadingIndicator}>Saving...</span>
+                    ) : (
+                        'Save'
+                    )}
+                </button>
+            )}
 
-            <button
-                onClick={(e) => {
-                    e.preventDefault();
-                    handleSubmit();
-                }}
-                className={styles.submitButton}
-                disabled={!selectedTrigger || !messageBody || isLoading}
-            >
-                {isLoading ? (
-                    <span className={styles.loadingIndicator}>Saving...</span>
-                ) : (
-                    'Save'
-                )}
-            </button>
         </div>
     );
 };

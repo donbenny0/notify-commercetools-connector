@@ -80,3 +80,8 @@ export function flattenObject(obj: any, prefix = ''): string[] {
         return [...acc, `${pre}${key}`];
     }, []);
 }
+
+
+
+// new parser
+

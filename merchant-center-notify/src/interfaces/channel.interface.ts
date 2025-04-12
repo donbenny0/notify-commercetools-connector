@@ -11,15 +11,15 @@ export interface ChannelConfigurationRequest {
     messageBody?: MessageBody;
 }
 
-export interface MessagingChannel {
-    configurations: ChannelConfigurationRequest;
-}
+
 
 export interface ChannelValue {
     [key: string]: {
         configurations: ChannelConfigurationRequest
     }
 }
+
+
 
 export interface ChannelInterfaceResponse {
     id: string;

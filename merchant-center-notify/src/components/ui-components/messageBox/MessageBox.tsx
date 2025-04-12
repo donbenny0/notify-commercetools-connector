@@ -1,8 +1,9 @@
 import { useState, useRef, useEffect } from 'react';
 import styles from './MessageBox.module.css';
-import { flattenObject } from '../../../utils/messageTemplate.utils';
+import { flattenObject, generateMessage } from '../../../utils/messageTemplate.utils';
 import addIconWhite from '../../../assets/icons/add-white.svg';
-
+import previewIcon from '../../../assets/icons/preview_icon_white.svg';
+import hidePreviewIcon from '../../../assets/icons/eye-hide.svg';
 interface MessageBoxProps {
     selectedTemplateData: any;
     messageBody: string;
@@ -16,7 +17,8 @@ const MessageBox = ({ selectedTemplateData, messageBody, onMessageChange }: Mess
     const [suggestionPosition, setSuggestionPosition] = useState({ top: 0, left: 0 });
     const [currentContext, setCurrentContext] = useState('');
     const textareaRef = useRef<HTMLTextAreaElement>(null);
-
+    const [preview, setPreview] = useState(false);
+    const [previewMessage, setPreviewMessage] = useState('')
     // Flatten the template data for suggestions
     useEffect(() => {
         if (selectedTemplateData && Object.keys(selectedTemplateData).length > 0) {
@@ -193,7 +195,7 @@ const MessageBox = ({ selectedTemplateData, messageBody, onMessageChange }: Mess
 
         if (!textareaRef.current) return;
 
-        const textarea = textareaRef.current;        
+        const textarea = textareaRef.current;
         const startPos = textarea.selectionStart;
         const endPos = textarea.selectionEnd;
         const currentValue = messageBody;
@@ -270,29 +272,56 @@ const MessageBox = ({ selectedTemplateData, messageBody, onMessageChange }: Mess
         }
     };
 
+    const handlePreviewButtonClick = (preview: boolean) => {
+        setPreview(!preview);
+        const previewMessage = generateMessage(selectedTemplateData, messageBody)
+        setPreviewMessage(previewMessage);
+    }
+
     return (
         <div className={styles.messageBoxContainer}>
             <label className={styles.label}>Message Template</label>
             <div className={styles.editorContainer}>
                 <div className={styles.messageEditorBox}>
-                    <button
-                        className={styles.varButton}
-                        onClick={handleVarButtonClick}
-                        type="button"
-                    >
-                        <img src={addIconWhite} alt="" />
-                        <span>Variables</span>
-                    </button>
-                    <textarea
-                        ref={textareaRef}
-                        value={messageBody}
-                        onChange={handleTextareaChange}
-                        onKeyDown={handleKeyDown}
-                        className={styles.editor}
-                        placeholder="Type your message here. Use {{}} to insert variables..."
-                        rows={8}
-                        spellCheck={false}
-                    />
+                    <div className={styles.messageBoxButtons}>
+                        {messageBody && (
+                            <button
+                                className={styles.previewButton}
+                                onClick={() => handlePreviewButtonClick(preview)}
+                                type="button"
+                            >
+
+                                <img src={preview ? hidePreviewIcon : previewIcon} alt="" />
+                                <span>{preview ? 'Hide Preview' : 'Show Preview'}</span>
+                            </button>
+                        )}
+                        <button
+                            className={styles.varButton}
+                            onClick={handleVarButtonClick}
+                            type="button"
+                        >
+                            <img src={addIconWhite} alt="" />
+                            <span>Insert variable</span>
+                        </button>
+                    </div>
+                    {preview ? (
+                        <div className={styles.previewContainer}>
+                            <span>{previewMessage}</span>
+                        </div>
+                    ) : (
+                        <textarea
+                            ref={textareaRef}
+                            value={messageBody}
+                            onChange={handleTextareaChange}
+                            onKeyDown={handleKeyDown}
+                            className={styles.editor}
+                            placeholder="Type your message here. Use {{}} to insert variables..."
+                            rows={8}
+                            spellCheck={false}
+                        />
+                    )}
+
+
                 </div>
 
                 {showSuggestions && (

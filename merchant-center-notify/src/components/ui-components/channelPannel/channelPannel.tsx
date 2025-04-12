@@ -5,7 +5,6 @@ import settingsIcon from '../../../assets/icons/settings_icon.svg';
 import addIcon from '../../../assets/icons/add-circle.svg';
 import closeIcon from '../../../assets/icons/close-circle.svg';
 import logIcon from '../../../assets/icons/logs.svg';
-import { FiBell, FiSettings, FiPlus, FiX, FiToggleLeft, FiToggleRight } from 'react-icons/fi';
 import TabBar from '../tabBar/TabBar';
 import styles from './channelPannel.module.css';
 import SubscriptionList from '../subscriptionList/SubscriptionList';
@@ -15,6 +14,7 @@ import Loader from '../loader';
 import TriggerSearchForm from '../createTrigger/TriggerSearchForm';
 import Logs from '../logs/Logs';
 import ChannelSettings from '../channelSettings/ChannelSettings';
+import { ChannelConfigurationRequest } from '../../../interfaces/channel.interface';
 
 type ChannelPannelProps = {
     channel: string;
@@ -27,6 +27,7 @@ const ChannelPannel = ({ channel }: ChannelPannelProps) => {
     const [messageData, setMessageData] = useState({});
     const [isLoading, setIsLoading] = useState(true);
     const [addSubscription, setAddSubscription] = useState(false);
+    const [channelData, setChannelData] = useState<ChannelConfigurationRequest>({})
     const dispatch = useAsyncDispatch();
 
     const tabs = [
@@ -49,6 +50,7 @@ const ChannelPannel = ({ channel }: ChannelPannelProps) => {
                 if (response?.value?.channels?.[channel]) {
                     setIsLoading(false);
                     setSubscriptions(response.value.channels[channel]);
+                    setChannelData(response.value.references.obj.value[channel].configurations)
                     const isEnabled = response.value.references?.obj?.value[channel]?.configurations?.isEnabled;
                     const messageBody = response.value.references?.obj?.value[channel]?.configurations?.messageBody;
 
@@ -79,6 +81,10 @@ const ChannelPannel = ({ channel }: ChannelPannelProps) => {
                 <Loader />
             </div>
         );
+    }
+    const handleSetAddAddressClicked = () => {
+        setAddSubscription(false);
+        setActiveTab('settings')
     }
 
     return (
@@ -134,7 +140,7 @@ const ChannelPannel = ({ channel }: ChannelPannelProps) => {
             <div className={styles.panelContent}>
                 {addSubscription ? (
                     <div className={styles.subscriptionForm}>
-                        <TriggerSearchForm channel={channel} />
+                        <TriggerSearchForm channel={channel} channelConfigurations={channelData} setAddAddressClicked={handleSetAddAddressClicked} />
                     </div>
                 ) : (
                     <>

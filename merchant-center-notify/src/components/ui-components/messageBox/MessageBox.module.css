@@ -128,6 +128,9 @@
 }
 
 .messageEditorBox {
+    display: flex;
+    gap: 5px;
+    flex-direction: column;
     padding: 2%
 }
 
@@ -139,7 +142,8 @@
     margin-right: 5px;
 }
 
-.varButton {
+.varButton,
+.previewButton {
     background-color: #2563eb;
     display: flex;
     align-items: center;

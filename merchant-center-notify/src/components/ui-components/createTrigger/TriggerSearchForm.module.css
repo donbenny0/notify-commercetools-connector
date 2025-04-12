@@ -12,6 +12,58 @@ body {
 
 }
 
+.showInfo {
+  width: 100%;
+  padding: 16px 24px;
+  background: linear-gradient(135deg, #e0f7fa, #b2ebf2);
+  margin-bottom: 16px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.infoText {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #01579b;
+  font-size: 14px;
+}
+
+.icon {
+  font-size: 18px;
+}
+
+.showInfo>button {
+  background-color: #6200ea;
+  padding: 8px 20px;
+  border: none;
+  color: white;
+  border-radius: 24px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.showInfo>button:hover {
+  background-color: #3700b3;
+}
 /* Form container with improved shadows and spacing */
 .formContainer {
   padding: 32px;
