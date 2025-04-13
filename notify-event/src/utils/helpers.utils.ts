@@ -50,7 +50,6 @@ export const generateRandomKey = (): string => {
 };
 
 
-
 export const parsePlaceholder = (data: object, template: string): string => {
     try {
         const placeholderRegex = /\{\{([^{}]+?)\}\}/g;
@@ -146,4 +145,60 @@ export function jsonToBase64(json: object): string {
     const jsonString = JSON.stringify(json);
     const base64 = Buffer.from(jsonString).toString('base64');
     return base64;
+}
+
+
+export async function decryptString(encryptedBase64: string, secretKey: string): Promise<string> {
+    try {
+        const encoder = new TextEncoder();
+
+        // Convert from base64
+        const binaryString = atob(encryptedBase64);
+        const combined = new Uint8Array(binaryString.length);
+        for (let i = 0; i < binaryString.length; i++) {
+            combined[i] = binaryString.charCodeAt(i);
+        }
+
+        // Extract salt (first 16 bytes), IV (next 12 bytes), and ciphertext
+        const salt = combined.slice(0, 16);
+        const iv = combined.slice(16, 28);
+        const ciphertext = combined.slice(28);
+
+        // Derive key using PBKDF2
+        const keyMaterial = await crypto.subtle.importKey(
+            'raw',
+            encoder.encode(secretKey),
+            { name: 'PBKDF2' },
+            false,
+            ['deriveKey']
+        );
+
+        const aesKey = await crypto.subtle.deriveKey(
+            {
+                name: 'PBKDF2',
+                salt: salt,
+                iterations: 100000,
+                hash: 'SHA-256'
+            },
+            keyMaterial,
+            { name: 'AES-GCM', length: 256 },
+            false,
+            ['decrypt']
+        );
+
+        // Decrypt
+        const decrypted = await crypto.subtle.decrypt(
+            {
+                name: 'AES-GCM',
+                iv: iv
+            },
+            aesKey,
+            ciphertext
+        );
+
+        return new TextDecoder().decode(decrypted);
+    } catch (error) {
+        logger.error('Decryption error:', error);
+        throw error;
+    }
 }

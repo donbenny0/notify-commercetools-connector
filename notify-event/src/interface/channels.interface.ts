@@ -3,6 +3,7 @@ import { MessageInstance } from "twilio/lib/rest/api/v2010/account/message";
 
 // Structure for each message template in a channel
 export interface MessageTemplate {
+    subject?: string,
     message: string;
     sendToPath: string;
 }
@@ -56,7 +57,9 @@ export interface ChannelInterfaceRequest {
 export interface ChannelHandler {
     sendMessage: (
         messageData: string,
-        recipient: string
+        senderAddress: string,
+        recipient: string,
+        subject?: string
     ) => Promise<MessageInstance> | Promise<[ClientResponse, object]>;
 }
 

@@ -45,6 +45,7 @@ const TriggerSearchForm = ({ channel, channelConfigurations, setAddAddressClicke
     const [selectedTemplate, setSelectedTemplate] = useState("");
     const [selectedTemplateData, setSelectedTemplateData] = useState<any>({});
     const [sendToPath, setSendToPath] = useState('')
+    const [subject, setSubject] = useState('')
     const dispatch = useAsyncDispatch();
 
 
@@ -103,6 +104,8 @@ const TriggerSearchForm = ({ channel, channelConfigurations, setAddAddressClicke
     }, [searchTerm, triggerData]);
 
     const handleSubmit = async () => {
+        console.log(subject);
+
         if (!selectedTrigger || !messageBody) return;
         setIsLoading(true);
         try {
@@ -123,6 +126,7 @@ const TriggerSearchForm = ({ channel, channelConfigurations, setAddAddressClicke
             await addSubscriptionHook(dispatch, channel, messageUpdatedBody);
             await updateMessageBodyHook(dispatch, channel, {
                 [selectedTrigger.trigger]: {
+                    subject: subject || '',
                     message: messageBody,
                     sendToPath: sendToPath
                 }
@@ -256,11 +260,16 @@ const TriggerSearchForm = ({ channel, channelConfigurations, setAddAddressClicke
                             placeholder="Search for variables to insert..."
                         />
                         <br />
+                        {channel === 'email' && (
+                            <MessageBox
+                                selectedTemplateData={selectedTemplateData}
+                                messageBody={subject}
+                                onMessageChange={setSubject} placeholder={"Type your subject here. Use {{}} to insert variables..."} title={'Add Subject'} />
+                        )}
                         <MessageBox
                             selectedTemplateData={selectedTemplateData}
                             messageBody={messageBody}
-                            onMessageChange={setMessageBody}
-                        />
+                            onMessageChange={setMessageBody} placeholder={"Type your message here. Use {{}} to insert variables..."} title={'Add message template'} />
                     </div>
                 )}
             </div>
@@ -276,7 +285,7 @@ const TriggerSearchForm = ({ channel, channelConfigurations, setAddAddressClicke
                     disabled={!selectedTrigger || !messageBody || isLoading}
                 >
                     {isLoading ? (
-                        <span className={styles.loadingIndicator}>Saving...</span>
+                        <span className={styles.loadingIndicator}></span>
                     ) : (
                         'Save'
                     )}

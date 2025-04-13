@@ -37,6 +37,8 @@ const ChannelPannel = ({ channel }: ChannelPannelProps) => {
     ];
 
     useEffect(() => {
+        let isMounted = true; // Track mounted state
+
         const fetchData = async () => {
             setIsLoading(true);
             try {
@@ -47,27 +49,38 @@ const ChannelPannel = ({ channel }: ChannelPannelProps) => {
                     'expand=value.references.channelReference'
                 );
 
-                if (response?.value?.channels?.[channel]) {
-                    setIsLoading(false);
-                    setSubscriptions(response.value.channels[channel]);
-                    setChannelData(response.value.references.obj.value[channel].configurations)
-                    const isEnabled = response.value.references?.obj?.value[channel]?.configurations?.isEnabled;
-                    const messageBody = response.value.references?.obj?.value[channel]?.configurations?.messageBody;
+                if (isMounted) { // Only update state if component is mounted
+                    if (response?.value?.channels?.[channel]) {
+                        setSubscriptions(response.value.channels[channel]);
+                        setChannelData(response.value.references.obj.value[channel].configurations || {});
+                        const isEnabled = response.value.references?.obj?.value[channel]?.configurations?.isEnabled || false;
+                        const messageBody = response.value.references?.obj?.value[channel]?.configurations?.messageBody || {};
 
-                    setIsChannelActive(isEnabled);
-                    setMessageData(messageBody);
-                } else {
+                        setIsChannelActive(isEnabled);
+                        setMessageData(messageBody);
+                    } else {
+                        // Set default empty values if no data found
+                        setSubscriptions({ subscriptions: [] });
+                        setChannelData({});
+                        setIsChannelActive(false);
+                        setMessageData({});
+                    }
                     setIsLoading(false);
-                    setSubscriptions([]);
-                    setIsChannelActive(false);
                 }
             } catch (error) {
-                console.error("Error fetching subscriptions:", error);
-                setIsLoading(false);
+                if (isMounted) {
+                    console.error("Error fetching subscriptions:", error);
+                    setSubscriptions({ subscriptions: [] });
+                    setIsLoading(false);
+                }
             }
         };
 
         fetchData();
+
+        return () => {
+            isMounted = false; // Cleanup function to set mounted to false
+        };
     }, [dispatch, channel]);
 
     const handleToggle = async (newState: boolean) => {

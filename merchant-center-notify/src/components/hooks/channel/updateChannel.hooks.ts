@@ -107,12 +107,17 @@ export const updateMessageBodyHook = async (
             // If the trigger doesn't exist, create it
             if (!response.value[channel].configurations.messageBody[key]) {
                 response.value[channel].configurations.messageBody[key] = {
+                    subject: '',
                     message: '',
                     sendToPath: ''
                 };
             }
 
             // Update the values
+            if (updateRequest[key].subject !== undefined) {
+                response.value[channel].configurations.messageBody[key].subject =
+                    updateRequest[key].subject;
+            }
             if (updateRequest[key].message !== undefined) {
                 response.value[channel].configurations.messageBody[key].message =
                     updateRequest[key].message;

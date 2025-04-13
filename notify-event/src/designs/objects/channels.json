@@ -8,10 +8,12 @@
                 "sender_id": "000000000000",
                 "messageBody": {
                     "OrderCreated": {
+                        "subject":"",
                         "message": "Hello, this is a test message from the WhatsApp channel",
                         "sendToPath": "shippingAddress.lastName"
                     },
                     "OrderUpdated": {
+                        "subject": "",
                         "message": "Hello, this is a test message from the WhatsApp channel",
                         "sendToPath": "shippingAddress.lastName"
                     }
@@ -24,10 +26,12 @@
                 "sender_id": "000000000000",
                 "messageBody": {
                     "OrderCreated": {
+                        "subject": "",
                         "message": "Hello, this is a test message from the WhatsApp channel",
                         "sendToPath": "shippingAddress.lastName"
                     },
                     "OrderUpdated": {
+                        "subject": "",
                         "message": "Hello, this is a test message from the WhatsApp channel",
                         "sendToPath": "shippingAddress.lastName"
                     }
@@ -40,10 +44,12 @@
                 "sender_id": "000000000000",
                 "messageBody": {
                     "OrderCreated": {
+                        "subject": "",
                         "message": "Hello, this is a test message from the WhatsApp channel",
                         "sendToPath": "shippingAddress.lastName"
                     },
                     "OrderUpdated": {
+                        "subject": "",
                         "message": "Hello, this is a test message from the WhatsApp channel",
                         "sendToPath": "shippingAddress.lastName"
                     }

@@ -53,10 +53,3 @@ inheritAs:
         - key: SENDGRID_API_KEY
           description: Sendgrid API key
           required: true
-    standardConfiguration:
-        - key: TWILIO_FROM_NUMBER
-          description: Twilio from number
-          required: true
-        - key: SENDGRID_SENDER_EMAIL_ID
-          description: Sendgrid sender email ID
-          required: true

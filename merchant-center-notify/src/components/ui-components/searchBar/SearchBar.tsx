@@ -1,36 +1,31 @@
-import React, { useState } from 'react';
-import styles from './SearchBar.module.css';
+import React from 'react';
+import styles from './searchBar.module.css';
 
-interface SearchBarProps {
+type SearchBarProps = {
+    searchTerm: string;
+    onSearchChange: (term: string) => void;
     placeholder?: string;
-    onSearch: (query: string) => void;
-}
+};
 
-const SearchBar: React.FC<SearchBarProps> = ({ placeholder = 'Search...', onSearch }) => {
-    const [query, setQuery] = useState('');
-
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setQuery(e.target.value);
-    };
-
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        onSearch(query);
-    };
-
+const SearchBar = ({ searchTerm, onSearchChange, placeholder = "Search..." }: SearchBarProps) => {
     return (
-        <form className={styles.searchContainer} onSubmit={handleSubmit}>
+        <div className={styles.searchContainer}>
             <input
                 type="text"
-                className={styles.searchInput}
+                value={searchTerm}
+                onChange={(e) => onSearchChange(e.target.value)}
                 placeholder={placeholder}
-                value={query}
-                onChange={handleInputChange}
+                className={styles.searchInput}
             />
-            <button type="submit" className={styles.searchButton}>
-                <i className="fas fa-search"></i>
-            </button>
-        </form>
+            {searchTerm && (
+                <button
+                    onClick={() => onSearchChange('')}
+                    className={styles.clearButton}
+                >
+                    ×
+                </button>
+            )}
+        </div>
     );
 };
 

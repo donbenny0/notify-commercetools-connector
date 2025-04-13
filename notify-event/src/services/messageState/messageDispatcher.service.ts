@@ -45,13 +45,10 @@ export const addNewMessageStateEntry = async (
 
 
         const channelsToSend = enabledChannels.filter((channel) => {
-            // fetch all subscriptions corresponding to the channel
             const channelSubscriptions = channelsAndSubscriptions.value.channels[channel]?.subscriptions || [];
-            // Check current channel has the subscription added.
             const hasTriggerType = channelSubscriptions.some(subscription =>
                 subscription.triggers.some(trigger => trigger.triggerType === message.type)
             );
-
             return hasTriggerType;
         });
 
@@ -104,7 +101,6 @@ export const processDeliveringMessage = async (
                 subscription.triggers.some(trigger => trigger.triggerType === message.type)
             );
 
-            // Increment retry count for channels that are being processed again
             if (channelState.isSent === "processing" || channelState.isSent === false) {
                 channelState.retry = retryCount + 1;
             }
@@ -166,7 +162,8 @@ const deliverMessages = async (
             if (!channelConfig) {
                 throw new GlobalError(`Configuration not found for channel: ${channel}`, '400');
             }
-
+            const senderAddress = channelConfig.configurations.sender_id;
+            const rawSubject = channelConfig.configurations.messageBody?.[message.type]?.subject || ''
             const recipientPath = channelConfig.configurations.messageBody?.[message.type]?.sendToPath;
             const messageBodyPath = channelConfig.configurations.messageBody?.[message.type]?.message;
 
@@ -175,6 +172,7 @@ const deliverMessages = async (
             }
 
             const generatedMessageBody = parsePlaceholder(currentResource, messageBodyPath);
+            const subject = parsePlaceholder(currentResource, rawSubject) || '';
             const recipient = parsePlaceholder(currentResource, `{{${recipientPath}}}`);
 
             if (!generatedMessageBody) {
@@ -188,7 +186,7 @@ const deliverMessages = async (
             // Mark as processing before attempting to send
             channelState.isSent = "processing";
 
-            await handler.sendMessage(generatedMessageBody, recipient);
+            await handler.sendMessage(generatedMessageBody, senderAddress, recipient, subject);
 
             // Update state only after successful send
             channelState.isSent = true;
@@ -218,7 +216,7 @@ const deliverMessages = async (
             await addProcessLog(
                 message.id,
                 channel,
-                "", // recipient might not be available
+                "",
                 {
                     message: errorMessage,
                     statusCode: errorStatusCode.toString(),

@@ -45,7 +45,7 @@ const SideBar = ({ setChannel, availableChannels, currentChannel }: SideBarProps
             <nav className={styles.nav}>
                 <div className={styles.sidebarHeader}>
                     <img src={settingsIcon} alt="Settings" />
-                    <h3>Manage Notifications</h3>
+                    <h3>Manage Notify</h3>
                 </div>
                 <div className={styles.divider} />
                 <ul className={styles.menuList}>

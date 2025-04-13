@@ -1,5 +1,6 @@
 export interface MessageBody {
     [key: string]: {
+        subject?: string,
         message: string;
         sendToPath: string;
     };

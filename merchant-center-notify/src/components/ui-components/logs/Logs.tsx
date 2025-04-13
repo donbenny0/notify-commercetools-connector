@@ -4,7 +4,6 @@ import { fetchAllCustomObjectsRepository, fetchCustomObjectsCount } from '../../
 import { useAsyncDispatch } from '@commercetools-frontend/sdk';
 import React from 'react';
 
-// Type definitions (keep your existing types)
 type ProcessLog = {
     message: string;
     statusCode: number;
@@ -15,79 +14,78 @@ type ChannelData = {
     isSent: boolean;
     lastProcessedDate: string;
     recipient: string;
-    processLogs: ProcessLog[];
+    processLogs?: ProcessLog[]; // Made optional
 };
 
 type MessageData = {
-    notificationType: string;
-    projectKey: string;
-    id: string;
-    version: number;
-    sequenceNumber: number;
-    resource: {
-        typeId: string;
-        id: string;
+    notificationType?: string;
+    projectKey?: string;
+    id?: string;
+    version?: number;
+    sequenceNumber?: number;
+    resource?: {
+        typeId?: string;
+        id?: string;
     };
-    resourceVersion: number;
-    type: string;
+    resourceVersion?: number;
+    type?: string;
     shipmentState?: string;
     oldShipmentState?: string;
-    createdAt: string;
-    lastModifiedAt: string;
-    createdBy: {
-        isPlatformClient: boolean;
+    createdAt?: string;
+    lastModifiedAt?: string;
+    createdBy?: {
+        isPlatformClient?: boolean;
         user?: {
-            typeId: string;
-            id: string;
+            typeId?: string;
+            id?: string;
         };
     };
-    lastModifiedBy: {
-        isPlatformClient: boolean;
+    lastModifiedBy?: {
+        isPlatformClient?: boolean;
         user?: {
-            typeId: string;
-            id: string;
+            typeId?: string;
+            id?: string;
         };
     };
 };
 
 type LogItem = {
     id: string;
-    version: number;
+    version?: number;
     versionModifiedAt?: string;
-    createdAt: string;
-    lastModifiedAt: string;
+    createdAt?: string;
+    lastModifiedAt?: string;
     container?: string;
     key?: string;
     value: {
         message: string;
-        channels: {
-            whatsapp?: ChannelData;
-            email?: ChannelData;
-            sms?: ChannelData;
+        channels?: {
             [key: string]: ChannelData | undefined;
         };
     };
-    decodedMessage?: MessageData;
+    decodedMessage?: MessageData | null;
 };
 
 type LogsProps = {
     channel: string;
 };
 
-// Helper functions (keep your existing helpers)
 const getStatusColor = (isSent: boolean, lastLog?: ProcessLog) => {
-    if (!isSent) return '#dc3545'; // Red for failed
-    if (!lastLog) return '#6c757d'; // Gray if no logs
-
-    if (lastLog.statusCode >= 200 && lastLog.statusCode < 300) return '#28a745'; // Green for success
-    if (lastLog.statusCode >= 400 && lastLog.statusCode < 500) return '#ffc107'; // Yellow for client errors
-    return '#dc3545'; // Red for server errors
+    if (!isSent) return '#dc3545';
+    if (!lastLog) return '#6c757d';
+    if (lastLog.statusCode >= 200 && lastLog.statusCode < 300) return '#28a745';
+    if (lastLog.statusCode >= 400 && lastLog.statusCode < 500) return '#ffc107';
+    return '#dc3545';
 };
 
-
-const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleString();
+const formatDate = (dateString?: string) => {
+    if (!dateString) return 'N/A';
+    try {
+        const date = new Date(dateString);
+        return date.toLocaleString();
+    } catch {
+        return 'Invalid date';
+    }
 };
 
 const decodeBase64Message = (base64String: string): MessageData | null => {
@@ -101,13 +99,22 @@ const decodeBase64Message = (base64String: string): MessageData | null => {
 };
 
 const processLogsForChannel = (response: any, channel: string): LogItem[] => {
-    const results = response.results ? response.results : response;
+    if (!response) return [];
+
+    const results = Array.isArray(response.results) ? response.results :
+        Array.isArray(response) ? response : [];
+
     return results
+        .filter((item: any) => item?.value?.message)
         .map((item: any) => ({
             ...item,
             decodedMessage: decodeBase64Message(item.value.message),
+            value: {
+                ...item.value,
+                channels: item.value.channels || {}
+            }
         }))
-        .filter((item: LogItem) => item.value.channels && item.value.channels[channel] !== undefined);
+        .filter((item: LogItem) => item.value.channels && item.value.channels[channel]);
 };
 
 const ChannelLogs = ({ channel }: LogsProps) => {
@@ -122,20 +129,21 @@ const ChannelLogs = ({ channel }: LogsProps) => {
         total: 0,
     });
 
-    const fetchData = React.useCallback(async () => {
+    const fetchData = async () => {
         setIsLoading(true);
         setError(null);
 
         try {
             // Fetch count first
-            const total = await fetchCustomObjectsCount(dispatch, 'notify-messagelogs');
+            const total = await fetchCustomObjectsCount(dispatch, 'notify-messagelogs') || 0;
 
             // Then fetch paginated data
             const offset = (pagination.page - 1) * pagination.pageSize;
-            const response = await fetchAllCustomObjectsRepository(dispatch, 'notify-messagelogs', {
-                limit: pagination.pageSize,
-                offset,
-            });
+            const response = await fetchAllCustomObjectsRepository(
+                dispatch,
+                'notify-messagelogs',
+                { limit: pagination.pageSize, offset }
+            );
 
             const processedData = processLogsForChannel(response, channel);
             setLogData(processedData);
@@ -146,21 +154,35 @@ const ChannelLogs = ({ channel }: LogsProps) => {
         } catch (error) {
             console.error('Error fetching data:', error);
             setError('Failed to load logs. Please try again later.');
+            setLogData([]);
+            setPagination(prev => ({ ...prev, total: 0 }));
         } finally {
             setIsLoading(false);
         }
-    }, [dispatch, channel, pagination.page, pagination.pageSize]);
+    };
 
     useEffect(() => {
-        fetchData();
-    }, [fetchData]);
+        let isMounted = true;
+
+        const loadData = async () => {
+            await fetchData();
+        };
+
+        if (isMounted) {
+            loadData();
+        }
+
+        return () => {
+            isMounted = false;
+        };
+    }, [dispatch, channel, pagination.page, pagination.pageSize]);
 
     const toggleRow = (id: string) => {
         setExpandedRow(expandedRow === id ? null : id);
     };
 
     const getChannelData = (item: LogItem): ChannelData | undefined => {
-        return item.value.channels[channel];
+        return item.value.channels?.[channel];
     };
 
     const handlePageChange = (newPage: number) => {
@@ -172,7 +194,7 @@ const ChannelLogs = ({ channel }: LogsProps) => {
         setPagination(prev => ({ ...prev, pageSize: newSize, page: 1 }));
     };
 
-    const totalPages = Math.ceil(pagination.total / pagination.pageSize);
+    const totalPages = Math.max(1, Math.ceil(pagination.total / pagination.pageSize));
 
     if (isLoading) {
         return <div className={styles.container}>Loading logs...</div>;
@@ -188,7 +210,6 @@ const ChannelLogs = ({ channel }: LogsProps) => {
 
     return (
         <div className={styles.container}>
-
             <table className={styles.table}>
                 <thead>
                     <tr>
@@ -211,7 +232,7 @@ const ChannelLogs = ({ channel }: LogsProps) => {
                             <React.Fragment key={item.id}>
                                 <tr onClick={() => toggleRow(item.id)} className={styles.clickableRow}>
                                     <td>{decodedMessage?.type || 'N/A'}</td>
-                                    <td>{decodedMessage?.resource.typeId || 'N/A'}</td>
+                                    <td>{decodedMessage?.resource?.typeId || 'N/A'}</td>
                                     <td>{formatDate(channelData.lastProcessedDate)}</td>
                                     <td>
                                         <span style={{
@@ -224,7 +245,7 @@ const ChannelLogs = ({ channel }: LogsProps) => {
                                         }} />
                                         {channelData.isSent ? 'Delivered' : 'Failed'}
                                     </td>
-                                    <td>{channelData.recipient}</td>
+                                    <td>{channelData.recipient || 'N/A'}</td>
                                 </tr>
                                 {expandedRow === item.id && (
                                     <tr className={styles.expandedRow}>
@@ -232,27 +253,31 @@ const ChannelLogs = ({ channel }: LogsProps) => {
                                             <div className={styles.expandedContent}>
                                                 <h4>Process Logs</h4>
                                                 <div className={styles.logsContainer}>
-                                                    {channelData.processLogs.map((log, index) => (
-                                                        <div key={`${item.id}-log-${index}`} className={styles.logEntry}>
-                                                            <div className={styles.logHeader}>
-                                                                <span
-                                                                    className={styles.logStatus}
-                                                                    style={{
-                                                                        backgroundColor:
-                                                                            log.statusCode >= 200 && log.statusCode < 300
-                                                                                ? '#28a745'
-                                                                                : log.statusCode >= 400 && log.statusCode < 500
-                                                                                    ? '#ffc107'
-                                                                                    : '#dc3545',
-                                                                    }}
-                                                                >
-                                                                    {log.statusCode}
-                                                                </span>
-                                                                <span className={styles.logTime}>{formatDate(log.createdAt)}</span>
+                                                    {channelData.processLogs?.length ? (
+                                                        channelData.processLogs.map((log, index) => (
+                                                            <div key={`${item.id}-log-${index}`} className={styles.logEntry}>
+                                                                <div className={styles.logHeader}>
+                                                                    <span
+                                                                        className={styles.logStatus}
+                                                                        style={{
+                                                                            backgroundColor:
+                                                                                log.statusCode >= 200 && log.statusCode < 300
+                                                                                    ? '#28a745'
+                                                                                    : log.statusCode >= 400 && log.statusCode < 500
+                                                                                        ? '#ffc107'
+                                                                                        : '#dc3545',
+                                                                        }}
+                                                                    >
+                                                                        {log.statusCode}
+                                                                    </span>
+                                                                    <span className={styles.logTime}>{formatDate(log.createdAt)}</span>
+                                                                </div>
+                                                                <div className={styles.logMessage}>{log.message}</div>
                                                             </div>
-                                                            <div className={styles.logMessage}>{log.message}</div>
-                                                        </div>
-                                                    ))}
+                                                        ))
+                                                    ) : (
+                                                        <div className={styles.logEntry}>No process logs available</div>
+                                                    )}
                                                 </div>
 
                                                 <h4>Message Details</h4>
@@ -260,16 +285,16 @@ const ChannelLogs = ({ channel }: LogsProps) => {
                                                     {decodedMessage ? (
                                                         <>
                                                             <div>
-                                                                <strong>Notification Type:</strong> {decodedMessage.notificationType}
+                                                                <strong>Notification Type:</strong> {decodedMessage.notificationType || 'N/A'}
                                                             </div>
                                                             <div>
-                                                                <strong>Project Key:</strong> {decodedMessage.projectKey}
+                                                                <strong>Project Key:</strong> {decodedMessage.projectKey || 'N/A'}
                                                             </div>
                                                             <div>
-                                                                <strong>Resource ID:</strong> {decodedMessage.resource.id}
+                                                                <strong>Resource ID:</strong> {decodedMessage.resource?.id || 'N/A'}
                                                             </div>
                                                             <div>
-                                                                <strong>Resource Type:</strong> {decodedMessage.resource.typeId}
+                                                                <strong>Resource Type:</strong> {decodedMessage.resource?.typeId || 'N/A'}
                                                             </div>
                                                             <div>
                                                                 <strong>Created At:</strong> {formatDate(decodedMessage.createdAt)}
@@ -298,7 +323,7 @@ const ChannelLogs = ({ channel }: LogsProps) => {
                         onChange={handlePageSizeChange}
                         disabled={isLoading}
                     >
-                        <option value={10}>5</option>
+                        <option value={5}>5</option>
                         <option value={20}>20</option>
                         <option value={50}>50</option>
                         <option value={100}>100</option>
@@ -313,7 +338,7 @@ const ChannelLogs = ({ channel }: LogsProps) => {
                         «
                     </button>
                     <button
-                        onClick={() => handlePageChange(pagination.page - 1)}
+                        onClick={() => handlePageChange(Math.max(1, pagination.page - 1))}
                         disabled={pagination.page === 1 || isLoading}
                     >
                         ‹
@@ -324,7 +349,7 @@ const ChannelLogs = ({ channel }: LogsProps) => {
                     </span>
 
                     <button
-                        onClick={() => handlePageChange(pagination.page + 1)}
+                        onClick={() => handlePageChange(Math.min(totalPages, pagination.page + 1))}
                         disabled={pagination.page >= totalPages || isLoading}
                     >
                         ›
@@ -341,7 +366,6 @@ const ChannelLogs = ({ channel }: LogsProps) => {
                     Total: {pagination.total} items
                 </div>
             </div>
-
         </div>
     );
 };

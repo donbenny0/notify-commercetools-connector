@@ -121,8 +121,7 @@ const EditSubscription = ({ resourceType, messageBody, channel, triggerName }: E
                     <MessageBox
                         selectedTemplateData={selectedTemplateData}
                         messageBody={messageBodyValue}
-                        onMessageChange={setMessageBodyValue}
-                    />
+                        onMessageChange={setMessageBodyValue} placeholder={"Type your message here. Use {{}} to insert variables..."} title={"Edit template"} />
                     <br />
                     <button
                         onClick={(e) => {

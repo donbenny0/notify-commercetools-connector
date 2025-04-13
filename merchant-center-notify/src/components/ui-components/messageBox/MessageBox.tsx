@@ -7,10 +7,12 @@ import hidePreviewIcon from '../../../assets/icons/eye-hide.svg';
 interface MessageBoxProps {
     selectedTemplateData: any;
     messageBody: string;
+    placeholder: string;
+    title: string;
     onMessageChange: (value: string) => void;
 }
 
-const MessageBox = ({ selectedTemplateData, messageBody, onMessageChange }: MessageBoxProps) => {
+const MessageBox = ({ selectedTemplateData, messageBody, placeholder, title, onMessageChange }: MessageBoxProps) => {
     const [suggestions, setSuggestions] = useState<string[]>([]);
     const [activeSuggestion, setActiveSuggestion] = useState(0);
     const [showSuggestions, setShowSuggestions] = useState(false);
@@ -280,7 +282,7 @@ const MessageBox = ({ selectedTemplateData, messageBody, onMessageChange }: Mess
 
     return (
         <div className={styles.messageBoxContainer}>
-            <label className={styles.label}>Message Template</label>
+            <label className={styles.label}>{title}</label>
             <div className={styles.editorContainer}>
                 <div className={styles.messageEditorBox}>
                     <div className={styles.messageBoxButtons}>
@@ -317,7 +319,7 @@ const MessageBox = ({ selectedTemplateData, messageBody, onMessageChange }: Mess
                             onChange={handleTextareaChange}
                             onKeyDown={handleKeyDown}
                             className={styles.editor}
-                            placeholder="Type your message here. Use {{}} to insert variables..."
+                            placeholder={placeholder}
                             rows={8}
                             spellCheck={false}
                         />
