@@ -2,6 +2,7 @@ import { PubsubMessageBody } from "./pubsub.interface";
 
 
 interface ChannelStatus {
+    retry: number,
     isSent: "processing" | boolean;
 }
 

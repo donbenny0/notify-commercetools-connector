@@ -295,14 +295,16 @@ const MessageBox = ({ selectedTemplateData, messageBody, onMessageChange }: Mess
                                 <span>{preview ? 'Hide Preview' : 'Show Preview'}</span>
                             </button>
                         )}
-                        <button
-                            className={styles.varButton}
-                            onClick={handleVarButtonClick}
-                            type="button"
-                        >
-                            <img src={addIconWhite} alt="" />
-                            <span>Insert variable</span>
-                        </button>
+                        {!preview && (
+                            <button
+                                className={styles.varButton}
+                                onClick={handleVarButtonClick}
+                                type="button"
+                            >
+                                <img src={addIconWhite} alt="" />
+                                <span>Insert variable</span>
+                            </button>
+                        )}
                     </div>
                     {preview ? (
                         <div className={styles.previewContainer}>

@@ -5,12 +5,15 @@
     "value": {
         "channelsProcessed": {
             "whatsapp": {
+                "retry": 1,
                 "isSent": "processing"
             },
             "email": {
+                "retry": 1,
                 "isSent": true
             },
             "sms": {
+                "retry": 1,
                 "isSent": false
             }
         },
