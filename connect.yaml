@@ -38,3 +38,19 @@ deployAs:
         - key: TWILIO_FROM_NUMBER
           description: Twilio from number
           required: true
+  - name: mc-app
+    applicationType: merchant-center-custom-application
+    configuration:
+      standardConfiguration:
+        - key: CUSTOM_APPLICATION_ID
+          description: the Custom Application ID
+          required: true
+        - key: CLOUD_IDENTIFIER
+          description: The cloud identifier
+          default: 'gcp-eu'
+        - key: ENTRY_POINT_URI_PATH
+          description: The Application entry point URI path
+          required: true
+        - key: TWILIO_ACCOUNT_SID
+          description: Twilio account SID
+          required: true
