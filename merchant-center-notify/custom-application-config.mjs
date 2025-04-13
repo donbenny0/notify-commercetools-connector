@@ -4,7 +4,7 @@ import { PERMISSIONS } from './src/constants';
  * @type {import('@commercetools-frontend/application-config').ConfigOptionsForCustomApplication}
  */
 const config = {
-  name: 'Notifications',
+  name: 'Notify',
   entryPointUriPath: '${env:ENTRY_POINT_URI_PATH}',
   cloudIdentifier: '${env:CLOUD_IDENTIFIER}',
   env: {
@@ -61,18 +61,10 @@ const config = {
   },
   icon: '${path:@commercetools-frontend/assets/application-icons/bell.svg}',
   mainMenuLink: {
-    defaultLabel: 'Notifications',
+    defaultLabel: 'Notify',
     labelAllLocales: [],
     permissions: [PERMISSIONS.View],
   },
-  submenuLinks: [
-    {
-      uriPath: 'settings',
-      defaultLabel: 'Notification settings',
-      labelAllLocales: [],
-      permissions: [PERMISSIONS.View],
-    },
-  ],
 };
 
 export default config;

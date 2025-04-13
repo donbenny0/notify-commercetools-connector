@@ -237,7 +237,7 @@ const SubscriptionList = ({ subscriptionList, channel, messageData }: Subscripti
                     ) : (
                         <tr>
                             <td colSpan={4} className={styles.noResults}>
-                                No subscriptions match your search/filters.
+                               No subscriptions found.
                             </td>
                         </tr>
                     )}
