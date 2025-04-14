@@ -38,7 +38,7 @@ deployAs:
         - key: TWILIO_FROM_NUMBER
           description: Twilio from number
           required: true
-  - name: mc-app
+  - name: mc-notify
     applicationType: merchant-center-custom-application
     configuration:
       standardConfiguration:
