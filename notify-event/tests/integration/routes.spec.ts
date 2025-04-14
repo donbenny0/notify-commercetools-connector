@@ -15,14 +15,30 @@ jest.mock('../../src/utils/config.utils.ts', () => ({
       CTP_REGION: "region"
   })
 }));
-jest.mock('../../src/utils/twilio.utils', () => ({
-  readConfiguration: jest.fn().mockReturnValue({
-      TWILIO_ACCOUNT_SID: 'sid',
-      TWILIO_AUTH_TOKEN: 'auth-token',
-      TWILIO_FROM_NUMBER: 'from-number',
-      CUSTOM_MESSAGE_TEMPLATE:"Hello {{shippingAddress.firstName}},\n\n your order #{{id}} has been confirmed! Total rates: {{taxedPrice.taxPortions[*].rate}}."
-  })
-}));
+
+// Mock Twilio client
+jest.mock('twilio', () => {
+  return jest.fn().mockImplementation(() => ({
+    messages: {
+      create: jest.fn().mockResolvedValue({ sid: 'mock-message-sid' })
+    }
+  }));
+});
+
+
+beforeAll(() => {
+  // Set up environment variables needed for the tests
+  process.env.TWILIO_ACCOUNT_SID = 'mock-account-sid';
+  process.env.TWILIO_AUTH_TOKEN = 'mock-auth-token';
+  process.env.SENDGRID_API_KEY = 'SG.mock-sendgrid-key';
+});
+
+
+beforeEach(() => {
+  jest.clearAllMocks();
+})
+
+
 describe('Testing router', () => {
   beforeEach(() => {
     (readConfiguration as jest.Mock).mockClear();
