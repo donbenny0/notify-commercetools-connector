@@ -1,7 +1,7 @@
 import { logger } from "@commercetools-frontend/application-shell-connectors";
-import { RemoveSubscriptionRequestInterface } from "../../../interfaces/subscription.interface";
-import { fetchCustomObjectRepository, updateCustomObjectRepository } from "../../../repository/customObject.repository";
-import { deleteCommerceToolsSubscriptionRepository, updateCommerceToolsSubscriptionRepository } from "../../../repository/subscription.repository";
+import { RemoveSubscriptionRequestInterface } from "../../interfaces/subscription.interface";
+import { fetchCustomObjectRepository, updateCustomObjectRepository } from "../../repository/customObject.repository";
+import { deleteCommerceToolsSubscriptionRepository, updateCommerceToolsSubscriptionRepository } from "../../repository/subscription.repository";
 
 export const removeSubscriptionHook = async (dispatch: any, removeSubscriptionInterface: RemoveSubscriptionRequestInterface) => {
     try {

@@ -1,4 +1,4 @@
-import { fetchCustomObjectRepository } from "../../../repository/customObject.repository";
+import { fetchCustomObjectRepository } from "../../repository/customObject.repository";
 
 
 

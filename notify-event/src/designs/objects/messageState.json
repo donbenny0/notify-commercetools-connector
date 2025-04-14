@@ -17,7 +17,7 @@
                 "isSent": false
             }
         },
-        "messsage": {
+        "message": {
             "notificationType": "Message",
             "projectKey": "ayata-connectors",
             "id": "72bdda14-b87b-481e-8f17-751f6433d906",
@@ -28,7 +28,7 @@
                 "id": "9bda752a-447a-47e6-bbc7-07dac970ecb8"
             },
             "resourceVersion": 18,
-            "type": "OrderShipmentStateChanged",
+            "type": "OrderCreated",
             "shipmentState": "Pending",
             "oldShipmentState": "Ready",
             "createdAt": "2025-03-21T09:21:14.174Z",

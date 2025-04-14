@@ -1,14 +1,14 @@
-import { useState, useEffect } from 'react';
-import styles from './TriggerSearchForm.module.css';
-import { fetchCustomObjectRepository } from '../../../repository/customObject.repository';
 import { useAsyncDispatch } from '@commercetools-frontend/sdk';
+import { useEffect, useState } from 'react';
+import { updateMessageBodyHook } from '../../../hooks/channel/updateChannel.hooks';
+import { addSubscriptionHook } from '../../../hooks/subscription/addSubscription.hooks';
+import { ChannelConfigurationRequest } from '../../../interfaces/channel.interface';
 import { ChannelSubscriptions } from '../../../interfaces/subscription.interface';
-import { addSubscriptionHook } from '../../hooks/subscription/addSubscription.hooks';
+import { fetchCustomObjectRepository } from '../../../repository/customObject.repository';
 import { fetchCurrentResourceData } from '../../../repository/fetchResouces.repository';
 import MessageBox from '../messageBox/MessageBox';
 import PlaceholderSearch from '../placeholderSearch/PlaceholderSearch';
-import { updateMessageBodyHook } from '../../hooks/channel/updateChannel.hooks';
-import { ChannelConfigurationRequest } from '../../../interfaces/channel.interface';
+import styles from './TriggerSearchForm.module.css';
 
 
 

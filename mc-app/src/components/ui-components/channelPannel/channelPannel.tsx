@@ -1,20 +1,20 @@
-import { useEffect, useState } from 'react';
 import { useAsyncDispatch } from '@commercetools-frontend/sdk';
-import bellIcon from '../../../assets/icons/bell-24.png';
-import settingsIcon from '../../../assets/icons/settings_icon.svg';
+import { useEffect, useState } from 'react';
 import addIcon from '../../../assets/icons/add-circle.svg';
+import bellIcon from '../../../assets/icons/bell-24.png';
 import closeIcon from '../../../assets/icons/close-circle.svg';
 import logIcon from '../../../assets/icons/logs.svg';
+import settingsIcon from '../../../assets/icons/settings_icon.svg';
+import { toggleChannelStatusHook } from '../../../hooks/channel/updateChannel.hooks';
+import { ChannelConfigurationRequest } from '../../../interfaces/channel.interface';
+import { fetchCustomObjectQueryRepository } from '../../../repository/customObject.repository';
+import ChannelSettings from '../channelSettings/ChannelSettings';
+import TriggerSearchForm from '../createTrigger/TriggerSearchForm';
+import Loader from '../loader';
+import Logs from '../logs/Logs';
+import SubscriptionList from '../subscriptionList/SubscriptionList';
 import TabBar from '../tabBar/TabBar';
 import styles from './channelPannel.module.css';
-import SubscriptionList from '../subscriptionList/SubscriptionList';
-import { fetchCustomObjectQueryRepository } from '../../../repository/customObject.repository';
-import { toggleChannelStatusHook } from '../../hooks/channel/updateChannel.hooks';
-import Loader from '../loader';
-import TriggerSearchForm from '../createTrigger/TriggerSearchForm';
-import Logs from '../logs/Logs';
-import ChannelSettings from '../channelSettings/ChannelSettings';
-import { ChannelConfigurationRequest } from '../../../interfaces/channel.interface';
 
 type ChannelPannelProps = {
     channel: string;

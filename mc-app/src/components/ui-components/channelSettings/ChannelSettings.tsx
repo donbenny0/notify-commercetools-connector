@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from 'react';
-import styles from './ChannelSettings.module.css';
-import { decryptString, encryptString, isPhoneNumberValid, validateEmail } from '../../../helpers';
-import { updateSenderId } from '../../hooks/channel/updateChannel.hooks';
-import { useAsyncDispatch } from '@commercetools-frontend/sdk';
 import { useApplicationContext } from '@commercetools-frontend/application-shell-connectors';
-import { fetchCustomObjectRepository } from '../../../repository/customObject.repository';
+import { useAsyncDispatch } from '@commercetools-frontend/sdk';
+import React, { useEffect, useState } from 'react';
+import { decryptString, encryptString, isPhoneNumberValid, validateEmail } from '../../../helpers';
+import { updateSenderId } from '../../../hooks/channel/updateChannel.hooks';
 import { ChannelInterfaceResponse } from '../../../interfaces/channel.interface';
+import { fetchCustomObjectRepository } from '../../../repository/customObject.repository';
+import styles from './ChannelSettings.module.css';
 
 interface ChannelSettingsProps {
     channel: string;

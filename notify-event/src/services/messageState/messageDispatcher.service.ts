@@ -11,7 +11,7 @@ import { PubsubMessageBody } from "../../interface/pubsub.interface";
 import { addProcessLog } from "../logs/addLogs.service";
 import GlobalError from "../../errors/global.error";
 
-const handlers: Record<string, ChannelHandler> = {
+export const handlers: Record<string, ChannelHandler> = {
     sms: smsHandler,
     whatsapp: whatsappHandler,
     email: emailHandler
@@ -19,12 +19,12 @@ const handlers: Record<string, ChannelHandler> = {
 
 type ChannelProcessingStatus = "processing" | boolean;
 
-interface ChannelProcessingState {
+export interface ChannelProcessingState {
     isSent: ChannelProcessingStatus;
     retry: number;
 }
 
-const getChannelHandler = (channel: string): ChannelHandler => {
+export const getChannelHandler = (channel: string): ChannelHandler => {
     const handler = handlers[channel];
     if (!handler) {
         throw new GlobalError(`No handler found for channel: ${channel}`, '400');
@@ -72,6 +72,7 @@ export const addNewMessageStateEntry = async (
 
         const newMessageStateResponse = await updateCustomObjectRepository(newMessageState);
         await processDeliveringMessage(newMessageStateResponse, channelsAndSubscriptions, message);
+        return newMessageState;
     } catch (error) {
         logger.error(`Error in addNewMessageStateEntry for message ${message.id}:`, error);
         throw error;
@@ -139,13 +140,13 @@ export const processDeliveringMessage = async (
     }
 };
 
-const checkAllChannelsCompleted = (messageState: MessageStateResponse): boolean => {
+export const checkAllChannelsCompleted = (messageState: MessageStateResponse): boolean => {
     return Object.values(messageState.value.channelsProcessed).every(
         channelState => channelState.isSent === true
     );
 };
 
-const deliverMessages = async (
+export const deliverMessages = async (
     currentMessageState: MessageStateResponse,
     channelsToSend: string[],
     channels: ChannelInterfaceResponse,
@@ -157,9 +158,10 @@ const deliverMessages = async (
         try {
             const handler = getChannelHandler(channel);
             const channelConfig = channels.value[channel];
+            
             const channelState = currentMessageState.value.channelsProcessed[channel];
 
-            if (!channelConfig) {
+            if (!channelConfig.configurations) {
                 throw new GlobalError(`Configuration not found for channel: ${channel}`, '400');
             }
             const senderAddress = channelConfig.configurations.sender_id;
@@ -174,6 +176,9 @@ const deliverMessages = async (
             const generatedMessageBody = parsePlaceholder(currentResource, messageBodyPath);
             const subject = parsePlaceholder(currentResource, rawSubject) || '';
             const recipient = parsePlaceholder(currentResource, `{{${recipientPath}}}`);
+            if (!recipient) {
+                throw new GlobalError(`Invalid receiver address for channel ${channel} and type ${message.type}`, '400');
+            }
 
             if (!generatedMessageBody) {
                 throw new GlobalError(`Failed to generate message body for channel ${channel}`, '400');

@@ -1,6 +1,6 @@
-import { ChannelConfigurationRequest, MessagingChannel, MessageBody } from "../../../interfaces/channel.interface";
-import { CreateCustomObjectInterface } from "../../../interfaces/customObject.interface";
-import { fetchCustomObjectRepository, updateCustomObjectRepository } from "../../../repository/customObject.repository";
+import { ChannelConfigurationRequest, MessageBody, MessagingChannel } from "../../interfaces/channel.interface";
+import { CreateCustomObjectInterface } from "../../interfaces/customObject.interface";
+import { fetchCustomObjectRepository, updateCustomObjectRepository } from "../../repository/customObject.repository";
 
 export const toggleChannelStatusHook = async (dispatch: any, channel: string, updateRequest: ChannelConfigurationRequest) => {
 

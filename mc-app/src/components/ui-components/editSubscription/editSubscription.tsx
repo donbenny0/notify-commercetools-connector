@@ -1,11 +1,11 @@
-import { useState, useEffect } from "react";
-import componentStyle from './editSubscription.module.css'
-import styles from "../createTrigger/TriggerSearchForm.module.css";
 import { useAsyncDispatch } from '@commercetools-frontend/sdk';
+import { useEffect, useState } from "react";
+import { updateMessageBodyHook } from "../../../hooks/channel/updateChannel.hooks";
 import { fetchCurrentResourceData } from "../../../repository/fetchResouces.repository";
-import { updateMessageBodyHook } from "../../hooks/channel/updateChannel.hooks";
+import styles from "../createTrigger/TriggerSearchForm.module.css";
 import MessageBox from "../messageBox/MessageBox";
 import PlaceholderSearch from "../placeholderSearch/PlaceholderSearch";
+import componentStyle from './editSubscription.module.css';
 
 type EditSubscriptionProps = {
     resourceType: string;

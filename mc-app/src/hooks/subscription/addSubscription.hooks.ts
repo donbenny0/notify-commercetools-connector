@@ -1,8 +1,8 @@
 import { logger } from "@commercetools-frontend/application-shell-connectors";
-import { CreateCustomObjectInterface } from "../../../interfaces/customObject.interface";
-import { ChannelSubscriptions } from "../../../interfaces/subscription.interface";
-import { fetchCustomObjectRepository, updateCustomObjectRepository } from "../../../repository/customObject.repository";
-import { updateCommerceToolsSubscriptionRepository, createCommerceToolsSubscriptionRepository, commerceToolsSubscriptionExistsRepository } from "../../../repository/subscription.repository";
+import { CreateCustomObjectInterface } from "../../interfaces/customObject.interface";
+import { ChannelSubscriptions } from "../../interfaces/subscription.interface";
+import { fetchCustomObjectRepository, updateCustomObjectRepository } from "../../repository/customObject.repository";
+import { commerceToolsSubscriptionExistsRepository, createCommerceToolsSubscriptionRepository, updateCommerceToolsSubscriptionRepository } from "../../repository/subscription.repository";
 
 export const addSubscriptionHook = async (dispatch: any, channel: string, updateBody: ChannelSubscriptions) => {
     try {
