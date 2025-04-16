@@ -18,12 +18,12 @@ Notify is an event-driven connector designed to automate real-time message deliv
 - [Installing Notify into your project](docs/install_notify.md)
 - [Run notify locally](docs/run_notify_locally.md)
 - [Architecture](docs/basic_architecture.jpg)
-- [Overall Information](docs/notify.pdf)
+- [Overall Information](docs/know_about_notify.md)
 - [Customizing Templates](docs/how_to_customize_template.md)
 
 ##
 
 ```markdown
 ## Note
-Please carefully read all the documentations for successful installation of Notify.
+Please carefully read all the documentation to ensure a successful installation of Notify.
 ```

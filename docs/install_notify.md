@@ -1,6 +1,6 @@
 # 🚀 Installing Notify to Your Project
 
-Once prerequisites and local setup are complete, follow the steps below to integrate Notify with your commercetools project.
+Once [prerequisites](know_about_notify.md/#-prerequisites) and local setup are complete, follow the steps below to integrate Notify with your commercetools project.
 
 ## Installation Steps
 
