@@ -7,7 +7,7 @@ Instructions to input a custom message template into the application for sending
 ```plaintext
 Hello {{shippingAddress.firstName}},\n\n your order #{{id}} has been confirmed! Total: {{totalPrice.centAmount}} {{totalPrice.currencyCode}}
 ```
-
+![](media/customize_template.gif)
 
 ### Placeholders
 

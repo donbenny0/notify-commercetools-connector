@@ -13,6 +13,10 @@ Notify is an event-driven connector designed to automate real-time message deliv
 - **Real-time message delivery**: Delivers messages in real-time, ensuring timely updates to customers.
 - **Scalability**: Designed to handle a high volume of messages and events.
 
+## Available Channels
+  - 📩 **Email**
+  - 📱 **SMS**
+  - 💬 **WhatsApp**
 
 ## Know more about Notify
 - [Installing Notify into your project](docs/install_notify.md)
@@ -20,6 +24,14 @@ Notify is an event-driven connector designed to automate real-time message deliv
 - [Architecture](docs/basic_architecture.jpg)
 - [Overall Information](docs/know_about_notify.md)
 - [Customizing Templates](docs/how_to_customize_template.md)
+
+### How to add new subscription
+![](docs/media/adding_subscription.gif)
+##
+
+### How to edit subscription
+![](docs/media/edit_subscriptions.gif)
+
 
 ##
 
