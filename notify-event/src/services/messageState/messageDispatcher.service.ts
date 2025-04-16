@@ -158,34 +158,35 @@ export const deliverMessages = async (
         try {
             const handler = getChannelHandler(channel);
             const channelConfig = channels.value[channel];
-            
+
             const channelState = currentMessageState.value.channelsProcessed[channel];
 
             if (!channelConfig.configurations) {
                 throw new GlobalError('400', `Configuration not found for channel: ${channel}`);
             }
             const senderAddress = channelConfig.configurations.sender_id;
+            logger.info(`sender address id is ${senderAddress}`)
             const rawSubject = channelConfig.configurations.messageBody?.[message.type]?.subject || ''
             const recipientPath = channelConfig.configurations.messageBody?.[message.type]?.sendToPath;
             const messageBodyPath = channelConfig.configurations.messageBody?.[message.type]?.message;
 
             if (!recipientPath || !messageBodyPath) {
-                throw new GlobalError('400',`Message configuration not found for channel ${channel} and type ${message.type}`);
+                throw new GlobalError('400', `Message configuration not found for channel ${channel} and type ${message.type}`);
             }
 
             const generatedMessageBody = parsePlaceholder(currentResource, messageBodyPath);
             const subject = parsePlaceholder(currentResource, rawSubject) || '';
             const recipient = parsePlaceholder(currentResource, `{{${recipientPath}}}`);
             if (!recipient) {
-                throw new GlobalError('400',`Invalid receiver address for channel ${channel} and type ${message.type}`);
+                throw new GlobalError('400', `Invalid receiver address for channel ${channel} and type ${message.type}`);
             }
 
             if (!generatedMessageBody) {
-                throw new GlobalError('400',`Failed to generate message body for channel ${channel}`);
+                throw new GlobalError('400', `Failed to generate message body for channel ${channel}`);
             }
 
             if (!recipient) {
-                throw new GlobalError('400',`Recipient not found for channel ${channel}`);
+                throw new GlobalError('400', `Recipient not found for channel ${channel}`);
             }
 
             // Mark as processing before attempting to send

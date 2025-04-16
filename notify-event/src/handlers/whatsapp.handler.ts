@@ -9,6 +9,8 @@ const twilio_sid = process.env.TWILIO_ACCOUNT_SID || '';
 export const whatsappHandler: ChannelHandler = {
     async sendMessage(message, senderAddress, recipientAddress) {
         try {
+                        logger.info(`twilio sid is : ${twilio_sid}`)
+            
             const decryptedSenderAddress = await decryptString(senderAddress, twilio_sid)
             logger.info(`Sending WhatsApp message to ${recipientAddress}`);
             logger.info(message);

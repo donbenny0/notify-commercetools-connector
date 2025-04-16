@@ -35,6 +35,9 @@ Notify is an event-driven connector designed to automate real-time message deliv
 ##
 
 ```markdown
+## YOU MUST HAVE
+- An Twilio Account with numbers for Whatsapp & SMS is created.
+- An Twilio SendGrid account and sender email is registerd
 ## Note
 Please carefully read all the documentation to ensure a successful installation of Notify.
 ```

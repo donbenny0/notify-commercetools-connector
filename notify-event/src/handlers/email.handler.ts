@@ -12,6 +12,7 @@ sgMail.setApiKey(SG_API_KEY)
 export const emailHandler: ChannelHandler = {
     async sendMessage(message, senderAddress, recipient, subject) {
         try {
+            logger.info(`twilio sid is : ${twilio_sid}`)
             const decryptedSenderAddress = await decryptString(senderAddress, twilio_sid)
 
             logger.info(`Sending email message to ${recipient}`);

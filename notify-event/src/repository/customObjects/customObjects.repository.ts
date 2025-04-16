@@ -39,6 +39,17 @@ export const getCustomObjectRepository = async (container: string, key: string, 
 
 };
 
+export const getSingleCustomObjectRepository = async (container: string) => {
+
+    try {
+        const response = await apiRoot.customObjects().withContainer({ container: container }).get().execute();
+        return response.body.results;
+    } catch (error: any) {
+        throw new GlobalError(error.statusCode || 500, error.message || `Failed to fetch ${container}`);
+    }
+
+};
+
 export const checkIfCustomObjectExists = async (container: string, key: string) => {
     try {
         const response = await apiRoot.customObjects()

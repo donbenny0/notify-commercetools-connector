@@ -1,5 +1,5 @@
 import { GoogleCloudPubSubDestination } from '@commercetools/platform-sdk';
-import { deleteCustomObjectRepository, getCustomObjectRepository, updateCustomObjectRepository } from '../repository/customObjects/customObjects.repository';
+import { deleteCustomObjectRepository, getCustomObjectRepository, getSingleCustomObjectRepository, updateCustomObjectRepository } from '../repository/customObjects/customObjects.repository';
 import { CreateCustomObjectInterface } from '../interface/customObject.interface';
 import { removeSubscriptionRepository } from '../repository/subscription/subscription.repository';
 import { logger } from '../utils/logger.utils';
@@ -353,6 +353,40 @@ export async function deleteAllObjects() {
   await Promise.all([
     deleteCustomObjectRepository(toBeDeleted.channels.container, toBeDeleted.channels.key),
     deleteCustomObjectRepository(toBeDeleted.subscriptions.container, toBeDeleted.subscriptions.key),
-    deleteCustomObjectRepository(toBeDeleted.triggerList.container, toBeDeleted.triggerList.key)
+    deleteCustomObjectRepository(toBeDeleted.triggerList.container, toBeDeleted.triggerList.key),
+    deleteAllMessageState(),
+    deleteAllMessageLogs(),
   ]);
+}
+
+export async function deleteAllMessageState() {
+  try {
+    const messageStateObjects = await getSingleCustomObjectRepository("notify-messageState");
+
+    await Promise.all(
+      messageStateObjects.map((item) =>
+        deleteCustomObjectRepository(item.container, item.id)
+      )
+    );
+
+    logger.info("All messageState objects deleted.");
+  } catch (error) {
+    logger.error(`Failed to delete messageState objects: ${JSON.stringify(error)}`);
+  }
+}
+
+export async function deleteAllMessageLogs() {
+  try {
+    const messageStateObjects = await getSingleCustomObjectRepository("notify-messagelogs");
+
+    await Promise.all(
+      messageStateObjects.map((item) =>
+        deleteCustomObjectRepository(item.container, item.id)
+      )
+    );
+
+    logger.info("All messageState objects deleted.");
+  } catch (error) {
+    logger.error(`Failed to delete messageState objects: ${JSON.stringify(error)}`);
+  }
 }
