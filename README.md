@@ -1,4 +1,4 @@
-![](docs/media/notify_logo.jpg)
+![](docs/media/notify_banner_logo.png)
 
 ## Notify
 
