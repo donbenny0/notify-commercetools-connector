@@ -247,9 +247,7 @@ to integrate Notify with your commercetools project.
     **Choose Notify** → then update the **Application URL** field with
     the **URL** that we copied from the mc-notify.
 
-```{=html}
-<!-- -->
-```
+
 4.  Click **Save.**
 
 5.  Check if the state is in **ready** state if not change the state to

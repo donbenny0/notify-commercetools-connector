@@ -1,5 +1,5 @@
 import { useAsyncDispatch } from '@commercetools-frontend/sdk';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { updateMessageBodyHook } from '../../../hooks/channel/updateChannel.hooks';
 import { addSubscriptionHook } from '../../../hooks/subscription/addSubscription.hooks';
 import { ChannelConfigurationRequest } from '../../../interfaces/channel.interface';
@@ -9,8 +9,6 @@ import { fetchCurrentResourceData } from '../../../repository/fetchResouces.repo
 import MessageBox from '../messageBox/MessageBox';
 import PlaceholderSearch from '../placeholderSearch/PlaceholderSearch';
 import styles from './TriggerSearchForm.module.css';
-
-
 
 interface TriggerCategory {
     [category: string]: string[];
@@ -29,11 +27,10 @@ type TriggerSearchFormProps = {
     channel: string;
     channelConfigurations: ChannelConfigurationRequest;
     setAddAddressClicked: () => void;
-
 };
 
 const TriggerSearchForm = ({ channel, channelConfigurations, setAddAddressClicked }: TriggerSearchFormProps) => {
-    const configuration = channelConfigurations;
+    const { sender_id: senderId } = channelConfigurations;
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedTrigger, setSelectedTrigger] = useState<TriggerInfo | null>(null);
     const [messageBody, setMessageBody] = useState('');
@@ -44,41 +41,41 @@ const TriggerSearchForm = ({ channel, channelConfigurations, setAddAddressClicke
     const [templateData, setTemplateData] = useState<{ id: string }[]>([]);
     const [selectedTemplate, setSelectedTemplate] = useState("");
     const [selectedTemplateData, setSelectedTemplateData] = useState<any>({});
-    const [sendToPath, setSendToPath] = useState('')
-    const [subject, setSubject] = useState('')
+    const [sendToPath, setSendToPath] = useState('');
+    const [subject, setSubject] = useState('');
     const dispatch = useAsyncDispatch();
 
+    const fetchTriggers = useCallback(async () => {
+        try {
+            const data = await fetchCustomObjectRepository(
+                dispatch,
+                'notify-trigger-list',
+                'notify-trigger-list-key'
+            ) as TriggerData;
+
+            if (data?.value) {
+                setTriggerData(data);
+                const allTriggers: TriggerInfo[] = [];
+                Object.entries(data.value).forEach(([category, triggers]) => {
+                    if (Array.isArray(triggers)) {
+                        triggers.forEach(trigger => {
+                            allTriggers.push({
+                                category,
+                                trigger
+                            });
+                        });
+                    }
+                });
+                setFilteredTriggers(allTriggers);
+            }
+        } catch (error) {
+            console.error('Failed to fetch triggers:', error);
+        }
+    }, [dispatch]);
 
     useEffect(() => {
-        const fetchTriggers = async () => {
-            try {
-                const data = await fetchCustomObjectRepository(
-                    dispatch,
-                    'notify-trigger-list',
-                    'notify-trigger-list-key'
-                ) as TriggerData;
-
-                if (data?.value) {
-                    setTriggerData(data);
-                    const allTriggers: TriggerInfo[] = [];
-                    Object.entries(data.value).forEach(([category, triggers]) => {
-                        if (Array.isArray(triggers)) {
-                            triggers.forEach(trigger => {
-                                allTriggers.push({
-                                    category,
-                                    trigger
-                                });
-                            });
-                        }
-                    });
-                    setFilteredTriggers(allTriggers);
-                }
-            } catch (error) {
-                console.error('Failed to fetch triggers:', error);
-            }
-        };
         fetchTriggers();
-    }, [dispatch]);
+    }, [fetchTriggers]);
 
     useEffect(() => {
         if (!triggerData?.value) return;
@@ -103,10 +100,9 @@ const TriggerSearchForm = ({ channel, channelConfigurations, setAddAddressClicke
         filterTriggers();
     }, [searchTerm, triggerData]);
 
-    const handleSubmit = async () => {
-        console.log(subject);
-
+    const handleSubmit = useCallback(async () => {
         if (!selectedTrigger || !messageBody) return;
+
         setIsLoading(true);
         try {
             const messageUpdatedBody: ChannelSubscriptions = {
@@ -131,53 +127,69 @@ const TriggerSearchForm = ({ channel, channelConfigurations, setAddAddressClicke
                     sendToPath: sendToPath
                 }
             });
+
+            // Reset form
             setSelectedTrigger(null);
             setMessageBody('');
             setSearchTerm('');
+            setSelectedTemplate("");
+            setSelectedTemplateData({});
+            setSendToPath('');
+            setSubject('');
         } catch (error) {
             console.error('Submission error:', error);
         } finally {
             setIsLoading(false);
         }
-    };
+    }, [dispatch, channel, selectedTrigger, messageBody, subject, sendToPath]);
 
-    const handleTriggerSelect = async (triggerInfo: TriggerInfo) => {
+    const handleTriggerSelect = useCallback(async (triggerInfo: TriggerInfo) => {
         try {
-            const response = await fetchCurrentResourceData(dispatch, `${triggerInfo.category}s`);
+            const response = await fetchCurrentResourceData(dispatch, triggerInfo.category);
             setTemplateData(response);
             setSelectedTrigger(triggerInfo);
             setSearchTerm(triggerInfo.trigger);
             setShowDropdown(false);
+            // Reset template selection when trigger changes
+            setSelectedTemplate("");
+            setSelectedTemplateData({});
+            setSendToPath('');
+            setSubject('');
         } catch (error) {
             console.error('Failed to fetch template data:', error);
         }
-    };
+    }, [dispatch]);
 
-    const handleTemplateSelect = (templateId: string) => {
+    const handleTemplateSelect = useCallback((templateId: string) => {
         const selectedData = templateData.find((item) => item.id === templateId);
         setSelectedTemplate(templateId);
         setSelectedTemplateData(selectedData || {});
-    };
+        // Reset sendToPath when template changes
+        setSendToPath('');
+    }, [templateData]);
 
-    const handleInputBlur = () => {
+    const handleInputBlur = useCallback(() => {
         setTimeout(() => setShowDropdown(false), 200);
-    };
+    }, []);
 
-    const handlePlaceholderSelect = (placeholder: string) => {
+    const handlePlaceholderSelect = useCallback((placeholder: string) => {
         setSendToPath(placeholder);
-    };
-    const isSenderIdPresent = configuration.sender_id
+    }, []);
+
+    const isSenderIdMissing = !senderId || senderId === '';
+
     return (
         <div className={styles.formContainer}>
             <div className={styles.formGroup}>
-                {isSenderIdPresent && isSenderIdPresent === '' || !isSenderIdPresent ? (
+                {isSenderIdMissing ? (
                     <div className={styles.showInfo}>
                         <div className={styles.infoText}>
                             <span className={styles.icon}>⚠️</span>
                             <small>{`Sender's "From" address is not configured. Please set it before proceeding.`}</small>
                         </div>
                         <button onClick={setAddAddressClicked}>Add Address</button>
-                    </div>) : (
+                    </div>
+                ) : (
                     <div className={styles.searchContainer}>
                         <label htmlFor="triggerSearch" className={styles.label}>
                             Search Trigger
@@ -194,10 +206,16 @@ const TriggerSearchForm = ({ channel, channelConfigurations, setAddAddressClicke
                             onBlur={handleInputBlur}
                             className={styles.searchInput}
                             placeholder="Type to search triggers..."
+                            aria-autocomplete="list"
+                            aria-controls="triggerDropdown"
                         />
 
                         {showDropdown && filteredTriggers.length > 0 && (
-                            <ul className={styles.dropdown} role="listbox">
+                            <ul
+                                id="triggerDropdown"
+                                className={styles.dropdown}
+                                role="listbox"
+                            >
                                 {filteredTriggers.map((triggerInfo, index) => (
                                     <li
                                         key={`${triggerInfo.category}-${triggerInfo.trigger}-${index}`}
@@ -217,7 +235,6 @@ const TriggerSearchForm = ({ channel, channelConfigurations, setAddAddressClicke
                             </ul>
                         )}
                     </div>
-
                 )}
 
                 {selectedTrigger && (
@@ -231,6 +248,7 @@ const TriggerSearchForm = ({ channel, channelConfigurations, setAddAddressClicke
                             value={selectedTemplate}
                             onChange={(e) => handleTemplateSelect(e.target.value)}
                             className={styles.searchInput}
+                            disabled={!selectedTrigger}
                         >
                             <option value="">Select a template...</option>
                             {templateData.map((res) => (
@@ -239,20 +257,16 @@ const TriggerSearchForm = ({ channel, channelConfigurations, setAddAddressClicke
                                 </option>
                             ))}
                         </select>
-
-
                     </div>
-
                 )}
-
 
                 {selectedTemplate && (
                     <div>
                         <br />
-                        <label htmlFor="templateSelection" className={styles.label}>
+                        <label htmlFor="placeholderSearch" className={styles.label}>
                             Delivery address
                             <br />
-                            <small>Choose the appropriate delivery address field. </small>
+                            <small>Choose the appropriate delivery address field.</small>
                         </label>
                         <PlaceholderSearch
                             templateData={selectedTemplateData}
@@ -264,18 +278,23 @@ const TriggerSearchForm = ({ channel, channelConfigurations, setAddAddressClicke
                             <MessageBox
                                 selectedTemplateData={selectedTemplateData}
                                 messageBody={subject}
-                                onMessageChange={setSubject} placeholder={"Type your subject here. Use {{}} to insert variables..."} title={'Add Subject'} />
+                                onMessageChange={setSubject}
+                                placeholder="Type your subject here. Use {{}} to insert variables..."
+                                title="Add Subject"
+                            />
                         )}
                         <MessageBox
                             selectedTemplateData={selectedTemplateData}
                             messageBody={messageBody}
-                            onMessageChange={setMessageBody} placeholder={"Type your message here. Use {{}} to insert variables..."} title={'Add message template'} />
+                            onMessageChange={setMessageBody}
+                            placeholder="Type your message here. Use {{}} to insert variables..."
+                            title="Add message template"
+                        />
                     </div>
                 )}
             </div>
 
-
-            {isSenderIdPresent && (
+            {!isSenderIdMissing && selectedTrigger && templateData.length > 0 && (
                 <button
                     onClick={(e) => {
                         e.preventDefault();
@@ -283,6 +302,7 @@ const TriggerSearchForm = ({ channel, channelConfigurations, setAddAddressClicke
                     }}
                     className={styles.submitButton}
                     disabled={!selectedTrigger || !messageBody || isLoading}
+                    aria-busy={isLoading}
                 >
                     {isLoading ? (
                         <span className={styles.loadingIndicator}></span>
@@ -291,7 +311,6 @@ const TriggerSearchForm = ({ channel, channelConfigurations, setAddAddressClicke
                     )}
                 </button>
             )}
-
         </div>
     );
 };

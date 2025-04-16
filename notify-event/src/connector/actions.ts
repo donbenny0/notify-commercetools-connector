@@ -120,7 +120,7 @@ async function initializeTriggerList() {
         "CustomerAddressCustomTypeSet",
         "CustomerAddressCustomTypeRemoved"
       ],
-      "inventory-entry": [
+      "inventory": [
         "InventoryEntryCreated",
         "InventoryEntryDeleted",
         "InventoryEntryQuantitySet"

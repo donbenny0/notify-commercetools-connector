@@ -1,18 +1,29 @@
-<div style="width:100%">
-   <img src="./notify/public/notify_logo.jpg" />
-</div>
+![](docs/media/notify_logo.jpg)
 
 ## Notify
 
-This connector is designed to automate real-time order status notifications for customers. It listens for changes to order statuses in CommerceTools and automatically sends WhatsApp notifications to customers via [Twilio ](https://www.twilio.com/)when an order confirmed.Also logs the the notifications send.
+Notify is an event-driven connector designed to automate real-time message delivery through multiple communication channels such as WhatsApp, Email, and SMS. It allows users to create subscriptions through the Notify UI and offers additional options like customizing message templates and configuring channels for message delivery. Notify listens to specific events triggered in commercetools—such as order creation or status updates—and sends notifications based on the subscriptions defined within the platform.
 
-## Instructions
+## Features
+- **Event-driven**: Notify listens to specific events triggered in commercetools and sends notifications accordingly.
+- **Multi-channel support**: Supports sending notifications through WhatsApp, Email, and SMS.
+- **Customizable templates**: Allows users to customize message templates for different events and channels.
+- **Channel configuration**: Enables users to configure channels for message delivery.
+- **Subscription management**: Users can create subscriptions through the Notify UI.
+- **Real-time message delivery**: Delivers messages in real-time, ensuring timely updates to customers.
+- **Scalability**: Designed to handle a high volume of messages and events.
 
-These are the steps to run the application:
 
-1. **Install Dependencies:** Install the dependencies by running `yarn` in the root directory.
-2. **Create commercetools API client keys:** Ensure that you create the API client keys with the correct scope (***manage\_project***).
-3. **Create [Twilio](https://www.twilio.com/) API Credentials:** Create the API credentials for your Twilio account.
-4. **Create .env file:** Create a .env file in the root directory and fill in the required environment variables. See the sample .env.example file for reference.
-5. move to `cd poc-orders-notifications/notify`
-6. run `ỳarn start:dev` to build the application.
+## Know more about Notify
+- [Installing Notify into your project](docs/install_notify.md)
+- [Run notify locally](docs/run_notify_locally.md)
+- [Architecture](docs/basic_architecture.jpg)
+- [Overall Information](docs/notify.pdf)
+- [Customizing Templates](docs/how_to_customize_template.md)
+
+##
+
+```markdown
+## Note
+Please carefully read all the documentations for successful installation of Notify.
+```

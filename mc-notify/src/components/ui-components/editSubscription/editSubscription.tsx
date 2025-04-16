@@ -34,7 +34,7 @@ const EditSubscription = ({ resourceType, messageBody, channel, triggerName }: E
 
     const handleResourceDataFetch = async () => {
         try {
-            const response = await fetchCurrentResourceData(dispatch, `${resourceType}s`);
+            const response = await fetchCurrentResourceData(dispatch, resourceType);
             setTemplateData(response);
             return response;
         } catch (error) {
