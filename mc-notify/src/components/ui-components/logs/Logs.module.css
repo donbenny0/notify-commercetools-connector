@@ -180,9 +180,12 @@ td {
     max-height: 40vh;
     overflow: auto;
     border-radius: 8px;
+    display: flex;
     background-color: #f1f3f5;
     padding: 12px;
     scrollbar-width: thin;
+    flex-direction: column-reverse;
+    justify-content: space-between;
 }
 
 .logsContainer::-webkit-scrollbar {
@@ -198,6 +201,7 @@ td {
 .logEntry {
     padding: 16px;
     margin-bottom: 12px;
+    margin-top: 10px;
     background-color: white;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
