@@ -32,6 +32,9 @@ deployAs:
         - key: TWILIO_AUTH_TOKEN
           description: Twilio auth token
           required: true
+        - key: SENDGRID_API_KEY
+          description: Sendgrid API key
+          required: true
   - name: mc-notify
     applicationType: merchant-center-custom-application
     configuration:
