@@ -1,5 +1,5 @@
 
-# ![Notify Logo](media/notify_logo.jpg)
+![Notify Logo](media/notify_banner_logo.png)
 
 ## 📝 Overview
 
