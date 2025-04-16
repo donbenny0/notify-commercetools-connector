@@ -1,8 +1,8 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styles from './Logs.module.css';
 import { fetchAllCustomObjectsRepository, fetchCustomObjectsCount } from '../../../repository/customObject.repository';
 import { useAsyncDispatch } from '@commercetools-frontend/sdk';
-import React from 'react';
+
 
 type ProcessLog = {
     message: string;
@@ -281,29 +281,31 @@ const ChannelLogs = ({ channel }: LogsProps) => {
                                                 </div>
 
                                                 <h4>Message Details</h4>
-                                                <div className={styles.messageDetails}>
-                                                    {decodedMessage ? (
-                                                        <>
-                                                            <div>
-                                                                <strong>Notification Type:</strong> {decodedMessage.notificationType || 'N/A'}
-                                                            </div>
-                                                            <div>
-                                                                <strong>Project Key:</strong> {decodedMessage.projectKey || 'N/A'}
-                                                            </div>
-                                                            <div>
-                                                                <strong>Resource ID:</strong> {decodedMessage.resource?.id || 'N/A'}
-                                                            </div>
-                                                            <div>
-                                                                <strong>Resource Type:</strong> {decodedMessage.resource?.typeId || 'N/A'}
-                                                            </div>
-                                                            <div>
-                                                                <strong>Created At:</strong> {formatDate(decodedMessage.createdAt)}
-                                                            </div>
-                                                        </>
-                                                    ) : (
-                                                        <div>Message details unavailable</div>
-                                                    )}
-                                                </div>
+                                                {decodedMessage ? (
+                                                    <>
+                                                        <div className={styles.messagEntry}>
+                                                            {
+                                                                Object.entries(decodedMessage).map(([key, value]) => (
+                                                                    <div key={key} className={styles.messageItems}>
+                                                                        <strong>{key}:</strong>
+                                                                        <span>
+                                                                            {typeof value === 'object'
+                                                                                ? JSON.stringify(value).length > 100
+                                                                                    ? JSON.stringify(value).substring(0, 100) + '...'
+                                                                                    : JSON.stringify(value)
+                                                                                : (value?.toString()?.length > 100
+                                                                                    ? value.toString().substring(0, 100) + '...'
+                                                                                    : value || 'N/A')}
+                                                                        </span>                                                                    </div>
+                                                                ))
+                                                            }
+                                                        </div>
+
+
+                                                    </>
+                                                ) : (
+                                                    <div>Message details unavailable</div>
+                                                )}
                                             </div>
                                         </td>
                                     </tr>

@@ -151,65 +151,153 @@ td {
     background-color: #f5f5f5;
 }
 
+/* Main expanded row styles */
 .expandedRow {
-    background-color: #fafafa;
+    background-color: #f8f9fa;
+    transition: all 0.3s ease;
 }
 
 .expandedContent {
-    padding: 16px;
-    background-color: #fafafa;
-    border-top: 1px solid #eee;
+    padding: 24px;
+    background-color: #f8f9fa;
+    border-top: 1px solid #e9ecef;
+    animation: fadeIn 0.3s ease;
 }
 
+/* Section headers */
+.expandedContent h4 {
+    font-size: 16px;
+    font-weight: 600;
+    color: #343a40;
+    margin-bottom: 16px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #dee2e6;
+}
+
+/* Logs container */
 .logsContainer {
-    margin-bottom: 20px;
-}
-
-.logEntry {
+    margin-bottom: 24px;
+    max-height: 40vh;
+    overflow: auto;
+    border-radius: 8px;
+    background-color: #f1f3f5;
     padding: 12px;
-    margin-bottom: 8px;
-    background-color: white;
-    border-radius: 6px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    scrollbar-width: thin;
 }
 
+.logsContainer::-webkit-scrollbar {
+    width: 6px;
+}
+
+.logsContainer::-webkit-scrollbar-thumb {
+    background-color: #adb5bd;
+    border-radius: 6px;
+}
+
+/* Log entries */
+.logEntry {
+    padding: 16px;
+    margin-bottom: 12px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    transition: transform 0.2s ease;
+}
+
+.logEntry:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.08);
+}
+
+.logEntry:last-child {
+    margin-bottom: 0;
+}
+
+/* Log header */
 .logHeader {
     display: flex;
     align-items: center;
-    margin-bottom: 8px;
+    margin-bottom: 10px;
 }
 
+/* Status badge */
 .logStatus {
-    display: inline-block;
-    padding: 2px 8px;
-    border-radius: 12px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px 10px;
+    border-radius: 16px;
     color: white;
     font-size: 12px;
-    font-weight: bold;
-    margin-right: 10px;
+    font-weight: 600;
+    margin-right: 12px;
+    min-width: 48px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
+/* Log timestamp */
 .logTime {
-    font-size: 12px;
-    color: #666;
+    font-size: 13px;
+    color: #6c757d;
+    font-weight: 500;
 }
 
+/* Log message */
 .logMessage {
     font-size: 14px;
+    line-height: 1.5;
+    color: #495057;
+    word-break: break-word;
 }
 
-.messageDetails {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: 12px;
+/* Message details section */
+.messagEntry {
+    width: 100%;
+    max-height: 30vh;
+    overflow: auto;
     background-color: white;
-    padding: 16px;
-    border-radius: 6px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    padding: 10px 24px 30px 24px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
-.messageDetails div {
-    padding: 4px 0;
+.messagEntry div {
+    padding: 6px 0;
+    color: #495057;
+}
+
+.messagEntry strong {
+    color: #343a40;
+    font-weight: 600;
+    margin-right: 6px;
+}
+
+/* Empty state styling */
+.logEntry:only-child:not(:has(*)) {
+    text-align: center;
+    color: #6c757d;
+    padding: 24px;
+    font-style: italic;
+}
+
+/* Animation */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+
+
+.messageItems {
+    display: flex;
+    padding: 1%;
+    flex-direction: row;
+    justify-content: space-between;
 }
 
 .paginationControls {

@@ -365,7 +365,7 @@ export async function deleteAllMessageState() {
 
     await Promise.all(
       messageStateObjects.map((item) =>
-        deleteCustomObjectRepository(item.container, item.id)
+        deleteCustomObjectRepository(item.container, item.key)
       )
     );
 
@@ -381,7 +381,7 @@ export async function deleteAllMessageLogs() {
 
     await Promise.all(
       messageStateObjects.map((item) =>
-        deleteCustomObjectRepository(item.container, item.id)
+        deleteCustomObjectRepository(item.container, item.key)
       )
     );
 
