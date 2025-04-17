@@ -9,7 +9,7 @@ import FilterDropdown from "../filterDropDown/FilterDropdown";
 import Pagination from "../pagination/Pagination";
 import SearchBar from "../searchBar/SearchBar";
 import styles from "./subscriptionList.module.css";
-
+import notFound from "./not-found.png"
 
 type Subscription = {
     resourceType: string;
@@ -143,7 +143,10 @@ const SubscriptionList = ({ subscriptionList, channel, messageData }: Subscripti
     );
 
     if (!subList?.subscriptions?.length) {
-        return <p>No subscriptions found for {channel}.</p>;
+        return <div className={styles.notFoundImage}>
+            <img src={notFound} alt="" />
+            <p> Sorry, no subscriptions found.</p>
+        </div>;
     }
 
     return (
@@ -237,7 +240,7 @@ const SubscriptionList = ({ subscriptionList, channel, messageData }: Subscripti
                     ) : (
                         <tr>
                             <td colSpan={4} className={styles.noResults}>
-                               No subscriptions found.
+                                No subscriptions found.
                             </td>
                         </tr>
                     )}

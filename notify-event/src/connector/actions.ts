@@ -96,7 +96,6 @@ async function initializeTriggerList() {
       ],
       "customer": [
         "CustomerCreated",
-        "CustomerDeleted",
         "CustomerAddressChanged",
         "CustomerEmailChanged",
         "CustomerEmailVerified",
@@ -122,14 +121,12 @@ async function initializeTriggerList() {
       ],
       "inventory": [
         "InventoryEntryCreated",
-        "InventoryEntryDeleted",
         "InventoryEntryQuantitySet"
       ],
       "order": [
         "OrderCreated",
         "OrderImported",
         "OrderEditApplied",
-        "OrderDeleted",
         "PurchaseOrderNumberSet",
         "OrderCustomerSet",
         "OrderCustomerEmailSet",
@@ -207,10 +204,8 @@ async function initializeTriggerList() {
         "ProductPriceRemoved",
         "ProductPriceModeSet",
         "ProductVariantAdded",
-        "ProductVariantDeleted",
         "ProductAddedToCategory",
         "ProductRemovedFromCategory",
-        "ProductDeleted",
         "ProductPriceCustomFieldAdded",
         "ProductPriceCustomFieldChanged",
         "ProductPriceCustomFieldRemoved",
@@ -224,7 +219,6 @@ async function initializeTriggerList() {
         "ProductSelectionProductRemoved",
         "ProductSelectionVariantSelectionChanged",
         "ProductSelectionVariantExclusionChanged",
-        "ProductSelectionDeleted"
       ],
       "quote": [
         "QuoteCreated",
@@ -232,14 +226,12 @@ async function initializeTriggerList() {
         "QuoteStateChanged",
         "QuoteStateTransition",
         "QuoteCustomerChanged",
-        "QuoteDeleted"
       ],
       "quote-request": [
         "QuoteRequestCreated",
         "QuoteRequestStateChanged",
         "QuoteRequestStateTransition",
         "QuoteRequestCustomerChanged",
-        "QuoteRequestDeleted"
       ],
       "review": [
         "ReviewCreated",
@@ -252,11 +244,9 @@ async function initializeTriggerList() {
         "StagedQuoteStateTransition",
         "StagedQuoteValidToSet",
         "StagedQuoteSellerCommentSet",
-        "StagedQuoteDeleted"
       ],
       "product-tailoring": [
         "ProductTailoringCreated",
-        "ProductTailoringDeleted",
         "ProductTailoringNameSet",
         "ProductTailoringDescriptionSet",
         "ProductTailoringSlugSet",
@@ -269,7 +259,6 @@ async function initializeTriggerList() {
       ],
       "standalone-price": [
         "StandalonePriceCreated",
-        "StandalonePriceDeleted",
         "StandalonePriceValueChanged",
         "StandalonePriceKeySet",
         "StandalonePriceDiscountSet",
@@ -286,7 +275,6 @@ async function initializeTriggerList() {
       ],
       "store": [
         "StoreCreated",
-        "StoreDeleted",
         "StoreLanguagesChanged",
         "StoreCountriesChanged",
         "StoreNameSet",

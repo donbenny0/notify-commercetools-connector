@@ -5,6 +5,9 @@ import bellIcon from '../../../assets/icons/bell-24.png';
 import closeIcon from '../../../assets/icons/close-circle.svg';
 import logIcon from '../../../assets/icons/logs.svg';
 import settingsIcon from '../../../assets/icons/settings_icon.svg';
+import whatsappIcon from '../../../assets/icons/whatsapp-symbol.svg';
+import emailIcon from '../../../assets/icons/email-symbol.svg';
+import smsIcon from '../../../assets/icons/smartphone-sms.svg';
 import { toggleChannelStatusHook } from '../../../hooks/channel/updateChannel.hooks';
 import { ChannelConfigurationRequest } from '../../../interfaces/channel.interface';
 import { fetchCustomObjectQueryRepository } from '../../../repository/customObject.repository';
@@ -50,6 +53,7 @@ const ChannelPannel = ({ channel }: ChannelPannelProps) => {
                 );
 
                 if (isMounted) { // Only update state if component is mounted
+
                     if (response?.value?.channels?.[channel]) {
                         setSubscriptions(response.value.channels[channel]);
                         setChannelData(response.value.references.obj.value[channel].configurations || {});
@@ -79,7 +83,7 @@ const ChannelPannel = ({ channel }: ChannelPannelProps) => {
         fetchData();
 
         return () => {
-            isMounted = false; // Cleanup function to set mounted to false
+            isMounted = false;
         };
     }, [dispatch, channel]);
 
@@ -99,13 +103,44 @@ const ChannelPannel = ({ channel }: ChannelPannelProps) => {
         setAddSubscription(false);
         setActiveTab('settings')
     }
+    const handleToggleAddSubscription = async (subscriptionClicked: boolean) => {
+        setAddSubscription(!subscriptionClicked);
+        if (addSubscription) {
+            const response = await fetchCustomObjectQueryRepository(
+                dispatch,
+                'notify-subscriptions',
+                'notify-subscriptions-key',
+                'expand=value.references.channelReference'
+            );
+
+            setIsLoading(true);
+
+            if (response?.value?.channels?.[channel]) {
+                setSubscriptions(response.value.channels[channel]);
+                setChannelData(response.value.references.obj.value[channel].configurations || {});
+                const isEnabled = response.value.references?.obj?.value[channel]?.configurations?.isEnabled || false;
+                const messageBody = response.value.references?.obj?.value[channel]?.configurations?.messageBody || {};
+
+                setIsChannelActive(isEnabled);
+                setMessageData(messageBody);
+            } else {
+                // Set default empty values if no data found
+                setSubscriptions({ subscriptions: [] });
+                setChannelData({});
+                setIsChannelActive(false);
+                setMessageData({});
+            }
+            setIsLoading(false);
+        }
+    }
 
     return (
         <div className={styles.panelContainer}>
             <div className={styles.panelHeader}>
                 <div className={styles.headerContent}>
                     <h2 className={styles.channelTitle}>
-                        {channel.charAt(0).toUpperCase() + channel.slice(1)} Channel
+                        <img src={channel === "whatsapp" ? whatsappIcon : channel === "email" ? emailIcon : smsIcon} alt="" />
+                        Setup {channel.charAt(0).toUpperCase() + channel.slice(1)} triggers
                     </h2>
                     <p className={styles.channelDescription}>
                         Configure subscriptions, message templates, and channel settings
@@ -115,7 +150,7 @@ const ChannelPannel = ({ channel }: ChannelPannelProps) => {
                 <div className={styles.headerActions}>
                     <button
                         className={`${styles.actionButton} ${addSubscription ? styles.cancelButton : styles.addButton}`}
-                        onClick={() => setAddSubscription(!addSubscription)}
+                        onClick={() => handleToggleAddSubscription(addSubscription)}
                     >
                         {addSubscription ? (
                             <>

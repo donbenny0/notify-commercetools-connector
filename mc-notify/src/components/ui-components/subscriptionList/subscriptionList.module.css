@@ -22,6 +22,16 @@ td {
     border-bottom: 1px solid #ddd;
 }
 
+.notFoundImage {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+.notFoundImage>img {
+    width: 50%;
+}
+
 /* th {
     background-color: #007bff;
     color: white;

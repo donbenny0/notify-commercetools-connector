@@ -2,6 +2,9 @@ import React, { useEffect, useState } from 'react';
 import styles from './Logs.module.css';
 import { fetchAllCustomObjectsRepository, fetchCustomObjectsCount } from '../../../repository/customObject.repository';
 import { useAsyncDispatch } from '@commercetools-frontend/sdk';
+import processLogsIcon from '../../../assets/icons/process_logs.svg'
+import messageDetailsIcon from '../../../assets/icons/details-more.svg'
+import TabBar from '../tabBar/TabBar';
 
 
 type ProcessLog = {
@@ -128,7 +131,12 @@ const ChannelLogs = ({ channel }: LogsProps) => {
         pageSize: 20,
         total: 0,
     });
+    const [activeTab, setActiveTab] = useState('process_logs');
 
+    const tabs = [
+        { id: 'process_logs', label: 'Process Logs', icon: processLogsIcon },
+        { id: 'message_details', label: 'Message Details', icon: messageDetailsIcon },
+    ];
     const fetchData = async () => {
         setIsLoading(true);
         setError(null);
@@ -251,61 +259,66 @@ const ChannelLogs = ({ channel }: LogsProps) => {
                                     <tr className={styles.expandedRow}>
                                         <td colSpan={5}>
                                             <div className={styles.expandedContent}>
-                                                <h4>Process Logs</h4>
-                                                <div className={styles.logsContainer}>
-                                                    {channelData.processLogs?.length ? (
-                                                        channelData.processLogs.map((log, index) => (
-                                                            <div key={`${item.id}-log-${index}`} className={styles.logEntry}>
-                                                                <div className={styles.logHeader}>
-                                                                    <span
-                                                                        className={styles.logStatus}
-                                                                        style={{
-                                                                            backgroundColor:
-                                                                                log.statusCode >= 200 && log.statusCode < 300
-                                                                                    ? '#28a745'
-                                                                                    : log.statusCode >= 400 && log.statusCode < 500
-                                                                                        ? '#ffc107'
-                                                                                        : '#dc3545',
-                                                                        }}
-                                                                    >
-                                                                        {log.statusCode}
-                                                                    </span>
-                                                                    <span className={styles.logTime}>{formatDate(log.createdAt)}</span>
+                                                <TabBar tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} />
+
+                                                <div className={styles.tabContent}>
+                                                    {activeTab === 'process_logs' && (<div className={styles.logsContainer}>
+                                                        {channelData.processLogs?.length ? (
+                                                            channelData.processLogs.map((log, index) => (
+                                                                <div key={`${item.id}-log-${index}`} className={styles.logEntry}>
+                                                                    <div className={styles.logHeader}>
+                                                                        <span
+                                                                            className={styles.logStatus}
+                                                                            style={{
+                                                                                backgroundColor:
+                                                                                    log.statusCode >= 200 && log.statusCode < 300
+                                                                                        ? '#28a745'
+                                                                                        : log.statusCode >= 400 && log.statusCode < 500
+                                                                                            ? '#ffc107'
+                                                                                            : '#dc3545',
+                                                                            }}
+                                                                        >
+                                                                            {log.statusCode}
+                                                                        </span>
+                                                                        <span className={styles.logTime}>{formatDate(log.createdAt)}</span>
+                                                                    </div>
+                                                                    <div className={styles.logMessage}>{log.message}</div>
                                                                 </div>
-                                                                <div className={styles.logMessage}>{log.message}</div>
-                                                            </div>
-                                                        ))
-                                                    ) : (
-                                                        <div className={styles.logEntry}>No process logs available</div>
-                                                    )}
+                                                            ))
+                                                        ) : (
+                                                            <div className={styles.logEntry}>No process logs available</div>
+                                                        )}
+                                                    </div>)}
+                                                    {activeTab === 'message_details' && (<>
+                                                        {decodedMessage ? (
+                                                            <>
+                                                                <div className={styles.messagEntry}>
+                                                                    {
+                                                                        Object.entries(decodedMessage).map(([key, value]) => (
+                                                                            <div key={key} className={styles.messageItems}>
+                                                                                <strong>{key}:</strong>
+                                                                                <span>
+                                                                                    {typeof value === 'object'
+                                                                                        ? JSON.stringify(value).length > 100
+                                                                                            ? JSON.stringify(value).substring(0, 100) + '...'
+                                                                                            : JSON.stringify(value)
+                                                                                        : (value?.toString()?.length > 100
+                                                                                            ? value.toString().substring(0, 100) + '...'
+                                                                                            : value || 'N/A')}
+                                                                                </span>                                                                    </div>
+                                                                        ))
+                                                                    }
+                                                                </div>
+
+
+                                                            </>
+                                                        ) : (
+                                                            <div>Message details unavailable</div>
+                                                        )}</>)}
                                                 </div>
 
-                                                <h4>Message Details</h4>
-                                                {decodedMessage ? (
-                                                    <>
-                                                        <div className={styles.messagEntry}>
-                                                            {
-                                                                Object.entries(decodedMessage).map(([key, value]) => (
-                                                                    <div key={key} className={styles.messageItems}>
-                                                                        <strong>{key}:</strong>
-                                                                        <span>
-                                                                            {typeof value === 'object'
-                                                                                ? JSON.stringify(value).length > 100
-                                                                                    ? JSON.stringify(value).substring(0, 100) + '...'
-                                                                                    : JSON.stringify(value)
-                                                                                : (value?.toString()?.length > 100
-                                                                                    ? value.toString().substring(0, 100) + '...'
-                                                                                    : value || 'N/A')}
-                                                                        </span>                                                                    </div>
-                                                                ))
-                                                            }
-                                                        </div>
 
 
-                                                    </>
-                                                ) : (
-                                                    <div>Message details unavailable</div>
-                                                )}
                                             </div>
                                         </td>
                                     </tr>

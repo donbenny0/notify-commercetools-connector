@@ -116,7 +116,7 @@ export const processDeliveringMessage = async (
             return checkAllChannelsCompleted(currentMessageState);
         }
 
-        const currentResource = await fetchResource(message.resource.typeId, message.resource.id);
+        const currentResource = await fetchResource(message.resource.typeId, message.resource.id, message);
         await deliverMessages(
             currentMessageState,
             channelsToSend,
