@@ -2,7 +2,7 @@ import { useState } from 'react';
 import styles from './sidebar.module.css';
 import channelIcon from '../../../assets/icons/channel_icon_64.svg';
 import dropDown from '../../../assets/icons/dropdown-arrow.svg';
-import settingsIcon from '../../../assets/icons/settings_icon.svg';
+import manageIcon from '../../../assets/icons/manage.svg';
 import menuIcon from '../../../assets/icons/menu.svg';
 import arrowLeftIcon from '../../../assets/icons/arrow-left.svg';
 
@@ -44,7 +44,7 @@ const SideBar = ({ setChannel, availableChannels, currentChannel }: SideBarProps
             </div>
             <nav className={styles.nav}>
                 <div className={styles.sidebarHeader}>
-                    <img src={settingsIcon} alt="Settings" />
+                    <img src={manageIcon} alt="manage" />
                     <h3>Manage Notify</h3>
                 </div>
                 <div className={styles.divider} />
